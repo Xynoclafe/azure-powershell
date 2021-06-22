@@ -20,8 +20,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.Deploy
     using System.Text;
 
     [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "DeploymentStack",
-        DefaultParameterSetName = GetAzDeploymentStack.ListDeploymentStack), OutputType(typeof(PSDeploymentStack))]
-    public class GetAzDeploymentStack : DeploymentStacksCmdletBase
+        DefaultParameterSetName = GetAzResourceGroupDeploymentStack.ListDeploymentStack), OutputType(typeof(PSDeploymentStack))]
+    public class GetAzResourceGroupDeploymentStack : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
 

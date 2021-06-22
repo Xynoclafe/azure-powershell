@@ -1,14 +1,18 @@
 ﻿namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 {
     using Microsoft.Azure.Commands.ResourceManager.Common.ArgumentCompleters;
+    using Microsoft.WindowsAzure.Commands.Utilities.Common;
     using System;
+    using System.Collections;
     using System.Collections.Generic;
+    using System.IO;
     using System.Management.Automation;
     using System.Text;
+    using ProjectResources = Microsoft.Azure.Commands.ResourceManager.Cmdlets.Properties.Resources;
 
-    [Cmdlet("New", Common.AzureRMConstants.AzureRMPrefix + "DeploymentStack",
-        SupportsShouldProcess = true, DefaultParameterSetName = NewAzDeploymentStack.ParameterlessTemplateFileParameterSetName), OutputType(typeof(PSDeploymentStack))]
-    public class NewAzDeploymentStack : DeploymentStacksCmdletBase
+    [Cmdlet("New", Common.AzureRMConstants.AzureRMPrefix + "ResourceGroupDeploymentStack",
+        SupportsShouldProcess = true, DefaultParameterSetName = NewAzResourceGroupDeploymentStack.ParameterlessTemplateFileParameterSetName), OutputType(typeof(PSDeploymentStack))]
+    public class NewAzResourceGroupDeploymentStack : DeploymentStacksCmdletBase
     {
 
         #region Cmdlet Parameters and Parameter Set Definitions
@@ -88,15 +92,48 @@
         {
             try
             {
+                Hashtable parameters = new Hashtable();
                 switch (ParameterSetName)
                 {
-                    default:
-                        throw new PSNotSupportedException();
+                    case ParameterlessTemplateFileParameterSetName:
+                    case ParameterUriTemplateFileParameterSetName:
+                        string filePath = this.TryResolvePath(TemplateFile);
+                        if(!File.Exists(filePath))
+                        {
+                            throw new PSInvalidOperationException(
+                                string.Format(ProjectResources.InvalidFilePath, TemplateFile));
+                        }
+                        break;
+                    case ParameterFileTemplateSpecParameterSetName:
+                    case ParameterFileTemplateUriParameterSetName:
+                        parameters = this.GetParameterObject(ParameterFile);
+                        break;
+                    case ParameterFileTemplateFileParameterSetName:
+                        string templatePath = this.TryResolvePath(TemplateFile);
+                        if (!File.Exists(templatePath))
+                        {
+                            throw new PSInvalidOperationException(
+                                string.Format(ProjectResources.InvalidFilePath, TemplateFile));
+                        }
+                        parameters = this.GetParameterObject(ParameterFile);
+                        break;
                 }
-            }
-            catch
-            {
 
+                var deploymentStack = DeploymentStacksSdkClient.ResourceGroupCreateOrUpdateDeploymentStack(
+                    Name,
+                    ResourceGroupName,
+                    TemplateUri,
+                    TemplateSpec,
+                    ParameterUri,
+                    parameters,
+                    Description
+                    );
+                WriteObject(deploymentStack);
+
+            }
+            catch (Exception ex)
+            {
+                WriteExceptionError(ex);
             }
         }
 
