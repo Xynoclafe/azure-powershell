@@ -1,6 +1,10 @@
-﻿using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient;
+﻿using Microsoft.Azure.Commands.Common.Authentication.Abstractions;
+using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient;
+using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Utilities;
 using Microsoft.Azure.Commands.ResourceManager.Common;
+using Microsoft.WindowsAzure.Commands.Utilities.Common;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
@@ -31,6 +35,31 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             {
                 this.deploymentStacksSdkClient = value;
             }
+        }
+
+        protected Hashtable GetParameterObject(string parameterFile)
+        {
+            var parameters = new Hashtable();
+            string templateParameterFilePath = this.ResolvePath(parameterFile);
+            if (parameterFile != null && FileUtilities.DataStore.FileExists(parameterFile))
+            {
+                var parametersFromFile = TemplateUtility.ParseTemplateParameterFileContents(templateParameterFilePath);
+                parametersFromFile.ForEach(dp =>
+                {
+                    var parameter = new Hashtable();
+                    if (dp.Value.Value != null)
+                    {
+                        parameter.Add("value", dp.Value.Value);
+                    }
+                    if (dp.Value.Reference != null)
+                    {
+                        parameter.Add("reference", dp.Value.Reference);
+                    }
+
+                    parameters[dp.Key] = parameter;
+                });
+            }
+            return parameters;
         }
     }
 }

@@ -14,6 +14,8 @@ using Newtonsoft.Json.Linq;
 using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Json;
 using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Utilities;
 using Microsoft.WindowsAzure.Commands.Utilities.Common;
+using System.Management.Automation;
+using System.Linq;
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 {
@@ -45,11 +47,83 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
         public PSDeploymentStack GetResourceGroupDeploymentStack(
             string resourceGroupName,
-            string deploymentStackName = null)
+            string deploymentStackName)
         {
-            var deploymentStack = DeploymentStacksClient.DeploymentStacks.GetAtResourceGroup(resourceGroupName, deploymentStackName);
+            var deploymentStack = DeploymentStacksClient.DeploymentStacks.GetAtResourceGroup(resourceGroupName, deploymentStackName = null);
 
             return new PSDeploymentStack(deploymentStack);
+        }
+
+        public IEnumerable<PSDeploymentStack> ListResourceGroupDeploymentStack(string resourceGroupName)
+        {
+            var list = new List<PSDeploymentStack>();
+
+            var deploymentStacks = DeploymentStacksClient.DeploymentStacks.ListAtResourceGroup(resourceGroupName);
+
+            list.AddRange(deploymentStacks.Select(stack => PSDeploymentStack.FromAzureSDKDeploymentStack(stack)));
+
+            while (deploymentStacks.NextPageLink != null)
+            {
+                deploymentStacks = 
+                    DeploymentStacksClient.DeploymentStacks.ListAtResourceGroupNext(deploymentStacks.NextPageLink);
+                list.AddRange(deploymentStacks.Select(stack => PSDeploymentStack.FromAzureSDKDeploymentStack(stack)));
+            }
+            return list;
+        }
+
+        internal object ListSubscriptionDeploymentStackSnapshot(string stackName)
+        {
+            var list = new List<PSDeploymentStackSnapshot>();
+
+            var deploymentStackSnapshots = DeploymentStacksClient.DeploymentStackSnapshots.ListAtSubscription(stackName);
+
+            list.AddRange(deploymentStackSnapshots.Select(stack => PSDeploymentStackSnapshot.FromAzureSDKDeploymentStack(stack)));
+
+            while (deploymentStackSnapshots.NextPageLink != null)
+            {
+                deploymentStackSnapshots =
+                    DeploymentStacksClient.DeploymentStackSnapshots.ListAtSubscriptionNext(deploymentStackSnapshots.NextPageLink);
+                list.AddRange(deploymentStackSnapshots.Select(stack => PSDeploymentStackSnapshot.FromAzureSDKDeploymentStack(stack)));
+            }
+            return list;
+        }
+
+        public PSDeploymentStack GetSubscriptionDeploymentStack(string stackName)
+        {
+            var deploymentStack = DeploymentStacksClient.DeploymentStacks.GetAtSubscription(stackName);
+
+            return new PSDeploymentStack(deploymentStack);
+        }
+
+        public IEnumerable<PSDeploymentStack> ListSubscriptionDeploymentStack()
+        {
+            var list = new List<PSDeploymentStack>();
+
+            var deploymentStacks = DeploymentStacksClient.DeploymentStacks.ListAtSubscription();
+
+            list.AddRange(deploymentStacks.Select(stack => PSDeploymentStack.FromAzureSDKDeploymentStack(stack)));
+
+            while(deploymentStacks.NextPageLink != null)
+            {
+                deploymentStacks =
+                    DeploymentStacksClient.DeploymentStacks.ListAtSubscriptionNext(deploymentStacks.NextPageLink);
+                list.AddRange(deploymentStacks.Select(stack => PSDeploymentStack.FromAzureSDKDeploymentStack(stack)));
+            }
+            return list;
+        }
+
+        public PSDeploymentStackSnapshot GetResourceGroupDeploymentStackSnapshot(string resourceGroupName, string stackName, string snapshotName)
+        {
+            var deploymentStackSnapshot = DeploymentStacksClient.DeploymentStackSnapshots.GetAtResourceGroup(resourceGroupName, stackName, snapshotName);
+
+            return new PSDeploymentStackSnapshot(deploymentStackSnapshot);
+        }
+
+        public PSDeploymentStackSnapshot GetSubscriptionDeploymentStackSnapshot(string stackName, string snapshotName)
+        {
+            var deploymentStackSnapshot = DeploymentStacksClient.DeploymentStackSnapshots.GetAtSubscription(stackName, snapshotName);
+
+            return new PSDeploymentStackSnapshot(deploymentStackSnapshot);
         }
 
         public PSDeploymentStack ResourceGroupCreateOrUpdateDeploymentStack(
@@ -105,6 +179,74 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
             var deploymentStack = DeploymentStacksClient.DeploymentStacks.BeginCreateOrUpdateAtResourceGroup(resourceGroupName, deploymentStackName, deploymentStackModel);
             return new PSDeploymentStack(deploymentStack);
+        }
+
+        internal void DeleteResourceGroupDeploymentStackSnapshot(string resourceGroupName, string name, string snapshotName)
+        {
+            var deleteResponse = DeploymentStacksClient.DeploymentStackSnapshots
+                .DeleteAtResourceGroupWithHttpMessagesAsync(resourceGroupName, name, snapshotName)
+                .GetAwaiter()
+                .GetResult();
+
+            if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                throw new PSArgumentException(
+                        $"DeploymentStack snapshot '{snapshotName}' of the DeploymentStack '{name}' in ResourceGroup '{resourceGroupName}' not found."
+                    );
+            }
+
+            return;
+        }
+
+        internal void DeleteSubscriptionDeploymentStackSnapshot(string name, string snapshotName)
+        {
+            var deleteResponse = DeploymentStacksClient.DeploymentStackSnapshots
+                .DeleteAtSubscriptionWithHttpMessagesAsync(name, snapshotName)
+                .GetAwaiter()
+                .GetResult();
+
+            if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                throw new PSArgumentException(
+                        $"DeploymentStack snapshot '{snapshotName}' of the DeploymentStack '{name}' not found."
+                    );
+            }
+
+            return;
+        }
+
+        internal void DeleteResourceGroupDeploymentStack(string resourceGroupName, string name)
+        {
+            var deleteResponse = DeploymentStacksClient.DeploymentStacks
+                .DeleteAtResourceGroupWithHttpMessagesAsync(resourceGroupName, name)
+                .GetAwaiter()
+                .GetResult();
+
+            if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                throw new PSArgumentException(
+                        $"DeploymentStack '{name}' in ResourceGroup '{resourceGroupName}' not found."
+                    );
+            }
+
+            return;
+        }
+
+        internal void DeleteSubscriptionDeploymentStack(string name)
+        {
+            var deleteResponse = DeploymentStacksClient.DeploymentStacks
+                .DeleteAtSubscriptionWithHttpMessagesAsync(name)
+                .GetAwaiter()
+                .GetResult();
+
+            if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                throw new PSArgumentException(
+                        $"DeploymentStack '{name}' not found."
+                    );
+            }
+
+            return;
         }
 
         public PSDeploymentStack SubscriptionCreateOrUpdateDeploymentStack(

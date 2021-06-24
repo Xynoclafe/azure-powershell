@@ -7,7 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets
+namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
 {
     public class PSDeploymentStack
     {
@@ -73,5 +73,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets
             this.snapshotId = deploymentStack.SnapshotId;
         }
 
+        internal static PSDeploymentStack FromAzureSDKDeploymentStack(DeploymentStack stack)
+        {
+            return stack != null
+                ? new PSDeploymentStack(stack)
+                : null;
+        }
     }
 }
