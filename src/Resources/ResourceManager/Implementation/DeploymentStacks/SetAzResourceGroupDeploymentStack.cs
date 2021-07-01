@@ -2,6 +2,7 @@
 {
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
     using Microsoft.Azure.Commands.ResourceManager.Common.ArgumentCompleters;
+    using Microsoft.Azure.Management.ResourceManager.Models;
     using Microsoft.WindowsAzure.Commands.Utilities.Common;
     using System;
     using System.Collections;
@@ -85,6 +86,10 @@
             HelpMessage = "Description for the stack")]
         public string Description { get; set; }
 
+        [Parameter(Mandatory = true, ValueFromPipeline = true,
+            HelpMessage = "Update behavior for the stack. Value can be \"Detach\" or \"Purge\".")]
+        public String UpdateBehavior { get; set; }
+
         #endregion
 
         #region Cmdlet Overrides
@@ -120,6 +125,11 @@
                         break;
                 }
 
+                if (DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(
+                        Name,
+                        throwIfNotExists: false) == null)
+                    throw new DeploymentStacksErrorException($"The stack '{Name}' you're trying to modify does not exist in '{ResourceGroupName}'. Please Use New-AzResourceGroupDeploymentStack to create it");
+
                 var deploymentStack = DeploymentStacksSdkClient.ResourceGroupCreateOrUpdateDeploymentStack(
                     Name,
                     ResourceGroupName,
@@ -127,8 +137,9 @@
                     TemplateSpec,
                     ParameterUri,
                     parameters,
-                    Description
-                    );
+                    Description,
+                    UpdateBehavior
+                    ) ;
                 WriteObject(deploymentStack);
 
             }

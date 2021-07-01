@@ -47,83 +47,221 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
         public PSDeploymentStack GetResourceGroupDeploymentStack(
             string resourceGroupName,
-            string deploymentStackName)
+            string deploymentStackName,
+            bool throwIfNotExists = true)
         {
-            var deploymentStack = DeploymentStacksClient.DeploymentStacks.GetAtResourceGroup(resourceGroupName, deploymentStackName = null);
-
-            return new PSDeploymentStack(deploymentStack);
-        }
-
-        public IEnumerable<PSDeploymentStack> ListResourceGroupDeploymentStack(string resourceGroupName)
-        {
-            var list = new List<PSDeploymentStack>();
-
-            var deploymentStacks = DeploymentStacksClient.DeploymentStacks.ListAtResourceGroup(resourceGroupName);
-
-            list.AddRange(deploymentStacks.Select(stack => PSDeploymentStack.FromAzureSDKDeploymentStack(stack)));
-
-            while (deploymentStacks.NextPageLink != null)
+            try
             {
-                deploymentStacks = 
-                    DeploymentStacksClient.DeploymentStacks.ListAtResourceGroupNext(deploymentStacks.NextPageLink);
-                list.AddRange(deploymentStacks.Select(stack => PSDeploymentStack.FromAzureSDKDeploymentStack(stack)));
+                var deploymentStack = DeploymentStacksClient.DeploymentStacks.GetAtResourceGroup(resourceGroupName, deploymentStackName);
+                return new PSDeploymentStack(deploymentStack);
             }
-            return list;
+            catch (Exception ex)
+            {
+                if (!throwIfNotExists &&
+                    ex is DeploymentStacksErrorException dex &&
+                    dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    // Deployment Stack does not exist
+                    return null;
+                }
+
+                throw;
+            }
         }
 
-        internal object ListSubscriptionDeploymentStackSnapshot(string stackName)
+        public IEnumerable<PSDeploymentStack> ListResourceGroupDeploymentStack(string resourceGroupName, bool throwIfNotExists = true)
         {
-            var list = new List<PSDeploymentStackSnapshot>();
-
-            var deploymentStackSnapshots = DeploymentStacksClient.DeploymentStackSnapshots.ListAtSubscription(stackName);
-
-            list.AddRange(deploymentStackSnapshots.Select(stack => PSDeploymentStackSnapshot.FromAzureSDKDeploymentStack(stack)));
-
-            while (deploymentStackSnapshots.NextPageLink != null)
+            try
             {
-                deploymentStackSnapshots =
-                    DeploymentStacksClient.DeploymentStackSnapshots.ListAtSubscriptionNext(deploymentStackSnapshots.NextPageLink);
+                var list = new List<PSDeploymentStack>();
+
+                var deploymentStacks = DeploymentStacksClient.DeploymentStacks.ListAtResourceGroup(resourceGroupName);
+
+                list.AddRange(deploymentStacks.Select(stack => PSDeploymentStack.FromAzureSDKDeploymentStack(stack)));
+
+                while (deploymentStacks.NextPageLink != null)
+                {
+                    deploymentStacks =
+                        DeploymentStacksClient.DeploymentStacks.ListAtResourceGroupNext(deploymentStacks.NextPageLink);
+                    list.AddRange(deploymentStacks.Select(stack => PSDeploymentStack.FromAzureSDKDeploymentStack(stack)));
+                }
+                return list;
+            }
+            catch (Exception ex)
+            {
+                if (!throwIfNotExists &&
+                    ex is DeploymentStacksErrorException dex &&
+                    dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    // Deployment Stack does not exist
+                    return null;
+                }
+
+                throw;
+            }
+        }
+
+        public IEnumerable<PSDeploymentStackSnapshot> ListResourceGroupDeploymentStackSnapshot(string resourceGroupName, string stackName, bool throwIfNotExists = true)
+        {
+            try
+            {
+                var list = new List<PSDeploymentStackSnapshot>();
+
+                var deploymentStackSnapshots = DeploymentStacksClient.DeploymentStackSnapshots.ListAtResourceGroup(resourceGroupName, stackName);
+
                 list.AddRange(deploymentStackSnapshots.Select(stack => PSDeploymentStackSnapshot.FromAzureSDKDeploymentStack(stack)));
+
+                while (deploymentStackSnapshots.NextPageLink != null)
+                {
+                    deploymentStackSnapshots =
+                        DeploymentStacksClient.DeploymentStackSnapshots.ListAtResourceGroupNext(deploymentStackSnapshots.NextPageLink);
+                    list.AddRange(deploymentStackSnapshots.Select(stack => PSDeploymentStackSnapshot.FromAzureSDKDeploymentStack(stack)));
+                }
+                return list;
             }
-            return list;
-        }
-
-        public PSDeploymentStack GetSubscriptionDeploymentStack(string stackName)
-        {
-            var deploymentStack = DeploymentStacksClient.DeploymentStacks.GetAtSubscription(stackName);
-
-            return new PSDeploymentStack(deploymentStack);
-        }
-
-        public IEnumerable<PSDeploymentStack> ListSubscriptionDeploymentStack()
-        {
-            var list = new List<PSDeploymentStack>();
-
-            var deploymentStacks = DeploymentStacksClient.DeploymentStacks.ListAtSubscription();
-
-            list.AddRange(deploymentStacks.Select(stack => PSDeploymentStack.FromAzureSDKDeploymentStack(stack)));
-
-            while(deploymentStacks.NextPageLink != null)
+            catch (Exception ex)
             {
-                deploymentStacks =
-                    DeploymentStacksClient.DeploymentStacks.ListAtSubscriptionNext(deploymentStacks.NextPageLink);
-                list.AddRange(deploymentStacks.Select(stack => PSDeploymentStack.FromAzureSDKDeploymentStack(stack)));
+                if (!throwIfNotExists &&
+                    ex is DeploymentStacksErrorException dex &&
+                    dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    // Deployment Stack does not exist
+                    return null;
+                }
+
+                throw;
             }
-            return list;
         }
 
-        public PSDeploymentStackSnapshot GetResourceGroupDeploymentStackSnapshot(string resourceGroupName, string stackName, string snapshotName)
+        internal object ListSubscriptionDeploymentStackSnapshot(string stackName, bool throwIfNotExists = true)
         {
-            var deploymentStackSnapshot = DeploymentStacksClient.DeploymentStackSnapshots.GetAtResourceGroup(resourceGroupName, stackName, snapshotName);
+            try
+            {
+                var list = new List<PSDeploymentStackSnapshot>();
 
-            return new PSDeploymentStackSnapshot(deploymentStackSnapshot);
+                var deploymentStackSnapshots = DeploymentStacksClient.DeploymentStackSnapshots.ListAtSubscription(stackName);
+
+                list.AddRange(deploymentStackSnapshots.Select(stack => PSDeploymentStackSnapshot.FromAzureSDKDeploymentStack(stack)));
+
+                while (deploymentStackSnapshots.NextPageLink != null)
+                {
+                    deploymentStackSnapshots =
+                        DeploymentStacksClient.DeploymentStackSnapshots.ListAtSubscriptionNext(deploymentStackSnapshots.NextPageLink);
+                    list.AddRange(deploymentStackSnapshots.Select(stack => PSDeploymentStackSnapshot.FromAzureSDKDeploymentStack(stack)));
+                }
+                return list;
+            }
+            catch (Exception ex)
+            {
+                if (!throwIfNotExists &&
+                    ex is DeploymentStacksErrorException dex &&
+                    dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    // Deployment Stack does not exist
+                    return null;
+                }
+
+                throw;
+            }
         }
 
-        public PSDeploymentStackSnapshot GetSubscriptionDeploymentStackSnapshot(string stackName, string snapshotName)
+        public PSDeploymentStack GetSubscriptionDeploymentStack(string stackName, bool throwIfNotExists = true)
         {
-            var deploymentStackSnapshot = DeploymentStacksClient.DeploymentStackSnapshots.GetAtSubscription(stackName, snapshotName);
+            try
+            {
+                var deploymentStack = DeploymentStacksClient.DeploymentStacks.GetAtSubscription(stackName);
 
-            return new PSDeploymentStackSnapshot(deploymentStackSnapshot);
+                return new PSDeploymentStack(deploymentStack);
+            }
+
+            catch (Exception ex)
+            {
+                if (!throwIfNotExists &&
+                    ex is DeploymentStacksErrorException dex &&
+                    dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    // Deployment Stack does not exist
+                    return null;
+                }
+
+                throw;
+            }
+        }
+
+        public IEnumerable<PSDeploymentStack> ListSubscriptionDeploymentStack(bool throwIfNotExists = true)
+        {
+            try
+            {
+                var list = new List<PSDeploymentStack>();
+
+                var deploymentStacks = DeploymentStacksClient.DeploymentStacks.ListAtSubscription();
+
+                list.AddRange(deploymentStacks.Select(stack => PSDeploymentStack.FromAzureSDKDeploymentStack(stack)));
+
+                while (deploymentStacks.NextPageLink != null)
+                {
+                    deploymentStacks =
+                        DeploymentStacksClient.DeploymentStacks.ListAtSubscriptionNext(deploymentStacks.NextPageLink);
+                    list.AddRange(deploymentStacks.Select(stack => PSDeploymentStack.FromAzureSDKDeploymentStack(stack)));
+                }
+                return list;
+            }
+            catch (Exception ex)
+            {
+                if (!throwIfNotExists &&
+                    ex is DeploymentStacksErrorException dex &&
+                    dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    // Deployment Stack does not exist
+                    return null;
+                }
+
+                throw;
+            }
+        }
+
+        public PSDeploymentStackSnapshot GetResourceGroupDeploymentStackSnapshot(string resourceGroupName, string stackName, string snapshotName, bool throwIfNotExists = true)
+        {
+            try
+            {
+                var deploymentStackSnapshot = DeploymentStacksClient.DeploymentStackSnapshots.GetAtResourceGroup(resourceGroupName, stackName, snapshotName);
+                return new PSDeploymentStackSnapshot(deploymentStackSnapshot);
+            }
+
+            catch (Exception ex)
+            {
+                if (!throwIfNotExists &&
+                    ex is DeploymentStacksErrorException dex &&
+                    dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    // Deployment Stack does not exist
+                    return null;
+                }
+
+                throw;
+            }
+        }
+
+        public PSDeploymentStackSnapshot GetSubscriptionDeploymentStackSnapshot(string stackName, string snapshotName, bool throwIfNotExists = true)
+        {
+            try
+            {
+                var deploymentStackSnapshot = DeploymentStacksClient.DeploymentStackSnapshots.GetAtSubscription(stackName, snapshotName);
+
+                return new PSDeploymentStackSnapshot(deploymentStackSnapshot);
+            }
+            catch (Exception ex)
+            {
+                if (!throwIfNotExists &&
+                    ex is DeploymentStacksErrorException dex &&
+                    dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    // Deployment Stack does not exist
+                    return null;
+                }
+
+                throw;
+            }
         }
 
         public PSDeploymentStack ResourceGroupCreateOrUpdateDeploymentStack(
@@ -133,12 +271,14 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             string templateSpec,
             string parameterUri,
             Hashtable parameters,
-            string description
+            string description,
+            string updateBehavior
             )
         {
             var deploymentStackModel = new DeploymentStack
             {
-                Description = description
+                Description = description,
+                UpdateBehavior = updateBehavior
             };
 
             DeploymentStacksTemplateLink templateLink = new DeploymentStacksTemplateLink();

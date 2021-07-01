@@ -2,6 +2,7 @@
 {
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
     using Microsoft.Azure.Commands.ResourceManager.Common.ArgumentCompleters;
+    using Microsoft.Azure.Management.ResourceManager.Models;
     using Microsoft.WindowsAzure.Commands.Utilities.Common;
     using System;
     using System.Collections;
@@ -113,6 +114,11 @@
                         parameters = this.GetParameterObject(ParameterFile);
                         break;
                 }
+
+                if (DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(
+                        Name,
+                        throwIfNotExists: false) != null)
+                    throw new DeploymentStacksErrorException($"The stack '{Name}' you're trying to create already exists in the current subscription. Please Use Set-AzResourceGroupDeploymentStack to make changes to it");
 
                 var deploymentStack = DeploymentStacksSdkClient.SubscriptionCreateOrUpdateDeploymentStack(
                     Name,

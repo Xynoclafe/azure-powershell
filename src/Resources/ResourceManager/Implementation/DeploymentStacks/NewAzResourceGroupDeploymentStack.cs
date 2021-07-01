@@ -2,6 +2,7 @@
 {
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
     using Microsoft.Azure.Commands.ResourceManager.Common.ArgumentCompleters;
+    using Microsoft.Azure.Management.ResourceManager.Models;
     using Microsoft.WindowsAzure.Commands.Utilities.Common;
     using System;
     using System.Collections;
@@ -104,6 +105,7 @@
                             throw new PSInvalidOperationException(
                                 string.Format(ProjectResources.InvalidFilePath, TemplateFile));
                         }
+                        TemplateUri = TemplateFile;
                         break;
                     case ParameterFileTemplateSpecParameterSetName:
                     case ParameterFileTemplateUriParameterSetName:
@@ -117,8 +119,15 @@
                                 string.Format(ProjectResources.InvalidFilePath, TemplateFile));
                         }
                         parameters = this.GetParameterObject(ParameterFile);
+                        TemplateUri = TemplateFile;
                         break;
                 }
+
+                if (DeploymentStacksSdkClient.GetResourceGroupDeploymentStack(
+                        ResourceGroupName,
+                        Name,
+                        throwIfNotExists: false) != null)
+                    throw new DeploymentStacksErrorException($"The stack '{Name}' in Resource Group '{ResourceGroupName}' you're trying to create already exists. Please Use Set-AzResourceGroupDeploymentStack to make changes to it");
 
                 var deploymentStack = DeploymentStacksSdkClient.ResourceGroupCreateOrUpdateDeploymentStack(
                     Name,
@@ -127,7 +136,8 @@
                     TemplateSpec,
                     ParameterUri,
                     parameters,
-                    Description
+                    Description,
+                    "Detach"
                     );
                 WriteObject(deploymentStack);
 
