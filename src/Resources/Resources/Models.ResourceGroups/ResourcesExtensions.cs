@@ -68,7 +68,7 @@ namespace Microsoft.Azure.Commands.Resources.Models
             };
         }
 
-        public static PSPermission ToPSPermission(this Permission permission)
+        public static PSPermission ToPSPermission(this Management.Authorization.Models.Permission permission)
         {
             return new PSPermission
             {

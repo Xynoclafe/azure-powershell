@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 {
-    [Cmdlet("Remove", Common.AzureRMConstants.AzureRMPrefix + "ResourceGroupDeploymentStack",
+    [Cmdlet("Remove", Common.AzureRMConstants.AzureRMPrefix + "SubscriptionDeploymentStackSnapshot",
         SupportsShouldProcess = true, DefaultParameterSetName = RemoveAzSubscriptionDeploymentStackSnapshot.RemoveByResourceIdParameterSetName), OutputType(typeof(bool))]
     public class RemoveAzSubscriptionDeploymentStackSnapshot : DeploymentStacksCmdletBase
     {

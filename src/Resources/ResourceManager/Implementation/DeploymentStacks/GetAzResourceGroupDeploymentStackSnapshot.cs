@@ -14,12 +14,13 @@
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.DeploymentStacks
 {
+    using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
     using System;
     using System.Collections.Generic;
     using System.Management.Automation;
     using System.Text;
 
-    [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "DeploymentStack",
+    [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "ResourceGroupDeploymentStackSnapshot",
         DefaultParameterSetName = GetAzResourceGroupDeploymentStackSnapshot.ListDeploymentStack), OutputType(typeof(PSDeploymentStack))]
     public class GetAzResourceGroupDeploymentStackSnapshot : DeploymentStacksCmdletBase
     {

@@ -50,7 +50,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStackSnapshot(Name, SnapshotName));
                         break;
                     case GetByResourceIdParameterSetName:
-                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStackSnapshot(ResourceIdUtility.GetResourceName(ResourceId)));
+                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStackSnapshot(ResourceIdUtility.GetResourceName(ResourceId), SnapshotName));
                         break;
                     case ListParameterSetname:
                         WriteObject(DeploymentStacksSdkClient.ListSubscriptionDeploymentStackSnapshot(Name));

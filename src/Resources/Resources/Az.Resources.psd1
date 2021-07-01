@@ -152,7 +152,13 @@ CmdletsToExport = 'Get-AzProviderOperation', 'Remove-AzRoleAssignment',
                'Get-AzManagementGroupDeploymentWhatIfResult', 
                'Get-AzTenantDeploymentWhatIfResult', 'Get-AzTemplateSpec', 
                'New-AzTemplateSpec', 'Set-AzTemplateSpec', 'Export-AzTemplateSpec', 
-               'Remove-AzTemplateSpec'
+               'Remove-AzTemplateSpec', 'Get-AzResourceGroupDeploymentStack',
+               'Get-AzResourceGroupDeploymentStackSnapshot', 'Get-AzSubscriptionDeploymentStack',
+               'Get-AzSubscriptionDeploymentStackSnapshot', 'New-AzResourceGroupDeploymentStack',
+               'New-AzSubscriptionDeploymentStack', 'Remove-AzResourceGroupDeploymentStack',
+               'Remove-AzResourceGroupDeploymentStackSnapshot', 'Remove-AzSubscriptionDeploymentStack',
+               'Remove-AzSubscriptionDeploymentStackSnapshot', 'Set-AzResourceGroupDeploymentStack',
+               'Set-AzSubscriptionDeploymentStack'
 
 # Variables to export from this module
 # VariablesToExport = @()
