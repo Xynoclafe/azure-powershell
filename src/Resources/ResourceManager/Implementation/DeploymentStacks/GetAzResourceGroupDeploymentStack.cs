@@ -14,22 +14,67 @@
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.DeploymentStacks
 {
+    using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
     using System;
     using System.Collections.Generic;
     using System.Management.Automation;
     using System.Text;
 
-    [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "ResourceGroupDeploymentStack",
-        DefaultParameterSetName = GetAzResourceGroupDeploymentStack.ListDeploymentStack), OutputType(typeof(PSDeploymentStack))]
+    [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "DeploymentStack",
+        DefaultParameterSetName = GetAzResourceGroupDeploymentStack.ListParameterSetName), OutputType(typeof(PSDeploymentStack))]
     public class GetAzResourceGroupDeploymentStack : DeploymentStacksCmdletBase
     {
-        #region Cmdlet Parameters and Parameter Set Definitions
+        internal const string ListParameterSetName = "ListDeploymentStacks";
 
-        internal const string ListDeploymentStack = "ListDeploymentStack";
+        internal const string GetByResourceIdParameterSetName = "GetDeploymentStackByResourceId";
+        internal const string GetByResourceGroupNameParameterSetName = "GetDeploymentStacksByResourceGroupName";
+        internal const string GetByDeploymentStackName = "GetDeploymentStackByStackName";
+
+        [Alias("Id")]
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByResourceIdParameterSetName)]
+        [ValidateNotNullOrEmpty]
+        public string ResourceId { get; set; }
+
+        [Alias("ResourceGroupName")]
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByResourceGroupNameParameterSetName)]
+        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackName)]
+        [ValidateNotNullOrEmpty]
+        public string ResourceGroupName { get; set; }
+
+        [Alias("StackName")]
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackName)]
+        [ValidateNotNullOrEmpty]
+        public string StackName { get; set; }
+
+        public override void ExecuteCmdlet()
+        {
+            try
+            {
+                switch (ParameterSetName)
+                {
+                    case GetByResourceIdParameterSetName:
+                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStack(ResourceIdUtility.GetResourceGroupName(ResourceId), ResourceIdUtility.GetDeploymentName(ResourceId)));
+                        break;
+                    case GetByResourceGroupNameParameterSetName:
+                        WriteObject(DeploymentStacksSdkClient.ListResourceGroupDeploymentStack(ResourceGroupName));
+                        break;
+                    case GetByDeploymentStackName:
+                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStack(ResourceGroupName, StackName));
+                        break;
+                    default:
+                        throw new PSInvalidOperationException();
+                }
+            }
+            catch (Exception ex)
+            {
+                WriteExceptionError(ex);
+            }
+
+        }
 
 
-        #endregion
+
 
     }
 }
