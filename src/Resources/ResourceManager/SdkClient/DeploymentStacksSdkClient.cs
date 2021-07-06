@@ -391,16 +391,20 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
         public PSDeploymentStack SubscriptionCreateOrUpdateDeploymentStack(
             string deploymentStackName,
+            string location,
             string templateUri,
             string templateSpec,
             string parameterUri,
             Hashtable parameters,
-            string description
+            string description,
+            string updateBehavior
             )
         {
             var deploymentStackModel = new DeploymentStack
             {
-                Description = description
+                Description = description,
+                Location = location,
+                UpdateBehavior = updateBehavior
             };
 
             DeploymentStacksTemplateLink templateLink = new DeploymentStacksTemplateLink();

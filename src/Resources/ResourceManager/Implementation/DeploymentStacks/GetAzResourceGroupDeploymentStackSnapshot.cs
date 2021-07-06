@@ -12,7 +12,7 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
-namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.DeploymentStacks
+namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 {
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
     using System;
@@ -21,7 +21,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.Deploy
     using System.Text;
 
     [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "ResourceGroupDeploymentStackSnapshot",
-        DefaultParameterSetName = GetAzResourceGroupDeploymentStackSnapshot.ListDeploymentStack), OutputType(typeof(PSDeploymentStack))]
+        DefaultParameterSetName = GetAzResourceGroupDeploymentStackSnapshot.ListDeploymentStack), OutputType(typeof(PSDeploymentStackSnapshot))]
     public class GetAzResourceGroupDeploymentStackSnapshot : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions

@@ -80,6 +80,10 @@
             HelpMessage = "Description for the stack")]
         public string Description { get; set; }
 
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true,
+            HelpMessage = "Location of the stack")]
+        public string Location { get; set; }
+
         #endregion
 
         #region Cmdlet Overrides
@@ -99,6 +103,7 @@
                             throw new PSInvalidOperationException(
                                 string.Format(ProjectResources.InvalidFilePath, TemplateFile));
                         }
+                        TemplateUri = TemplateFile;
                         break;
                     case ParameterFileTemplateSpecParameterSetName:
                     case ParameterFileTemplateUriParameterSetName:
@@ -112,6 +117,7 @@
                                 string.Format(ProjectResources.InvalidFilePath, TemplateFile));
                         }
                         parameters = this.GetParameterObject(ParameterFile);
+                        TemplateUri = TemplateFile;
                         break;
                 }
 
@@ -122,11 +128,13 @@
 
                 var deploymentStack = DeploymentStacksSdkClient.SubscriptionCreateOrUpdateDeploymentStack(
                     Name,
+                    Location,
                     TemplateUri,
                     TemplateSpec,
                     ParameterUri,
                     parameters,
-                    Description
+                    Description,
+                    "Detach"
                     );
                 WriteObject(deploymentStack);
 
