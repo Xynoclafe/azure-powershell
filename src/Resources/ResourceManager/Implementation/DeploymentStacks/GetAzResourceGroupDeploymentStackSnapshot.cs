@@ -48,12 +48,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         [ValidateNotNullOrEmpty]
         public string StackName { get; set; }
 
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByResourceIdParameterSetName)]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackName)]
         [ValidateNotNullOrEmpty]
         public string SnapshotName { get; set; }
 
+        #endregion
 
+        #region Cmdlet Overrides
         public override void ExecuteCmdlet()
         {
             try
@@ -61,7 +62,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 switch (ParameterSetName)
                 {
                     case GetByResourceIdParameterSetName:
-                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStackSnapshot(ResourceIdUtility.GetResourceGroupName(ResourceId), ResourceIdUtility.GetDeploymentName(ResourceId), SnapshotName));
+                        ResourceIdentifier resourceIdentifier = new ResourceIdentifier(ResourceId);
+                        StackName = ResourceIdUtility.GetResourceName(ResourceId).Split('/')[0];
+                        SnapshotName = resourceIdentifier.ResourceName;
+                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStackSnapshot(ResourceIdUtility.GetResourceGroupName(ResourceId), StackName, SnapshotName));
                         break;
                     case GetByResourceGroupNameParameterSetName:
                         WriteObject(DeploymentStacksSdkClient.ListResourceGroupDeploymentStackSnapshot(ResourceGroupName, StackName));

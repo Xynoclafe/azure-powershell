@@ -109,6 +109,7 @@
                             throw new PSInvalidOperationException(
                                 string.Format(ProjectResources.InvalidFilePath, TemplateFile));
                         }
+                        TemplateUri = TemplateFile;
                         break;
                     case ParameterFileTemplateSpecParameterSetName:
                     case ParameterFileTemplateUriParameterSetName:
@@ -122,10 +123,12 @@
                                 string.Format(ProjectResources.InvalidFilePath, TemplateFile));
                         }
                         parameters = this.GetParameterObject(ParameterFile);
+                        TemplateUri = TemplateFile;
                         break;
                 }
 
-                if (DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(
+                if (DeploymentStacksSdkClient.GetResourceGroupDeploymentStack(
+                        ResourceGroupName,
                         Name,
                         throwIfNotExists: false) == null)
                     throw new DeploymentStacksErrorException($"The stack '{Name}' you're trying to modify does not exist in '{ResourceGroupName}'. Please Use New-AzResourceGroupDeploymentStack to create it");

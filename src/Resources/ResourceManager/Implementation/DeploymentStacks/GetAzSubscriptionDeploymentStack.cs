@@ -7,9 +7,9 @@ using System.Text;
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 {
-    [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "DeploymentStack",
+    [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "SubscriptionDeploymentStack",
         DefaultParameterSetName = GetAzSubscriptionDeploymentStack.ListParameterSetname), OutputType(typeof(PSDeploymentStack))]
-    [Alias("Get-AzSubscriptionDeploymentStack")]
+    [Alias("Get-AzDeploymentStack")]
     class GetAzSubscriptionDeploymentStack : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions

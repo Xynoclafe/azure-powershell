@@ -54,7 +54,12 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
                 ResourceGroupName = ResourceGroupName ?? resourceIdentifier.ResourceGroupName;
                 Name = Name ?? ResourceIdUtility.GetResourceName(ResourceId);
-                SnapshotName = SnapshotName ?? resourceIdentifier.ResourceName;
+
+                if(ResourceId != null && SnapshotName == null)
+                {
+                    Name = Name.Split('/')[0];
+                    SnapshotName = resourceIdentifier.ResourceName;
+                }
 
                 string confirmationMessage = $"Are you sure you want to remove snapshot '{SnapshotName}' of DeploymentStack '{Name}'";
 
