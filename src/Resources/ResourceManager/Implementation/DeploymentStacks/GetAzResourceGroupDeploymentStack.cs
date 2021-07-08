@@ -22,13 +22,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Text;
 
     [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "ResourceGroupDeploymentStack",
-        DefaultParameterSetName = GetAzResourceGroupDeploymentStack.ListParameterSetName), OutputType(typeof(PSDeploymentStack))]
+        DefaultParameterSetName = GetAzResourceGroupDeploymentStack.ListByResourceGroupNameParameterSetName), OutputType(typeof(PSDeploymentStack))]
     public class GetAzResourceGroupDeploymentStack : DeploymentStacksCmdletBase
     {
-        internal const string ListParameterSetName = "ListDeploymentStacks";
-
         internal const string GetByResourceIdParameterSetName = "GetDeploymentStackByResourceId";
-        internal const string GetByResourceGroupNameParameterSetName = "GetDeploymentStacksByResourceGroupName";
+        internal const string ListByResourceGroupNameParameterSetName = "ListDeploymentStacksByResourceGroupName";
         internal const string GetByDeploymentStackName = "GetDeploymentStackByStackName";
 
         [Alias("Id")]
@@ -36,7 +34,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         [ValidateNotNullOrEmpty]
         public string ResourceId { get; set; }
 
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByResourceGroupNameParameterSetName)]
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ListByResourceGroupNameParameterSetName)]
         [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackName)]
         [ValidateNotNullOrEmpty]
         public string ResourceGroupName { get; set; }
@@ -54,7 +52,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                     case GetByResourceIdParameterSetName:
                         WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStack(ResourceIdUtility.GetResourceGroupName(ResourceId), ResourceIdUtility.GetDeploymentName(ResourceId)));
                         break;
-                    case GetByResourceGroupNameParameterSetName:
+                    case ListByResourceGroupNameParameterSetName:
                         WriteObject(DeploymentStacksSdkClient.ListResourceGroupDeploymentStack(ResourceGroupName));
                         break;
                     case GetByDeploymentStackName:

@@ -60,6 +60,63 @@ function Test-GetResourceGroupDeploymentStack
 
 <#
 .SYNOPSIS
+Tests GET operation on deploymentStacksSnapshots at the RG scope
+#>
+function Test-GetResourceGroupDeploymentStackSnapshot
+{
+	#Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+	$subId = (Get-AzContext).Subscription.SubscriptionId
+
+	$vmName = "MyVM"
+	$snapshotName = "snapshot"
+
+
+	try
+	{
+		#Prepare
+		New-AzVm -ResourceGroupName $rgname -Name $vmName -Location $rglocation -VirtualNetworkName "myVnet" -SubnetName "mySubnet" -SecurityGroupName "myNetworkSecurityGroup" -PublicIpAddressName "myPublicIpAddress" -OpenPorts 80,3389
+		$vm = Get-AzVM -ResourceGroupName $rgname -Name $vmName
+		$snapshot =  New-AzSnapshotConfig -SourceUri $vm.StorageProfile.OsDisk.ManagedDisk.Id -Location $rglocation -CreateOption copy
+		New-AzSnapshot -Snapshot $snapshot -SnapshotName $snapshotName -ResourceGroupName $rgname 
+
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.js
+		$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname/snapshots/$snapshotName"
+
+		#Test - GetByIdAndSnapshotName
+		$getByIdAndSnapshotName = Get-AzResourceGroupDeploymentStackSnapshot -ResourceId $resourceId -SnapshotName $snapshotName
+
+		#Assert
+		Assert-NotNull $getByIdAndSnapshotName
+
+		#Test - GetByResourceGroupNameAndStackName
+		$getByResourceGroupNameAndStackName = Get-AzResourceGroupDeploymentStackSnapshot -ResourceGroupName $rgname -StackName $rname
+
+		#Assert
+		Assert-NotNull $getByResourceGroupNameAndStackName
+
+		#Test - GetByResourceGroupNameAndStackNameAndSnapshotName
+		$getByResourceGroupNameAndStackName = Get-AzResourceGroupDeploymentStackSnapshot -ResourceGroupName $rgname -StackName $rname -SnapshotName $snapshotName
+
+		#Assert
+		Assert-NotNull = $getByResourceGroupNameAndStackName
+
+	}
+
+	finally
+	{
+		# Cleanup
+        Clean-ResourceGroup $rgname
+
+	}
+}
+
+
+<#
+.SYNOPSIS
 Tests GET operation on deploymentStacks at the Subscription scope
 #>
 function Test-GetSubscriptionDeploymentStack

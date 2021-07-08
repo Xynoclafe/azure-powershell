@@ -22,29 +22,27 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Text;
 
     [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "ResourceGroupDeploymentStackSnapshot",
-        DefaultParameterSetName = GetAzResourceGroupDeploymentStackSnapshot.ListDeploymentStack), OutputType(typeof(PSDeploymentStackSnapshot))]
+        DefaultParameterSetName = GetAzResourceGroupDeploymentStackSnapshot.ListByResourceGroupNameParameterSetName), OutputType(typeof(PSDeploymentStackSnapshot))]
     public class GetAzResourceGroupDeploymentStackSnapshot : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
 
-        internal const string ListDeploymentStack = "ListDeploymentStack";
-
         internal const string GetByResourceIdParameterSetName = "GetDeploymentStackByResourceId";
-        internal const string GetByResourceGroupNameParameterSetName = "GetDeploymentStacksByResourceGroupName";
+        internal const string ListByResourceGroupNameParameterSetName = "GetDeploymentStacksByResourceGroupName";
         internal const string GetByDeploymentStackName = "GetDeploymentStackByStackName";
 
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByResourceIdParameterSetName)]
         [ValidateNotNullOrEmpty]
         public string ResourceId { get; set; }
 
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByResourceGroupNameParameterSetName)]
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ListByResourceGroupNameParameterSetName)]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackName)]
         [ValidateNotNullOrEmpty]
         public string ResourceGroupName { get; set; }
 
 
         [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackName)]
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByResourceGroupNameParameterSetName)]
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ListByResourceGroupNameParameterSetName)]
         [ValidateNotNullOrEmpty]
         public string StackName { get; set; }
 
@@ -64,10 +62,12 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                     case GetByResourceIdParameterSetName:
                         ResourceIdentifier resourceIdentifier = new ResourceIdentifier(ResourceId);
                         StackName = ResourceIdUtility.GetResourceName(ResourceId).Split('/')[0];
+                        WriteObject(ResourceIdUtility.GetResourceName(ResourceId));
+                        WriteObject(StackName);
                         SnapshotName = resourceIdentifier.ResourceName;
                         WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStackSnapshot(ResourceIdUtility.GetResourceGroupName(ResourceId), StackName, SnapshotName));
                         break;
-                    case GetByResourceGroupNameParameterSetName:
+                    case ListByResourceGroupNameParameterSetName:
                         WriteObject(DeploymentStacksSdkClient.ListResourceGroupDeploymentStackSnapshot(ResourceGroupName, StackName));
                         break;
                     case GetByDeploymentStackName:
