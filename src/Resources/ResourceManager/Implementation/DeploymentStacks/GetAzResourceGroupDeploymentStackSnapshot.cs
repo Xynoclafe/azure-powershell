@@ -28,7 +28,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         #region Cmdlet Parameters and Parameter Set Definitions
 
         internal const string GetByResourceIdParameterSetName = "GetDeploymentStackByResourceId";
-        internal const string ListByResourceGroupNameParameterSetName = "GetDeploymentStacksByResourceGroupName";
+        internal const string ListByResourceGroupNameParameterSetName = "ListDeploymentStacksByResourceGroupName";
         internal const string GetByDeploymentStackName = "GetDeploymentStackByStackName";
 
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByResourceIdParameterSetName)]
@@ -41,7 +41,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         public string ResourceGroupName { get; set; }
 
 
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackName)]
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackName)]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ListByResourceGroupNameParameterSetName)]
         [ValidateNotNullOrEmpty]
         public string StackName { get; set; }
