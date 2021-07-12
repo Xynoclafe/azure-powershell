@@ -157,5 +157,3 @@ function Test-GetSubscriptionDeploymentStack
         Clean-DeploymentAtSubscription $rname
     }
 }
-
-function 

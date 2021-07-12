@@ -56,7 +56,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
             this.id = deploymentStack.Id;
             this.name = deploymentStack.Name;
             this.type = deploymentStack.Type;
-            this.creationTime = deploymentStack.SystemData.CreatedAt;
+            this.creationTime = (deploymentStack.SystemData != null) ? deploymentStack.SystemData.CreatedAt : null;
             this.location = deploymentStack.Location;
             this.template = deploymentStack.Template;
             this.templateLink = deploymentStack.TemplateLink;
