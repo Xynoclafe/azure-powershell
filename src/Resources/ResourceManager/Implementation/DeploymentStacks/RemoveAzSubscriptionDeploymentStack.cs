@@ -38,10 +38,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         {
             try
             {
-                ResourceIdentifier resourceIdentifier = (ResourceId != null)
-                    ? new ResourceIdentifier(ResourceId)
-                    : null;
-
                 Name = Name ?? ResourceIdUtility.GetResourceName(ResourceId);
 
                 string confirmationMessage = $"Are you sure you want to remove DeploymentStack '{Name}'";

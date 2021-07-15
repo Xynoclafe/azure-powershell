@@ -103,7 +103,7 @@
                             throw new PSInvalidOperationException(
                                 string.Format(ProjectResources.InvalidFilePath, TemplateFile));
                         }
-                        TemplateUri = TemplateFile;
+                        TemplateUri = filePath;
                         break;
                     case ParameterFileTemplateSpecParameterSetName:
                     case ParameterFileTemplateUriParameterSetName:
@@ -117,7 +117,7 @@
                                 string.Format(ProjectResources.InvalidFilePath, TemplateFile));
                         }
                         parameters = this.GetParameterObject(ParameterFile);
-                        TemplateUri = TemplateFile;
+                        TemplateUri = templatePath;
                         break;
                 }
 

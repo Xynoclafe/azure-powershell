@@ -15,7 +15,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
 
         public string type { get; set; }
 
-        public DateTime? creationTime { get; set; }
+        public SystemData systemData { get; set; }
 
         public object template { get; set; }
 
@@ -54,7 +54,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
             this.id = deploymentStackSnapshot.Id;
             this.name = deploymentStackSnapshot.Name;
             this.type = deploymentStackSnapshot.Type;
-            this.creationTime = deploymentStackSnapshot.SystemData.CreatedAt;
+            this.systemData = deploymentStackSnapshot.SystemData;
+            this.updateBehavior = deploymentStackSnapshot.UpdateBehavior;
             this.template = deploymentStackSnapshot.Template;
             this.templateLink = deploymentStackSnapshot.TemplateLink;
             this.parameters = deploymentStackSnapshot.Parameters;

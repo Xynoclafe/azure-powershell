@@ -19,7 +19,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
 
         public string type { get; set; }
 
-        public DateTime? creationTime { get; set; }
+        public SystemData systemData { get; set; }
 
         public string location { get; set; }
 
@@ -56,7 +56,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
             this.id = deploymentStack.Id;
             this.name = deploymentStack.Name;
             this.type = deploymentStack.Type;
-            this.creationTime = (deploymentStack.SystemData != null) ? deploymentStack.SystemData.CreatedAt : null;
+            this.systemData = deploymentStack.SystemData;
+            this.updateBehavior = deploymentStack.UpdateBehavior;
             this.location = deploymentStack.Location;
             this.template = deploymentStack.Template;
             this.templateLink = deploymentStack.TemplateLink;

@@ -57,12 +57,22 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             }
             catch (Exception ex)
             {
-                if (!throwIfNotExists &&
-                    ex is DeploymentStacksErrorException dex &&
-                    dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                if (ex is DeploymentStacksErrorException dex)
                 {
-                    // Deployment Stack does not exist
-                    return null;
+                    if (dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        // Deployment Stack does not exist
+                        if (!throwIfNotExists)
+                            return null;
+                        else
+                            throw new PSArgumentException(
+                            $"DeploymentStack '{deploymentStackName}' in Resource Group '{resourceGroupName}' not found."
+                        );
+                    }
+                    else
+                    {
+                        throw new PSArgumentException(dex.Body.Error.Message);
+                    }
                 }
 
                 throw;
@@ -89,15 +99,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             }
             catch (Exception ex)
             {
-                if (!throwIfNotExists &&
-                    ex is DeploymentStacksErrorException dex &&
-                    dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    // Deployment Stack does not exist
+                if (!throwIfNotExists)
                     return null;
-                }
 
-                throw;
+                if (ex is DeploymentStacksErrorException dex)
+                    throw new PSArgumentException(dex.Body.Error.Message);
+
+                throw ex;
             }
         }
 
@@ -121,15 +129,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             }
             catch (Exception ex)
             {
-                if (!throwIfNotExists &&
-                    ex is DeploymentStacksErrorException dex &&
-                    dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    // Deployment Stack does not exist
+                if (!throwIfNotExists)
                     return null;
-                }
 
-                throw;
+                if (ex is DeploymentStacksErrorException dex)
+                    throw new PSArgumentException(dex.Body.Error.Message);
+
+                throw ex;
             }
         }
 
@@ -153,15 +159,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             }
             catch (Exception ex)
             {
-                if (!throwIfNotExists &&
-                    ex is DeploymentStacksErrorException dex &&
-                    dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    // Deployment Stack does not exist
+                if (!throwIfNotExists)
                     return null;
-                }
 
-                throw;
+                if (ex is DeploymentStacksErrorException dex)
+                    throw new PSArgumentException(dex.Body.Error.Message);
+
+                throw ex;
             }
         }
 
@@ -176,12 +180,22 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
             catch (Exception ex)
             {
-                if (!throwIfNotExists &&
-                    ex is DeploymentStacksErrorException dex &&
-                    dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                if (ex is DeploymentStacksErrorException dex)
                 {
-                    // Deployment Stack does not exist
-                    return null;
+                    if (dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        // Deployment Stack does not exist
+                        if (!throwIfNotExists)
+                            return null;
+                        else
+                            throw new PSArgumentException(
+                            $"DeploymentStack '{stackName}' not found in current subscription."
+                        );
+                    }
+                    else
+                    {
+                        throw new PSArgumentException(dex.Body.Error.Message);
+                    }
                 }
 
                 throw;
@@ -208,15 +222,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             }
             catch (Exception ex)
             {
-                if (!throwIfNotExists &&
-                    ex is DeploymentStacksErrorException dex &&
-                    dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    // Deployment Stack does not exist
+                if (!throwIfNotExists)
                     return null;
-                }
 
-                throw;
+                if (ex is DeploymentStacksErrorException dex)
+                    throw new PSArgumentException(dex.Body.Error.Message);
+
+                throw ex;
             }
         }
 
@@ -230,12 +242,22 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
             catch (Exception ex)
             {
-                if (!throwIfNotExists &&
-                    ex is DeploymentStacksErrorException dex &&
-                    dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                if (ex is DeploymentStacksErrorException dex)
                 {
-                    // Deployment Stack does not exist
-                    return null;
+                    if (dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        // Deployment Stack does not exist
+                        if (!throwIfNotExists)
+                            return null;
+                        else
+                            throw new PSArgumentException(
+                            $"DeploymentStackSnapshot '{snapshotName}' of DeploymentStack '{stackName}' in Resource Group '{resourceGroupName}' not found.."
+                        );
+                    }
+                    else
+                    {
+                        throw new PSArgumentException(dex.Body.Error.Message);
+                    }
                 }
 
                 throw;
@@ -252,12 +274,22 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             }
             catch (Exception ex)
             {
-                if (!throwIfNotExists &&
-                    ex is DeploymentStacksErrorException dex &&
-                    dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                if (ex is DeploymentStacksErrorException dex)
                 {
-                    // Deployment Stack does not exist
-                    return null;
+                    if (dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        // Deployment Stack does not exist
+                        if (!throwIfNotExists)
+                            return null;
+                        else
+                            throw new PSArgumentException(
+                            $"DeploymentStackSnapshot '{snapshotName}' of DeploymentStack '{stackName}' not found in current subscription."
+                        );
+                    }
+                    else
+                    {
+                        throw new PSArgumentException(dex.Body.Error.Message);
+                    }
                 }
 
                 throw;
