@@ -64,27 +64,30 @@ Tests GET operation on deploymentStacksSnapshots at the RG scope
 #>
 function Test-GetResourceGroupDeploymentStackSnapshot
 {
-	#Setup
+	# Setup
 	$rgname = Get-ResourceGroupName
 	$rname = Get-ResourceName
 	$rglocation = "West US 2"
 	$subId = (Get-AzContext).Subscription.SubscriptionId
 
-	$vmName = "MyVM"
-	$snapshotName = "snapshot"
-
-
 	try
 	{
-		#Prepare
-		New-AzVm -ResourceGroupName $rgname -Name $vmName -Location $rglocation -VirtualNetworkName "myVnet" -SubnetName "mySubnet" -SecurityGroupName "myNetworkSecurityGroup" -PublicIpAddressName "myPublicIpAddress" -OpenPorts 80,3389
-		$vm = Get-AzVM -ResourceGroupName $rgname -Name $vmName
-		$snapshot =  New-AzSnapshotConfig -SourceUri $vm.StorageProfile.OsDisk.ManagedDisk.Id -Location $rglocation -CreateOption copy
-		New-AzSnapshot -Snapshot $snapshot -SnapshotName $snapshotName -ResourceGroupName $rgname 
-
+		# Prepare 
 		New-AzResourceGroup -Name $rgname -Location $rglocation
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.js
-		$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname/snapshots/$snapshotName"
+
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+		$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname"
+
+		$getByNameAndResourceGroup = Get-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -Name $rname 
+		$provisioningState = $getByNameAndResourceGroup.provisioningState
+
+		while ($provisioningState == "failed"){
+			$getByNameAndResourceGroup = Get-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -Name $rname 
+			$provisioningState = $$getByNameAndResourceGroup.provisioningState
+		}
+
+		$resourceId = $getByNameAndResourceGroup.snapshotId
+		$snapshotName = ResourceIdUtility.GetResourceName($resourceId).Split('/')[0];
 
 		#Test - GetByIdAndSnapshotName
 		$getByIdAndSnapshotName = Get-AzResourceGroupDeploymentStackSnapshot -ResourceId $resourceId -SnapshotName $snapshotName
@@ -103,15 +106,12 @@ function Test-GetResourceGroupDeploymentStackSnapshot
 
 		#Assert
 		Assert-NotNull = $getByResourceGroupNameAndStackName
-
 	}
-
 	finally
-	{
-		# Cleanup
+    {
+        # Cleanup
         Clean-ResourceGroup $rgname
-
-	}
+    }
 }
 
 
@@ -158,4 +158,84 @@ function Test-GetSubscriptionDeploymentStack
     }
 }
 
-function 
+<#
+.SYNOPSIS
+Tests REMOVE operation on deploymentStacks 
+#>
+function Test-RemoveResourceGroupDeploymentStack
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+	$subId = (Get-AzContext).Subscription.SubscriptionId
+
+	$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname"
+
+	try
+	{
+		# Prepare 
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+
+
+		# Test - removeByResourceId
+		$removeByResourceId = Remove-AzResourceGroupDeploymentStack -ResourceId $resourceId 
+
+		# Assert
+		Assert-NotNull $removeByResourceId
+
+		#Prepare
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+
+
+		# Test - removeByResourceNameAndResourceGroupName
+		$removeByResourceNameAndResouceGroupName = Remove-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -Name $rname
+
+		#Assert
+		Assert-NotNull $removeByResourceNameAndResouceGroupName
+
+	}
+	finally
+    {
+        # Cleanup
+        Clean-ResourceGroup $rgname
+    }
+} 
+
+
+<#
+.SYNOPSIS
+Tests REMOVE operation on deploymentStacks at the subscription scope
+#>
+function Test-RemoveSubscriptionDeploymentStack
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+
+	try
+	{
+		# Prepare 
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
+
+		# Test - RemoveByName
+		$removeByName = Remove-AzSubscriptionDeploymentStack -Name $rname 
+
+		# Assert
+		Assert-NotNull $removeByName 
+
+		# Prepare
+		New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+
+		# Test - RemoveByResourceId
+		$removeByResourceId = Remove-AzSubscriptionDeploymentStack -ResourceId $resourceId
+
+		#Assert
+		Assert-NotNull $removeByResourceId
+
+	}
+}
+
