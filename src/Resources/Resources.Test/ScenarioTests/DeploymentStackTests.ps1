@@ -253,6 +253,52 @@ function Test-NewResourceGroupDeploymentStack
         # Cleanup
         Clean-ResourceGroup $rgname
     }
+}
+
+
+<#
+.SYNOPSIS
+Tests NEW operation on deploymentStacks at the Subscription scope
+#>
+
+#NEED TO CONFIRM: that the only cases for this test should be: name, location, templateFile or name, location, templateFile, paramterFile
+function Test-NewSubscriptionDeploymentStack
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+
+	try {
+		# Prepare
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+
+		#Test - NewByNameAndResourceGroupAndTemplateFile
+		$NewByNameAndResourceGroupAndTemplateFile = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json
+
+		#Assert
+		Assert-NotNull $NewByNameAndResourceGroupAndTemplateFile
+
+		#Clean up
+		Clean-ResourceGroup $rgname
+
+		# Prepare
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+
+		#Test - NewByNameAndResourceGroupAndTemplateFileAndParameterFile
+		$NewByNameAndResourceGroupAndTemplateFile = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+
+		#Assert
+		Assert-NotNull $NewByNameAndResourceGroupAndTemplateFileAndParameterFile
+	}
+
+	finally
+    {
+        # Cleanup
+        Clean-ResourceGroup $rgname
+    }
+}
+
 
 
 <#
