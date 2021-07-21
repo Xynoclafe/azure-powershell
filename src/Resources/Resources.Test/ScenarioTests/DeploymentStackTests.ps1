@@ -136,19 +136,19 @@ function Test-GetSubscriptionDeploymentStack
 		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
 
 		# Test - GetByName
-		$getByName = Get-AzSubscriptionDeploymentStack -Name $rname 
+		$getByName = Get-AzDeploymentStack -Name $rname 
 
 		# Assert
 		Assert-NotNull $getByName
 
 		# Test - GetByResourceId
-		$getByResourceId = Get-AzSubscriptionDeploymentStack -ResourceId $resourceId
+		$getByResourceId = Get-AzDeploymentStack -ResourceId $resourceId
 
 		#Assert
 		Assert-NotNull $getByResourceId
 
 		#Test - ListByResourceGroupName
-		$list = Get-AzSubscriptionDeploymentStack
+		$list = Get-AzDeploymentStack
 
 		# Assert
 		Assert-AreNotEqual 0 $list.Count
@@ -187,19 +187,19 @@ function Test-GetSubscriptionDeploymentStackSnapshot
 		}
 
 		# Test - GetByStackName
-		$getByName = Get-AzSubscriptionDeploymentStack -Name $rname 
+		$getByName = Get-AzDeploymentStack -Name $rname 
 
 		# Assert
 		Assert-NotNull $getByName
 
 		# Test - GetByResourceId
-		$getByResourceId = Get-AzSubscriptionDeploymentStack -ResourceId $resourceId
+		$getByResourceId = Get-AzDeploymentStack -ResourceId $resourceId
 
 		#Assert
 		Assert-NotNull $getByResourceId
 
 		#Test - ListByResourceGroupName
-		$list = Get-AzSubscriptionDeploymentStack
+		$list = Get-AzDeploymentStack
 
 		# Assert
 		Assert-AreNotEqual 0 $list.Count
@@ -301,6 +301,51 @@ function Test-NewSubscriptionDeploymentStack
 Tests REMOVE operation on deploymentStacks 
 #>
 function Test-RemoveResourceGroupDeploymentStack
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+	$subId = (Get-AzContext).Subscription.SubscriptionId
+
+	$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname"
+
+	try
+	{
+		# Prepare 
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+
+
+		# Test - removeByResourceId
+		$removeByResourceId = Remove-AzResourceGroupDeploymentStack -ResourceId $resourceId 
+
+		# Assert
+		Assert-NotNull $removeByResourceId
+
+		#Prepare
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+
+
+		# Test - removeByResourceNameAndResourceGroupName
+		$removeByResourceNameAndResouceGroupName = Remove-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -Name $rname
+
+		#Assert
+		Assert-NotNull $removeByResourceNameAndResouceGroupName
+
+	}
+	finally
+    {
+        # Cleanup
+        Clean-ResourceGroup $rgname
+    }
+} 
+
+<#
+.SYNOPSIS
+Tests REMOVE operation on deploymentStacksSnapshot
+#>
+function Test-RemoveResourceGroupDeploymentStackSnapshot
 {
 	# Setup
 	$rgname = Get-ResourceGroupName
