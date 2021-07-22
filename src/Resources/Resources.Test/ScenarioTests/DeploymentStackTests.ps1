@@ -400,8 +400,6 @@ function Test-RemoveResourceGroupDeploymentStackSnapshot
 
 		# Assert
 		Assert-NotNull $removeByNameAndSnapshotNameAndResourceGroupName
-		
-
 	}
 
 	finally
@@ -515,6 +513,97 @@ function Test-RemoveSubscriptionDeploymentStackSnapshot
 	finally
     {
        
+    }
+}
+
+<#
+.SYNOPSIS
+Tests Set operation on deploymentStacks at the RG scope
+#>
+
+#NEED TO CONFIRM: that the only cases for this test should be: name, rgname, templateFile or name, rgname, templateFile, paramterFile
+function Test-SetResourceGroupDeploymentStack
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+
+	try {
+		# Prepare
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+
+		New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json
+
+		#Test - SetByNameAndResourceGroupAndTemplateFile
+		$SetByNameAndResourceGroupAndTemplateFile = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json
+
+		#Assert
+		Assert-NotNull $SetByNameAndResourceGroupAndTemplateFile
+
+		#Clean up
+		Clean-ResourceGroup $rgname
+
+		# Prepare
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+
+		New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json
+
+		#Test - SetByNameAndResourceGroupAndTemplateFileAndParameterFile
+		$SetByNameAndResourceGroupAndTemplateFile = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+
+		#Assert
+		Assert-NotNull $SetByNameAndResourceGroupAndTemplateFileAndParameterFile
+	}
+
+	finally
+    {
+        # Cleanup
+        Clean-ResourceGroup $rgname
+    }
+}
+
+
+<#
+.SYNOPSIS
+Tests SET operation on deploymentStacks at the Subscription scope
+#>
+
+#NEED TO CONFIRM: that the only cases for this test should be: name, location, templateFile or name, location, templateFile, paramterFile
+function Test-SetSubscriptionDeploymentStack
+{
+	# Setup
+	$rname = Get-ResourceName
+	$location = "West US 2"
+
+	try {
+		#Prepare
+		New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile simpleTemplate.json
+
+		#Test - SetByNameAndResourceGroupAndTemplateFile
+		$SetByNameAndTemplateFile = Set-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile simpleTemplate.json
+
+		#Assert
+		Assert-NotNull $SetByNameAndTemplateFile
+
+		# Cleanup
+        Clean-DeploymentAtSubscription $rname
+
+		#Prepare
+		New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile simpleTemplate.json
+
+		#Test - SetByNameAndResourceGroupAndTemplateFileAndParameterFile
+		$SetByNameAndTemplateFileAndParameterFile = Set-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+
+		#Assert
+		Assert-NotNull $SetByNameAndTemplateFileAndParameterFile
+
+	}
+
+	finally
+    {
+        # Cleanup
+        Clean-DeploymentAtSubscription $rname
     }
 }
 
