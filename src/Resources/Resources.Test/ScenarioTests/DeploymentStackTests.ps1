@@ -345,6 +345,8 @@ function Test-RemoveResourceGroupDeploymentStack
 .SYNOPSIS
 Tests REMOVE operation on deploymentStacksSnapshot
 #>
+#Does this delete the snapshot for this deplpyment or also the deployment
+#backlog until new command works
 function Test-RemoveResourceGroupDeploymentStackSnapshot
 {
 	# Setup
@@ -361,30 +363,22 @@ function Test-RemoveResourceGroupDeploymentStackSnapshot
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
 
-
-		# Test - removeByResourceId
-		$removeByResourceId = Remove-AzResourceGroupDeploymentStack -ResourceId $resourceId 
-
-		# Assert
-		Assert-NotNull $removeByResourceId
-
-		#Prepare
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+		$provisioningState = $deployment.provisioningState
+		$stackName = $deployment.name
 
 
-		# Test - removeByResourceNameAndResourceGroupName
-		$removeByResourceNameAndResouceGroupName = Remove-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -Name $rname
+		while ($provisioningState == "initializing" or $provisioningState == "failed"){
+			$provisioningState = $deployment.provisioningState
+		}
 
-		#Assert
-		Assert-NotNull $removeByResourceNameAndResouceGroupName
+		$deployment = Get-AzResourceGroupDeploymentStack -stackname $stackName -ResourceGroupName $rgname
+		$snapshotName = ResourceIdUtility.GetResourceName($deployment.SnapshotId).Split('/')[-1];
+
+		# Test - RemoveByResourceId
+		$RemoveByResourceId = Remove_AzResourceGroupDeploymentStackSnapshot -resourceid 
 
 	}
-	finally
-    {
-        # Cleanup
-        Clean-ResourceGroup $rgname
-    }
-} 
+}
 
 
 <#
@@ -419,6 +413,77 @@ function Test-RemoveSubscriptionDeploymentStack
 		#Assert
 		Assert-NotNull $removeByResourceId
 
+		finally
+		{
+		}
+
 	}
+}
+
+<#
+.SYNOPSIS
+Tests REMOVE operation on deploymentStacksSnapshot at the subscription scope
+#>
+#This will not work because we need multiple snapshots in subscription, how would we go about testing this
+function Test-RemoveSubscriptionDeploymentStackSnapshot
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+
+	try
+	{
+		# Prepare 
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+		#?
+		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
+
+		$provisioningState = $deployment.provisioningState
+		$stackName = $deployment.name
+
+
+		while ($provisioningState == "initializing" or $provisioningState == "failed"){
+			$provisioningState = $deployment.provisioningState
+		}
+
+		$deployment =  Get-AzDeploymentStack -name $stackName
+		$snapshotId = $deployment.SnapshotId
+
+		# Test - removeByResourceId
+		$removeByResourceId = remove-azsubscriptiondeploymentstacksnapshot -resourceid $snapshotId
+
+		# Assert
+		Assert-NotNull $removeByResourcId 
+
+		# Prepare 
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+		#?
+		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
+
+		$provisioningState = $deployment.provisioningState
+		$stackName = $deployment.name
+
+
+		while ($provisioningState == "initializing" or $provisioningState == "failed"){
+			$provisioningState = $deployment.provisioningState
+		}
+
+		$deployment =  Get-AzDeploymentStack -name $stackName
+		$snapshotName = ($deployment.SnapshotId).split('/')[-1]
+
+
+		# Test - removeByNameandSnapshotName
+		$removeByNameandSnapshotName = 	remove-azsubscriptiondeploymentstack -name $stackName -snapshotname $snapshotName
+
+		# Assert
+		Assert-NotNull $removeByNameandSnapshotName 
+
+	}
+
+	finally
+    {
+       
+    }
 }
 
