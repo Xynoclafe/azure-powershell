@@ -372,11 +372,42 @@ function Test-RemoveResourceGroupDeploymentStackSnapshot
 		}
 
 		$deployment = Get-AzResourceGroupDeploymentStack -stackname $stackName -ResourceGroupName $rgname
-		$snapshotName = ResourceIdUtility.GetResourceName($deployment.SnapshotId).Split('/')[-1];
+		$snapshotId = $deployment.SnapshotId;
 
-		# Test - RemoveByResourceId
-		$RemoveByResourceId = Remove_AzResourceGroupDeploymentStackSnapshot -resourceid 
+		# Test - removeByResourceId
+		$removeByResourceId = Remove_AzResourceGroupDeploymentStackSnapshot -resourceid $snapshotId
 
+		# Assert
+		Assert-NotNull $RemoveByResourceId
+
+		# Prepare
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+
+		$provisioningState = $deployment.provisioningState
+		$stackName = $deployment.name
+
+
+		while ($provisioningState == "initializing" or $provisioningState == "failed"){
+			$provisioningState = $deployment.provisioningState
+		}
+
+		$deployment = Get-AzResourceGroupDeploymentStack -stackname $stackName -ResourceGroupName $rgname
+		$snapshotName = $deployment.SnapshotId.split('/')[-1];
+
+		# Test - removeByNameAndSnapshotNameAndResourceGroupName
+		$removeByNameAndSnapshotNameAndResourceGroupName = Remove_AzResourceGroupDeploymentStackSnapshot -name $stackName -snapshotname $snapshotName -ResourceGroupName $rgname
+
+		# Assert
+		Assert-NotNull $removeByNameAndSnapshotNameAndResourceGroupName
+		
+
+	}
+
+	finally
+	{
+		# Cleanup
+        Clean-ResourceGroup $rgname
 	}
 }
 
