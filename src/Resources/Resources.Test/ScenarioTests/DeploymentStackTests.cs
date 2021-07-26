@@ -33,23 +33,79 @@ namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
 
         [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestResourceGroupDeploymentStackGetWithResourceId()
+        public void TestResourceGroupDeploymentStackSnapshotGet()
         {
-            TestRunner.RunTestScript("");
+            TestRunner.RunTestScript("Test-GetResourceGroupDeploymentStackSnapshot");
         }
 
         [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestSubscriptionDeploymentStackGetWithResourceName()
+        public void TestSubscriptionDeploymentStackGet()
         {
-            TestRunner.RunTestScript("");
+            TestRunner.RunTestScript("Test-GetSubscriptionDeploymentStack");
         }
 
         [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestSubscriptionDeploymentStackGetWithResourceId()
+        public void TestSubscriptionDeploymentStackSnapshotGet()
         {
-            TestRunner.RunTestScript("");
+            TestRunner.RunTestScript("Test-GetSubscriptionDeploymentStackSnapshot");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestNewResourceGroupDeploymentStack()
+        {
+            TestRunner.RunTestScript("Test-NewResourceGroupDeploymentStack");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestNewSubscriptionDeploymentStack()
+        {
+            TestRunner.RunTestScript("Test-NewSubscriptionDeploymentStack");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestResourceGroupDeploymentStackDelete()
+        {
+            TestRunner.RunTestScript("Test-RemoveResourceGroupDeploymentStack");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestResourceGroupDeploymentStackSnapshotDelete()
+        {
+            TestRunner.RunTestScript("Test-RemoveResourceGroupDeploymentStackSnapshot");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestSubscriptionDeploymentStackDelete()
+        {
+            TestRunner.RunTestScript("Test-RemoveSubscriptionDeploymentStack");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestSubscriptionDeploymentStackSnapshotDelete()
+        {
+            TestRunner.RunTestScript("Test-RemoveSubscriptionDeploymentStackSnapshot");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestSetResourceGroupDeploymentStack()
+        {
+            TestRunner.RunTestScript("Test-SetResourceGroupDeploymentStack");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestSetSubscriptionDeploymentStack()
+        {
+            TestRunner.RunTestScript("Test-SetSubscriptionDeploymentStack");
         }
 
     }
