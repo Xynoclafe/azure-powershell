@@ -1,4 +1,18 @@
-﻿namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
+﻿// ----------------------------------------------------------------------------------
+//
+// Copyright Microsoft Corporation
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// http://www.apache.org/licenses/LICENSE-2.0
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// ----------------------------------------------------------------------------------
+
+namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 {
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
     using Microsoft.Azure.Commands.ResourceManager.Common.ArgumentCompleters;
@@ -88,6 +102,10 @@
             HelpMessage = "Location of the stack")]
         public string Location { get; set; }
 
+        [Parameter(Mandatory = false,
+        HelpMessage = "Do not ask for confirmation when overwriting an existing stack.")]
+        public SwitchParameter Force { get; set; }
+
         #endregion
 
         #region Cmdlet Overrides
@@ -125,23 +143,46 @@
                         break;
                 }
 
+                Action createOrUpdateAction = () =>
+                {
+                    var deploymentStack = DeploymentStacksSdkClient.SubscriptionCreateOrUpdateDeploymentStack(
+                        Name,
+                        Location,
+                        TemplateUri,
+                        TemplateSpec,
+                        ParameterUri,
+                        parameters,
+                        Description,
+                        UpdateBehavior
+                        );
 
-                if (DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(
+                    WriteObject(deploymentStack);
+                };
+
+                if (!Force.IsPresent && DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(
                         Name,
                         throwIfNotExists: false) == null)
-                    throw new DeploymentStacksErrorException($"The stack '{Name}' you're trying to modify does not exist in the current subscription. Please Use New-AzResourceGroupDeploymentStack to create it");
+                {
+                    string confirmationMessage =
+                        $"The stack '{Name}' you're trying to modify does not exist in the current subscription. Do you want to create a new stack?";
 
-                var deploymentStack = DeploymentStacksSdkClient.SubscriptionCreateOrUpdateDeploymentStack(
-                    Name,
-                    Location,
-                    TemplateUri,
-                    TemplateSpec,
-                    ParameterUri,
-                    parameters,
-                    Description,
-                    UpdateBehavior
+                    ConfirmAction(
+                        Force.IsPresent,
+                        confirmationMessage,
+                        "Update",
+                        $"{Name}",
+                        createOrUpdateAction
                     );
-                WriteObject(deploymentStack);
+                }
+                else
+                {
+                    if (!ShouldProcess($"{Name}", "Create"))
+                    {
+                        return; // Don't perform the actual creation/update action
+                    }
+
+                    createOrUpdateAction();
+                }
 
             }
             catch (Exception ex)
