@@ -18,6 +18,14 @@
         - Additional information about change #1
 -->
 ## Upcoming Release
+* Supported Blob Last Access Time
+    -  `Enable-AzStorageBlobLastAccessTimeTracking`
+    -  `Disable-AzStorageBlobLastAccessTimeTracking`
+    -  `Add-AzStorageAccountManagementPolicyAction`
+* Made `Get-AzDataLakeGen2ChildItem` list all datalake gen2 items by default, instead of needing user to list chunk by chunk.
+* Fixed BlobProperties is empty issue when using sas without prefix '?' [#15460]
+
+## Version 3.9.0
 * Supported enable/disable Blob container soft delete
     -  `Enable-AzStorageContainerDeleteRetentionPolicy`
     -  `Disable-AzStorageContainerDeleteRetentionPolicy`
@@ -30,6 +38,8 @@
     - `Update-AzStorageFileServiceProperty`
 * Supported create account with EnableNfsV3
     - `New-AzStorageAccount`
+* Supported input more copy blob parameters from pipeline [#15301]
+    -  `Start-AzStorageBlobCopy`
 
 ## Version 3.8.0
 * Supported create file share with NFS/SMB enabledEnabledProtocol and RootSquash, and update share with RootSquash
