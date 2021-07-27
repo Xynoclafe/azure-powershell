@@ -565,7 +565,7 @@
 							  <ItemSelectionCondition>
 								  <ScriptBlock>$_.error -ne $null</ScriptBlock>
 							  </ItemSelectionCondition>
-							  <ScriptBlock>$_.error.Message</ScriptBlock>
+							  <ScriptBlock>$e=$_.error; while($e.Details -ne $null){$e = $e.Details[0]}$e.Code + " - " +$e.Message</ScriptBlock>
 						  </ListItem>
 					  </ListItems>
 				  </ListEntry>

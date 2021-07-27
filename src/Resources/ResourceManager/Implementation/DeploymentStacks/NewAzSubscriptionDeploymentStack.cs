@@ -182,7 +182,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             }
             catch (Exception ex)
             {
-                WriteExceptionError(ex);
+                if (ex is DeploymentStacksErrorException dex)
+                    throw new PSArgumentException(dex.Message + " : " + dex.Body.Error.Code + " : " + dex.Body.Error.Message);
+                else
+                    WriteExceptionError(ex);
             }
         }
 
