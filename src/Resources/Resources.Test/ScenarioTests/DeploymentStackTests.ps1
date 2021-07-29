@@ -255,6 +255,48 @@ function Test-NewResourceGroupDeploymentStack
     }
 }
 
+<#
+.SYNOPSIS
+Tests NEW and Set operation on deploymentStacks at the RG scope using template specs
+#>
+
+function Test-NewAndSetResourceGroupDeploymentStackWithTemplateSpec
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+
+	try {
+		# Prepare
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+
+		$sampleTemplateJson = Get-Content -Raw -Path "sampleTemplate.json"
+        $basicCreatedTemplateSpec = New-AzTemplateSpec -ResourceGroupName $rgname -Name $rname -Location $rgLocation -Version "v1" -TemplateJson $sampleTemplateJson
+
+		$resourceId = $basicCreatedTemplateSpec.Id + "/versions/v1"
+
+		# Test - New-AzResourceGroupDeploymentStacks using templateSpecs
+		$deployment = New-AzResourceGroupDeploymentStacks -Name $rname -ResourceGroupName $rgname -TemplateSpec $resourceId -ParameterFile "sampleTemplateParams.json"
+
+		# Assert
+		Assert-AreEqual Succeeded $deployment.ProvisioningState
+
+		# Test - Set-AzResourceGroupDeploymentStacks using templateSpecs
+		$deployment = Set-AzResourceGroupDeploymentStacks -Name $rname -ResourceGroupName $rgname -TemplateSpec $resourceId -ParameterFile "sampleTemplateParams.json" -updateBehavior "detach"
+
+		# Assert
+		Assert-AreEqual Succeeded $deployment.ProvisioningState
+
+	}
+
+	finally
+    {
+        # Cleanup
+        Clean-ResourceGroup $rgname
+    }
+}
+
 
 <#
 .SYNOPSIS
