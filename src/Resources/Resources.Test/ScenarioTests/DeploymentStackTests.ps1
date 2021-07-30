@@ -257,7 +257,7 @@ function Test-NewResourceGroupDeploymentStack
 
 <#
 .SYNOPSIS
-Tests NEW and Set operation on deploymentStacks at the RG scope using template specs
+Tests NEW and SET operation on deploymentStacks at the RG scope using template specs
 #>
 
 function Test-NewAndSetResourceGroupDeploymentStackWithTemplateSpec
@@ -284,6 +284,48 @@ function Test-NewAndSetResourceGroupDeploymentStackWithTemplateSpec
 
 		# Test - Set-AzResourceGroupDeploymentStacks using templateSpecs
 		$deployment = Set-AzResourceGroupDeploymentStacks -Name $rname -ResourceGroupName $rgname -TemplateSpec $resourceId -ParameterFile "sampleTemplateParams.json" -updateBehavior "detach"
+
+		# Assert
+		Assert-AreEqual Succeeded $deployment.ProvisioningState
+
+	}
+
+	finally
+    {
+        # Cleanup
+        Clean-ResourceGroup $rgname
+    }
+}
+
+<#
+.SYNOPSIS
+Tests NEW and SET operation on deploymentStacks at the subscription scope using template specs
+#>
+
+function Test-NewAndSetSubscriptionDeploymentStackWithTemplateSpec
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+
+	try {
+		# Prepare
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+
+		$sampleTemplateJson = Get-Content -Raw -Path "subscription_level_template.json"
+        $basicCreatedTemplateSpec = New-AzTemplateSpec -ResourceGroupName $rgname -Name $rname -Location $rgLocation -Version "v1" -TemplateJson $sampleTemplateJson
+
+		$resourceId = $basicCreatedTemplateSpec.Id + "/versions/v1"
+
+		# Test - New-AzSubscriptionDeploymentStacks using templateSpecs
+		$deployment = New-AzResourceGroupDeploymentStacks -Name $rname -TemplateSpec $resourceId -ParameterFile "subscription_level_parameters.json"
+
+		# Assert
+		Assert-AreEqual Succeeded $deployment.ProvisioningState
+
+		# Test - Set-AzSubscriptionDeploymentStacks using templateSpecs
+		$deployment = Set-AzResourceGroupDeploymentStacks -Name $rname -TemplateSpec $resourceId -ParameterFile "sampleTemplateParams.json" -Location $rglocation -updateBehavior "detach"
 
 		# Assert
 		Assert-AreEqual Succeeded $deployment.ProvisioningState
