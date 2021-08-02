@@ -277,13 +277,24 @@ function Test-NewAndSetResourceGroupDeploymentStackWithTemplateSpec
 		$resourceId = $basicCreatedTemplateSpec.Id + "/versions/v1"
 
 		# Test - New-AzResourceGroupDeploymentStacks using templateSpecs
-		$deployment = New-AzResourceGroupDeploymentStacks -Name $rname -ResourceGroupName $rgname -TemplateSpec $resourceId -ParameterFile "sampleTemplateParams.json"
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateSpec $resourceId -ParameterFile "sampleTemplateParams.json"
+		$id = $deployment.id
+
+		while ($deployment.provisioningState == "initializing" or $deployment.provisioningState == "failed"){
+			$deployment = Get-AzResourceGroupDeploymentStack -id $id
+		}
+
 
 		# Assert
 		Assert-AreEqual Succeeded $deployment.ProvisioningState
 
 		# Test - Set-AzResourceGroupDeploymentStacks using templateSpecs
-		$deployment = Set-AzResourceGroupDeploymentStacks -Name $rname -ResourceGroupName $rgname -TemplateSpec $resourceId -ParameterFile "sampleTemplateParams.json" -updateBehavior "detach"
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateSpec $resourceId -ParameterFile "sampleTemplateParams.json" -updateBehavior "detach"
+		$id = $deployment.id
+
+		while ($deployment.provisioningState == "initializing" or $deployment.provisioningState == "failed"){
+			$deployment = Get-AzResourceGroupDeploymentStack -id $id
+		}
 
 		# Assert
 		Assert-AreEqual Succeeded $deployment.ProvisioningState
@@ -319,13 +330,24 @@ function Test-NewAndSetSubscriptionDeploymentStackWithTemplateSpec
 		$resourceId = $basicCreatedTemplateSpec.Id + "/versions/v1"
 
 		# Test - New-AzSubscriptionDeploymentStacks using templateSpecs
-		$deployment = New-AzResourceGroupDeploymentStacks -Name $rname -TemplateSpec $resourceId -ParameterFile "subscription_level_parameters.json"
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateSpec $resourceId -Location "West US 2"
+		$id = $deployment.id
+
+		while ($deployment.provisioningState == "initializing" or $deployment.provisioningState == "failed"){
+			$deployment = Get-AzSubscriptionDeploymentStack -id $id
+		}
 
 		# Assert
 		Assert-AreEqual Succeeded $deployment.ProvisioningState
 
 		# Test - Set-AzSubscriptionDeploymentStacks using templateSpecs
-		$deployment = Set-AzResourceGroupDeploymentStacks -Name $rname -TemplateSpec $resourceId -ParameterFile "sampleTemplateParams.json" -Location $rglocation -updateBehavior "detach"
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -TemplateSpec $resourceId -ParameterFile "sampleTemplateParams.json" -Location $rglocation -updateBehavior "detach"
+		$id = $deployment.id
+
+		while ($deployment.provisioningState == "initializing" or $deployment.provisioningState == "failed"){
+			$deployment = Get-AzSubscriptionDeploymentStack -id $id
+		}
+
 
 		# Assert
 		Assert-AreEqual Succeeded $deployment.ProvisioningState
