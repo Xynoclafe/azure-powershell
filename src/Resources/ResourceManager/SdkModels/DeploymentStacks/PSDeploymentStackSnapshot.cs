@@ -39,7 +39,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
 
         public ErrorResponse error { get; set; }
 
-        public IList<ResourceReference> managedResources { get; set; }
+        public IList<ManagedResourceReference> managedResources { get; set; }
 
         public IList<ResourceReference> detatchedResources { get; set; }
 

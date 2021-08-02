@@ -50,6 +50,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         [Parameter(Mandatory = false, HelpMessage = "Do not ask for confirmation.")]
         public SwitchParameter Force { get; set; }
 
+        [Parameter(Mandatory = false,
+        HelpMessage = "Delete all resources along with the stack.")]
+        public SwitchParameter Purge { get; set; }
+
         #endregion
 
         #region Cmdlet Overrides
@@ -67,12 +71,14 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
                 string confirmationMessage = $"Are you sure you want to remove DeploymentStack '{Name}'";
 
+                string deleteBehavior = Purge.IsPresent ? "all" : null;
+
                 ConfirmAction(
                     Force.IsPresent,
                     confirmationMessage,
                     "Deleting Deployment Stack ...",
                     Name,
-                    () => DeploymentStacksSdkClient.DeleteResourceGroupDeploymentStack(ResourceGroupName, Name)
+                    () => DeploymentStacksSdkClient.DeleteResourceGroupDeploymentStack(ResourceGroupName, Name, deleteBehavior)
                 );
 
                 WriteObject(true);

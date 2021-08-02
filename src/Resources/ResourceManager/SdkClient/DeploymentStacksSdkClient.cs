@@ -387,10 +387,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             return;
         }
 
-        internal void DeleteResourceGroupDeploymentStack(string resourceGroupName, string name)
+        internal void DeleteResourceGroupDeploymentStack(string resourceGroupName, string name, string deleteBehavior = null)
         {
             var deleteResponse = DeploymentStacksClient.DeploymentStacks
-                .DeleteAtResourceGroupWithHttpMessagesAsync(resourceGroupName, name)
+                .DeleteAtResourceGroupWithHttpMessagesAsync(resourceGroupName, name, deleteBehavior)
                 .GetAwaiter()
                 .GetResult();
 
@@ -404,10 +404,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             return;
         }
 
-        internal void DeleteSubscriptionDeploymentStack(string name)
+        internal void DeleteSubscriptionDeploymentStack(string name, string deleteBehavior = null)
         {
             var deleteResponse = DeploymentStacksClient.DeploymentStacks
-                .DeleteAtSubscriptionWithHttpMessagesAsync(name)
+                .DeleteAtSubscriptionWithHttpMessagesAsync(name, deleteBehavior)
                 .GetAwaiter()
                 .GetResult();
 

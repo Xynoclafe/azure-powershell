@@ -39,7 +39,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
 
         public string description { get; set; }
 
-        public IList<ResourceReference> managedResources { get; set; }
+        public IList<ManagedResourceReference> managedResources { get; set; }
 
         public string deploymentId { get; set; }
 
