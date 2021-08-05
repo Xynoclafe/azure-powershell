@@ -131,7 +131,7 @@ function Test-GetSubscriptionDeploymentStack
 	try
 	{
 		# Prepare 
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile subscription_level_template.json -ParameterFile subscription_level_parameters.json
 		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
 
 		# Test - GetByName
@@ -167,42 +167,48 @@ Tests GET operation on deploymentStacksSnapshot at the Subscription scope
 function Test-GetSubscriptionDeploymentStackSnapshot
 {
 	# Setup
-	$rgname = Get-ResourceGroupName
 	$rname = Get-ResourceName
-	$rglocation = "West US 2"
+	$location = "West US 2"
 
 	try
 	{
 		# Prepare 
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile subscription_level_template.json -ParameterFile subscription_level_parameters.json
 		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
 
-		$provisioningState = $deployment.provisioningState
-		$stackName = $deployment.name
+		$getByName = Get-AzSubscriptionDeploymentStack -Name $rname 
+		$provisioningState = $getByName.provisioningState
 
 
-		while ($provisioningState == "initializing" or $provisioningState == "failed"){
-			$provisioningState = $deployment.provisioningState
+		while ($provisioningState -ne "succeeded" -and $provisioningState -ne "failed"){
+			$getByName = Get-AzSubscriptionDeploymentStack -Name $rname 
+			$provisioningState = $getByName.provisioningState
 		}
 
-		# Test - GetByStackName
-		$getByName = Get-AzDeploymentStack -Name $rname 
+		#Assert
+		Assert-AreEqual $provisioningState "succeeded"
+
+		$resourceId = $getByName.SnapshotId
+		$snapshotName = $resourceId.Split("/")[-1]
+
+		# Test - GetByStackAndSnapshotName
+		$getByName = Get-AzDeploymentStackSnapshot -Name $rname -SnapshotName $snapshotName
 
 		# Assert
 		Assert-NotNull $getByName
 
 		# Test - GetByResourceId
-		$getByResourceId = Get-AzDeploymentStack -ResourceId $resourceId
+		$getByResourceId = Get-AzDeploymentStackSnapshot -ResourceId $resourceId
 
 		#Assert
 		Assert-NotNull $getByResourceId
 
 		#Test - ListByResourceGroupName
-		$list = Get-AzDeploymentStack
+		$list = Get-AzDeploymentStackSnapshot -Name $rname
 
 		# Assert
 		Assert-AreNotEqual 0 $list.Count
-		Assert-True { $list.name.contains($rname) }
+		Assert-True { $list[0].name.contains($snapshotName) }
 	}
 	finally
     {
