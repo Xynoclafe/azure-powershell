@@ -41,7 +41,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         {
             var parameters = new Hashtable();
             string templateParameterFilePath = this.ResolvePath(parameterFile);
-            if (parameterFile != null && FileUtilities.DataStore.FileExists(parameterFile))
+            if (parameterFile != null && FileUtilities.DataStore.FileExists(templateParameterFilePath))
             {
                 var parametersFromFile = TemplateUtility.ParseTemplateParameterFileContents(templateParameterFilePath);
                 parametersFromFile.ForEach(dp =>

@@ -29,11 +29,11 @@ function Test-GetResourceGroupDeploymentStack
 		# Prepare 
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -ParameterFile sampleTemplateParams.json
 		$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname"
 
 		# Test - GetByNameAndResourceGroup
-		$getByNameAndResourceGroup = Get-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -Name $rname 
+		$getByNameAndResourceGroup = Get-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -StackName $rname 
 
 		# Assert
 		Assert-NotNull $getByNameAndResourceGroup
@@ -78,33 +78,33 @@ function Test-GetResourceGroupDeploymentStackSnapshot
 		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
 		$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname"
 
-		$getByNameAndResourceGroup = Get-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -Name $rname 
+		$getByNameAndResourceGroup = Get-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -StackName $rname 
 		$provisioningState = $getByNameAndResourceGroup.provisioningState
 
-		while ($provisioningState == "initializing" or $provisioningState == "failed"){
-			$getByNameAndResourceGroup = Get-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -Name $rname 
-			$provisioningState = $$getByNameAndResourceGroup.provisioningState
+		while ($provisioningState -ne "succeeded" -and $provisioningState -ne "failed"){
+			$getByNameAndResourceGroup = Get-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -StackName $rname 
+			$provisioningState = $getByNameAndResourceGroup.provisioningState
 		}
-
-		$resourceId = $getByNameAndResourceGroup.snapshotId
-		$snapshotName = ResourceIdUtility.GetResourceName($resourceId).Split('/')[0];
-
-		#Test - GetByIdAndSnapshotName
-		$getByIdAndSnapshotName = Get-AzResourceGroupDeploymentStackSnapshot -ResourceId $resourceId -SnapshotName $snapshotName
 
 		#Assert
 		Assert-AreEqual $provisioningState "succeeded"
+
+		$resourceId = $getByNameAndResourceGroup.SnapshotId
+		$snapshotName = $resourceId.Split("/")[-1]
+
+		#Test - GetByIdAndSnapshotName
+		$getByIdAndSnapshotName = Get-AzResourceGroupDeploymentStackSnapshot -ResourceId $resourceId
+
+		#Assert
 		Assert-NotNull $getByIdAndSnapshotName
 
-		#Test - GetByResourceGroupNameAndStackName
-		Assert-AreEqual $provisioningState "succeeded"
+		#Test - ListSnapshots
 		$getByResourceGroupNameAndStackName = Get-AzResourceGroupDeploymentStackSnapshot -ResourceGroupName $rgname -StackName $rname
 
 		#Assert
 		Assert-NotNull $getByResourceGroupNameAndStackName
 
 		#Test - GetByResourceGroupNameAndStackNameAndSnapshotName
-		Assert-AreEqual $provisioningState "succeeded"
 		$getByResourceGroupNameAndStackName = Get-AzResourceGroupDeploymentStackSnapshot -ResourceGroupName $rgname -StackName $rname -SnapshotName $snapshotName
 
 		#Assert
@@ -116,7 +116,6 @@ function Test-GetResourceGroupDeploymentStackSnapshot
         Clean-ResourceGroup $rgname
     }
 }
-
 
 <#
 .SYNOPSIS
