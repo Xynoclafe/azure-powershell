@@ -126,12 +126,12 @@ function Test-GetSubscriptionDeploymentStack
 	# Setup
 	$rgname = Get-ResourceGroupName
 	$rname = Get-ResourceName
-	$rglocation = "West US 2"
+	$location = "West US 2"
 
 	try
 	{
 		# Prepare 
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
 		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
 
 		# Test - GetByName
@@ -711,4 +711,3 @@ function Test-SetSubscriptionDeploymentStack
         Clean-DeploymentAtSubscription $rname
     }
 }
-
