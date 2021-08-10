@@ -61,17 +61,17 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 {
                     case GetByResourceIdParameterSetName:
                         ResourceIdentifier resourceIdentifier = new ResourceIdentifier(ResourceId);
-                        StackName = ResourceIdUtility.GetResourceName(ResourceId).Split('/')[0];
+                        Name = ResourceIdUtility.GetResourceName(ResourceId).Split('/')[0];
                         WriteObject(ResourceIdUtility.GetResourceName(ResourceId));
-                        WriteObject(StackName);
+                        WriteObject(Name);
                         SnapshotName = resourceIdentifier.ResourceName;
-                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStackSnapshot(ResourceIdUtility.GetResourceGroupName(ResourceId), StackName, SnapshotName));
+                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStackSnapshot(ResourceIdUtility.GetResourceGroupName(ResourceId), Name, SnapshotName));
                         break;
                     case ListByResourceGroupNameParameterSetName:
-                        WriteObject(DeploymentStacksSdkClient.ListResourceGroupDeploymentStackSnapshot(ResourceGroupName, StackName));
+                        WriteObject(DeploymentStacksSdkClient.ListResourceGroupDeploymentStackSnapshot(ResourceGroupName, Name));
                         break;
                     case GetByDeploymentStackName:
-                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStackSnapshot(ResourceGroupName, StackName, SnapshotName));
+                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStackSnapshot(ResourceGroupName, Name, SnapshotName));
                         break;
                     default:
                         throw new PSInvalidOperationException();

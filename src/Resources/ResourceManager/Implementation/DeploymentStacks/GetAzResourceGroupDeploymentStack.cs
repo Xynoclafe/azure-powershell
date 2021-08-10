@@ -57,7 +57,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         WriteObject(DeploymentStacksSdkClient.ListResourceGroupDeploymentStack(ResourceGroupName));
                         break;
                     case GetByDeploymentStackName:
-                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStack(ResourceGroupName, StackName));
+                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStack(ResourceGroupName, Name));
                         break;
                     default:
                         throw new PSInvalidOperationException();
