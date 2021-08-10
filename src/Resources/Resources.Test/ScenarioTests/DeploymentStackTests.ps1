@@ -356,8 +356,6 @@ function Test-NewAndSetSubscriptionDeploymentStackWithTemplateSpec
 .SYNOPSIS
 Tests NEW operation on deploymentStacks at the Subscription scope
 #>
-
-#NEED TO CONFIRM: that the only cases for this test should be: name, location, templateFile or name, location, templateFile, paramterFile
 function Test-NewSubscriptionDeploymentStack
 {
 	# Setup
@@ -366,20 +364,11 @@ function Test-NewSubscriptionDeploymentStack
 
 	try {
 
-		#Test - NewByNameAndResourceGroupAndTemplateFile
-		$NewByNameAndTemplateFile = New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile simpleTemplate.json
+		# Test - NewByNameAndTemplateFile
+		$NewByNameAndTemplateFile = New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile sampleTemplate.json -ParameterFile sampleTemplateParams.json
 
-		#Assert
+		# Assert
 		Assert-NotNull $NewByNameAndTemplateFile
-
-		# Cleanup
-        Clean-DeploymentAtSubscription $rname
-
-		#Test - NewByNameAndResourceGroupAndTemplateFileAndParameterFile
-		$NewByNameAndTemplateFileAndParameterFile = New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
-
-		#Assert
-		Assert-NotNull $NewByNameAndTemplateFileAndParameterFile
 
 	}
 
@@ -389,8 +378,6 @@ function Test-NewSubscriptionDeploymentStack
         Clean-DeploymentAtSubscription $rname
     }
 }
-
-
 
 <#
 .SYNOPSIS
@@ -410,24 +397,32 @@ function Test-RemoveResourceGroupDeploymentStack
 	{
 		# Prepare 
 		New-AzResourceGroup -Name $rgname -Location $rglocation
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -ParameterFile sampleTemplateParams.json
+
+		while ($deployment.provisioningState -ne "succeeded" -and $deployment.provisioningState -ne "failed"){
+			$deployment = Get-AzResourceGroupDeploymentStack -id $resourceid
+		}
 
 
 		# Test - removeByResourceId
-		$removeByResourceId = Remove-AzResourceGroupDeploymentStack -ResourceId $resourceId 
+		$removeByResourceId = Remove-AzResourceGroupDeploymentStack -ResourceId $resourceId -force
 
 		# Assert
 		Assert-NotNull $removeByResourceId
 
 		#Prepare
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -ParameterFile sampleTemplateParams.json -force
+
+		while ($deployment.provisioningState -ne "succeeded" -and $deployment.provisioningState -ne "failed"){
+			$deployment = Get-AzResourceGroupDeploymentStack -id $resourceid
+		}
 
 
 		# Test - removeByResourceNameAndResourceGroupName
-		$removeByResourceNameAndResouceGroupName = Remove-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -Name $rname
+		$removeByResourceNameAndResourceGroupName = Remove-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -Name $rname -force
 
 		#Assert
-		Assert-NotNull $removeByResourceNameAndResouceGroupName
+		Assert-NotNull $removeByResourceNameAndResourceGroupName
 
 	}
 	finally
@@ -457,42 +452,53 @@ function Test-RemoveResourceGroupDeploymentStackSnapshot
 	{
 		# Prepare 
 		New-AzResourceGroup -Name $rgname -Location $rglocation
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
-
-		$provisioningState = $deployment.provisioningState
-		$stackName = $deployment.name
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -ParameterFile sampleTemplateParams.json
 
 
-		while ($provisioningState == "initializing" or $provisioningState == "failed"){
-			$provisioningState = $deployment.provisioningState
+		while ($deployment.provisioningState -ne "succeeded" -and $deployment.provisioningState -ne "failed"){
+			$deployment = Get-AzResourceGroupDeploymentStack -id $resourceid
 		}
 
-		$deployment = Get-AzResourceGroupDeploymentStack -stackname $stackName -ResourceGroupName $rgname
+		$deploymentSet = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -ParameterFile sampleTemplateParams.json -UpdateBehavior "detach" -force
+
+		while ($deploymentSet.provisioningState -ne "succeeded" -and $deploymentSet.provisioningState -ne "failed"){
+			$deploymentSet = Get-AzResourceGroupDeploymentStack -id $resourceid
+		}
+
+
 		$snapshotId = $deployment.SnapshotId;
 
 		# Test - removeByResourceId
-		$removeByResourceId = Remove_AzResourceGroupDeploymentStackSnapshot -resourceid $snapshotId
+		$removeByResourceId = Remove-AzResourceGroupDeploymentStackSnapshot -resourceid $snapshotId -force
 
 		# Assert
 		Assert-NotNull $RemoveByResourceId
 
+		# Cleanup
+        Clean-ResourceGroup $rgname
+
 		# Prepare
 		New-AzResourceGroup -Name $rgname -Location $rglocation
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -ParameterFile sampleTemplateParams.json -force
 
-		$provisioningState = $deployment.provisioningState
-		$stackName = $deployment.name
-
-
-		while ($provisioningState == "initializing" or $provisioningState == "failed"){
-			$provisioningState = $deployment.provisioningState
+		while ($deployment.provisioningState -ne "succeeded" -and $deployment.provisioningState -ne "failed"){
+			$deployment = Get-AzResourceGroupDeploymentStack -id $resourceid
 		}
 
-		$deployment = Get-AzResourceGroupDeploymentStack -stackname $stackName -ResourceGroupName $rgname
-		$snapshotName = $deployment.SnapshotId.split('/')[-1];
+		$deploymentSet = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -ParameterFile sampleTemplateParams.json -UpdateBehavior "detach" -force
+
+
+		while ($deploymentSet.provisioningState -ne "succeeded" -and $deploymentSet.provisioningState -ne "failed"){
+			$deploymentSet = Get-AzResourceGroupDeploymentStack -id $resourceid
+		}
+
+		$stackName = $deployment.name
+
+		$snapshotId = $deployment.SnapshotId;
+		$snapshotName = $snapshotId.split('/')[-1]
 
 		# Test - removeByNameAndSnapshotNameAndResourceGroupName
-		$removeByNameAndSnapshotNameAndResourceGroupName = Remove_AzResourceGroupDeploymentStackSnapshot -name $stackName -snapshotname $snapshotName -ResourceGroupName $rgname
+		$removeByNameAndSnapshotNameAndResourceGroupName = Remove-AzResourceGroupDeploymentStackSnapshot -name $stackName -snapshotname $snapshotName -ResourceGroupName $rgname -force
 
 		# Assert
 		Assert-NotNull $removeByNameAndSnapshotNameAndResourceGroupName
@@ -504,7 +510,6 @@ function Test-RemoveResourceGroupDeploymentStackSnapshot
         Clean-ResourceGroup $rgname
 	}
 }
-
 
 <#
 .SYNOPSIS
@@ -520,122 +525,151 @@ function Test-RemoveSubscriptionDeploymentStack
 	try
 	{
 		# Prepare 
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
-		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -ParameterFile subscription_level_parameters.json -location $rglocation
+		$resourceid = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
+
+		while ($deployment.provisioningState -ne "succeeded" -and $deployment.provisioningState -ne "failed"){
+			$deployment = Get-AzDeploymentStack -id $resourceid
+		}
 
 		# Test - RemoveByName
-		$removeByName = Remove-AzSubscriptionDeploymentStack -Name $rname 
+		$removeByName = Remove-AzSubscriptionDeploymentStack -Name $rname -force
 
 		# Assert
 		Assert-NotNull $removeByName 
 
 		# Prepare
-		New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -ParameterFile subscription_level_parameters.json -location $rglocation -force
+
+		while ($deployment.provisioningState -ne "succeeded" -and $deployment.provisioningState -ne "failed"){
+			$deployment = Get-AzDeploymentStack -id $resourceid
+		}
+
 
 		# Test - RemoveByResourceId
-		$removeByResourceId = Remove-AzSubscriptionDeploymentStack -ResourceId $resourceId
+		$removeByResourceId = Remove-AzSubscriptionDeploymentStack -ResourceId $resourceid -force
 
 		#Assert
 		Assert-NotNull $removeByResourceId
-
-		finally
-		{
-		}
-
 	}
+
+	finally
+	{
+		Clean-DeploymentAtSubscription $rname
+	}
+
 }
 
 <#
 .SYNOPSIS
-Tests REMOVE operation on deploymentStacksSnapshot at the subscription scope
+Tests REMOVE operation on deploymentStacksSnapshot
 #>
-#This will not work because we need multiple snapshots in subscription, how would we go about testing this
 function Test-RemoveSubscriptionDeploymentStackSnapshot
 {
 	# Setup
-	$rgname = Get-ResourceGroupName
 	$rname = Get-ResourceName
 	$rglocation = "West US 2"
+	$subId = (Get-AzContext).Subscription.SubscriptionId
+
+	$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
 
 	try
 	{
 		# Prepare 
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
-		#?
-		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -ParameterFile subscription_level_parameters.json -location $rglocation
 
-		$provisioningState = $deployment.provisioningState
-		$stackName = $deployment.name
-
-
-		while ($provisioningState == "initializing" or $provisioningState == "failed"){
-			$provisioningState = $deployment.provisioningState
+		while ($deployment.provisioningState -ne "succeeded" -and $deployment.provisioningState -ne "failed"){
+			$deployment = Get-AzDeploymentStack -ResourceId $resourceId
 		}
 
-		$deployment =  Get-AzDeploymentStack -name $stackName
-		$snapshotId = $deployment.SnapshotId
+		Assert-AreEqual $deployment.provisioningState "succeeded"
+
+		$deploymentSet = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -ParameterFile subscription_level_parameters.json -UpdateBehavior "detach" -force -location $rglocation
+
+		while ($deploymentSet.provisioningState -ne "succeeded" -and $deploymentSet.provisioningState -ne "failed"){
+			$deploymentSet = Get-AzDeploymentStack -ResourceId $resourceId
+		}
+
+		Assert-AreEqual $deploymentSet.provisioningState "succeeded"
+
+		$snapshotId = $deployment.SnapshotId;
 
 		# Test - removeByResourceId
-		$removeByResourceId = remove-azsubscriptiondeploymentstacksnapshot -resourceid $snapshotId
+		$removeByResourceId = Remove-AzSubscriptionDeploymentStackSnapshot -resourceId $snapshotId -force
 
 		# Assert
-		Assert-NotNull $removeByResourcId 
+		Assert-NotNull $RemoveByResourceId
 
-		# Prepare 
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
-		#?
-		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
+		# Cleanup
+        Clean-DeploymentAtSubscription $rname
 
-		$provisioningState = $deployment.provisioningState
-		$stackName = $deployment.name
+		# Prepare
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -ParameterFile subscription_level_parameters.json -force -location $rglocation
 
-
-		while ($provisioningState == "initializing" or $provisioningState == "failed"){
-			$provisioningState = $deployment.provisioningState
+		while ($deployment.provisioningState -ne "succeeded" -and $deployment.provisioningState -ne "failed"){
+			$deployment = Get-AzDeploymentStack -ResourceId $resourceId
 		}
 
-		$deployment =  Get-AzDeploymentStack -name $stackName
-		$snapshotName = ($deployment.SnapshotId).split('/')[-1]
+		Assert-AreEqual $deployment.provisioningState "succeeded"
+
+		$deploymentSet = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -ParameterFile subscription_level_parameters.json -UpdateBehavior "detach" -force -location $rglocation
 
 
-		# Test - removeByNameandSnapshotName
-		$removeByNameandSnapshotName = 	remove-azsubscriptiondeploymentstack -name $stackName -snapshotname $snapshotName
+		while ($deploymentSet.provisioningState -ne "succeeded" -and $deploymentSet.provisioningState -ne "failed"){
+			$deploymentSet = Get-AzDeploymentStack -ResourceId $resourceId
+		}
+
+		Assert-AreEqual $deploymentSet.provisioningState "succeeded"
+
+		$stackName = $deployment.Name
+
+		$snapshotId = $deployment.SnapshotId;
+		$snapshotName = $snapshotId.split('/')[-1]
+
+		# Test - removeByNameAndSnapshotName
+		$removeByNameAndSnapshotName = Remove-AzSubscriptionDeploymentStackSnapshot -name $stackName -snapshotname $snapshotName -force
 
 		# Assert
-		Assert-NotNull $removeByNameandSnapshotName 
+		Assert-NotNull $removeByNameAndSnapshotName
 
+		
 	}
 
 	finally
-    {
-       
-    }
+	{
+		# Cleanup
+        Clean-DeploymentAtSubscription $rname
+	}
 }
 
 <#
 .SYNOPSIS
 Tests Set operation on deploymentStacks at the RG scope
 #>
-
-#NEED TO CONFIRM: that the only cases for this test should be: name, rgname, templateFile or name, rgname, templateFile, paramterFile
 function Test-SetResourceGroupDeploymentStack
 {
 	# Setup
 	$rgname = Get-ResourceGroupName
 	$rname = Get-ResourceName
 	$rglocation = "West US 2"
+	$subId = (Get-AzContext).Subscription.SubscriptionId
+
 
 	try {
 		# Prepare
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 
-		New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json
+		$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname"
 
 		#Test - SetByNameAndResourceGroupAndTemplateFile
-		$SetByNameAndResourceGroupAndTemplateFile = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -UpdateBehavior "detach" -force
+
+		while ($deployment.provisioningState -ne "succeeded" -and $deployment.provisioningState -ne "failed"){
+			$deployment = Get-AzResourceGroupDeploymentStack -ResourceId $resourceId
+		}
 
 		#Assert
-		Assert-NotNull $SetByNameAndResourceGroupAndTemplateFile
+		Assert-NotNull $deployment
 
 		#Clean up
 		Clean-ResourceGroup $rgname
@@ -643,13 +677,15 @@ function Test-SetResourceGroupDeploymentStack
 		# Prepare
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 
-		New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json
-
 		#Test - SetByNameAndResourceGroupAndTemplateFileAndParameterFile
-		$SetByNameAndResourceGroupAndTemplateFile = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -ParameterFile sampleTemplateParams.json -UpdateBehavior "detach" -force
+
+		while ($deployment.provisioningState -ne "succeeded" -and $deployment.provisioningState -ne "failed"){
+			$deployment = Get-AzResourceGroupDeploymentStack -ResourceId $resourceId
+		}
 
 		#Assert
-		Assert-NotNull $SetByNameAndResourceGroupAndTemplateFileAndParameterFile
+		Assert-NotNull $deployment
 	}
 
 	finally
@@ -659,41 +695,46 @@ function Test-SetResourceGroupDeploymentStack
     }
 }
 
-
 <#
 .SYNOPSIS
-Tests SET operation on deploymentStacks at the Subscription scope
+Tests Set operation on deploymentStacks at the Subscription scope
 #>
-
-#NEED TO CONFIRM: that the only cases for this test should be: name, location, templateFile or name, location, templateFile, paramterFile
 function Test-SetSubscriptionDeploymentStack
 {
 	# Setup
 	$rname = Get-ResourceName
 	$location = "West US 2"
+	$subId = (Get-AzContext).Subscription.SubscriptionId
+
 
 	try {
-		#Prepare
-		New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile simpleTemplate.json
+		# Prepare
+		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
 
-		#Test - SetByNameAndResourceGroupAndTemplateFile
-		$SetByNameAndTemplateFile = Set-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile simpleTemplate.json
+		#Test - SetByNameAndTemplateFile
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -UpdateBehavior "detach" -force -location $location
 
-		#Assert
-		Assert-NotNull $SetByNameAndTemplateFile
-
-		# Cleanup
-        Clean-DeploymentAtSubscription $rname
-
-		#Prepare
-		New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile simpleTemplate.json
-
-		#Test - SetByNameAndResourceGroupAndTemplateFileAndParameterFile
-		$SetByNameAndTemplateFileAndParameterFile = Set-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile simpleTemplate.json -ParameterFile simpleTemplateParams.json
+		while ($deployment.provisioningState -ne "succeeded" -and $deployment.provisioningState -ne "failed"){
+			$deployment = Get-AzDeploymentStack -ResourceId $resourceId
+		}
 
 		#Assert
-		Assert-NotNull $SetByNameAndTemplateFileAndParameterFile
+		Assert-NotNull $deployment
 
+		#Clean up
+		Clean-DeploymentAtSubscription $rname
+
+		# Prepare
+
+		#Test - SetByNameAndTemplateFileAndParameterFile
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -ParameterFile subscription_level_parameters.json -UpdateBehavior "detach" -force -location $location
+
+		while ($deployment.provisioningState -ne "succeeded" -and $deployment.provisioningState -ne "failed"){
+			$deployment = Get-AzDeploymentStack -ResourceId $resourceId
+		}
+
+		#Assert
+		Assert-NotNull $deployment
 	}
 
 	finally
