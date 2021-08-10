@@ -45,6 +45,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         internal const string ParameterUriTemplateUriParameterSetName = "ByTemplateUriWithParameterUri";
         internal const string ParameterUriTemplateSpecParameterSetName = "ByTemplateSpecWithParameterUri";
 
+        [Alias("StackName")]
         [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true,
             HelpMessage = "The name of the deploymentStack to create")]
         [ValidateNotNullOrEmpty]

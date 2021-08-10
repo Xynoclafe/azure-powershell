@@ -39,9 +39,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         [ValidateNotNullOrEmpty]
         public string ResourceGroupName { get; set; }
 
+        [Alias("StackName")]
         [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackName)]
         [ValidateNotNullOrEmpty]
-        public string StackName { get; set; }
+        public string Name { get; set; }
 
         public override void ExecuteCmdlet()
         {

@@ -40,11 +40,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         [ValidateNotNullOrEmpty]
         public string ResourceGroupName { get; set; }
 
-
+        [Alias("StackName")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackName)]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ListByResourceGroupNameParameterSetName)]
         [ValidateNotNullOrEmpty]
-        public string StackName { get; set; }
+        public string Name { get; set; }
 
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackName)]
         [ValidateNotNullOrEmpty]
