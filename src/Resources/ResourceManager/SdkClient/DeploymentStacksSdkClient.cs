@@ -16,6 +16,8 @@ using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Utilities;
 using Microsoft.WindowsAzure.Commands.Utilities.Common;
 using System.Management.Automation;
 using System.Linq;
+using Microsoft.Rest.Azure;
+using System.Threading.Tasks;
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 {
@@ -24,6 +26,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
         public IDeploymentStacksClient DeploymentStacksClient { get; set; }
 
         private IAzureContext azureContext;
+
+        public Action<string> VerboseLogger { get; set; }
 
         public DeploymentStacksSdkClient(IDeploymentStacksClient deploymentStacksClient)
         {
@@ -350,7 +354,14 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
 
             var deploymentStack = DeploymentStacksClient.DeploymentStacks.BeginCreateOrUpdateAtResourceGroup(resourceGroupName, deploymentStackName, deploymentStackModel);
-            return new PSDeploymentStack(deploymentStack);
+            var getStackFunc = this.GetStackAction(deploymentStackName, "resourceGroup", resourceGroupName);
+
+            var finalStack = this.waitStackCompletion(
+                getStackFunc,
+                "succeeded",
+                "failed"
+                );
+            return new PSDeploymentStack(finalStack);
         }
 
         internal void DeleteResourceGroupDeploymentStackSnapshot(string resourceGroupName, string name, string snapshotName)
@@ -474,7 +485,70 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             }
 
             var deploymentStack = DeploymentStacksClient.DeploymentStacks.BeginCreateOrUpdateAtSubscription(deploymentStackName, deploymentStackModel);
-            return new PSDeploymentStack(deploymentStack);
+            var getStackFunc = this.GetStackAction(deploymentStackName, "subscription");
+
+            var finalStack = this.waitStackCompletion(
+                getStackFunc,
+                "succeeded",
+                "failed"
+                );
+
+            return new PSDeploymentStack(finalStack);
+        }
+
+        private DeploymentStack waitStackCompletion(Func<Task<AzureOperationResponse<DeploymentStack>>> getStack, params string[] status)
+        {
+            //Poll stack deployment based on RetryAfter. If no RetyrAfter is present, polling status in two phases.
+            //Phase one: poll every 5 seconds for 400 seconds. If not completed in this duration, move to phase two
+            //Phase two: poll every 60 seconds
+            DeploymentStack stack;
+
+            const int counterUnit = 1000;
+            int step = 5;
+            int phaseOne = 400;
+            do
+            {
+                WriteVerbose(string.Format("Checking stack deployment status", step));
+                TestMockSupport.Delay(step * counterUnit);
+
+                if (phaseOne > 0)
+                    phaseOne -= step;
+
+                var getStackTask = getStack();
+
+                using (var getResult = getStackTask.ConfigureAwait(false).GetAwaiter().GetResult())
+                {
+                    stack = getResult.Body;
+                    var response = getResult.Response;
+
+                    if (response != null && response.Headers.RetryAfter != null && response.Headers.RetryAfter.Delta.HasValue)
+                    {
+                        step = response.Headers.RetryAfter.Delta.Value.Seconds;
+                    }
+                    else
+                    {
+                        step = phaseOne > 0 ? 5 : 60;
+                    }
+                }
+
+            } while (!status.Any(s => s.Equals(stack.ProvisioningState, StringComparison.OrdinalIgnoreCase)));
+
+            return stack;
+        }
+
+        Func<Task<AzureOperationResponse<DeploymentStack>>> GetStackAction(string stackName, string scope, string rgName = null)
+        {
+            switch(scope)
+            {
+                case "subscription":
+                    return () => DeploymentStacksClient.DeploymentStacks.GetAtSubscriptionWithHttpMessagesAsync(stackName);
+
+                case "resourceGroup":
+                    return () => DeploymentStacksClient.DeploymentStacks.GetAtResourceGroupWithHttpMessagesAsync(rgName, stackName);
+
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         public PSDeploymentStack UpdateResourceGroupDeploymentStack(
@@ -528,6 +602,14 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
             var deploymentStack = DeploymentStacksClient.DeploymentStacks.BeginCreateOrUpdateAtResourceGroup(resourceGroupName, deploymentStackName, deploymentStackModel);
             return new PSDeploymentStack(deploymentStack);
+        }
+
+        private void WriteVerbose(string progress)
+        {
+            if (VerboseLogger != null)
+            {
+                VerboseLogger(progress);
+            }
         }
     }
 }

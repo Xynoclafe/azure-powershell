@@ -99,6 +99,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             HelpMessage = "Location of the stack")]
         public string Location { get; set; }
 
+        [Parameter(Mandatory = false, ValueFromPipeline = true,
+            HelpMessage = "Update behavior for the stack. Value can be \"Detach\" or \"Purge\".")]
+        public String UpdateBehavior { get; set; }
+
         [Parameter(Mandatory = false,
         HelpMessage = "Do not ask for confirmation when overwriting an existing stack.")]
         public SwitchParameter Force { get; set; }
@@ -150,7 +154,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                     ParameterUri,
                     parameters,
                     Description,
-                    "Detach"
+                    UpdateBehavior == null ? "detach" : UpdateBehavior
                     );
                     WriteObject(deploymentStack);
                 };
