@@ -107,6 +107,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         HelpMessage = "Do not ask for confirmation when overwriting an existing stack.")]
         public SwitchParameter Force { get; set; }
 
+        [Parameter(Mandatory = false,
+            HelpMessage = "The scope at which the initial deployment should be created. If a scope isn't specified, it will default to the scope of the deployment stack.")]
+        public String DeploymentScope { get; set; }
+
         #endregion
 
         #region Cmdlet Overrides
@@ -154,7 +158,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         ParameterUri,
                         parameters,
                         Description,
-                        UpdateBehavior
+                        UpdateBehavior,
+                        DeploymentScope
                         );
 
                     WriteObject(deploymentStack);
