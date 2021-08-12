@@ -106,6 +106,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         public String UpdateBehavior { get; set; }
 
         [Parameter(Mandatory = false,
+            HelpMessage = "The scope at which the initial deployment should be created. If a scope isn't specified, it will default to the scope of the deployment stack.")]
+        public string DeploymentScope { get; set; }
+
+        [Parameter(Mandatory = false,
         HelpMessage = "Do not ask for confirmation when overwriting an existing stack.")]
         public SwitchParameter Force { get; set; }
 
@@ -159,7 +163,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                     ParameterUri,
                     parameters,
                     Description,
-                    UpdateBehavior
+                    UpdateBehavior,
+                    DeploymentScope
                     );
                     WriteObject(deploymentStack);
                 };

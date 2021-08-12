@@ -308,13 +308,15 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             string parameterUri,
             Hashtable parameters,
             string description,
-            string updateBehavior
+            string updateBehavior,
+            string deploymentScope
             )
         {
             var deploymentStackModel = new DeploymentStack
             {
                 Description = description,
-                UpdateBehavior = updateBehavior
+                UpdateBehavior = updateBehavior,
+                DeploymentScope = deploymentScope
             };
 
             DeploymentStacksTemplateLink templateLink = new DeploymentStacksTemplateLink();
@@ -442,14 +444,16 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             string parameterUri,
             Hashtable parameters,
             string description,
-            string updateBehavior
-            )
+            string updateBehavior,
+            string deploymentScope
+        )
         {
             var deploymentStackModel = new DeploymentStack
             {
                 Description = description,
                 Location = location,
-                UpdateBehavior = updateBehavior
+                UpdateBehavior = updateBehavior,
+                DeploymentScope = deploymentScope
             };
 
             DeploymentStacksTemplateLink templateLink = new DeploymentStacksTemplateLink();
