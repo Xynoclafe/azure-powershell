@@ -358,8 +358,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
             var finalStack = this.waitStackCompletion(
                 getStackFunc,
-                "succeeded",
-                "failed"
+                "Succeeded",
+                "SucceededWithFailures",
+                "Failed",
+                "Canceled"
                 );
             return new PSDeploymentStack(finalStack);
         }
@@ -489,8 +491,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
             var finalStack = this.waitStackCompletion(
                 getStackFunc,
-                "succeeded",
-                "failed"
+                "Succeeded",
+                "SucceededWithFailures",
+                "Failed",
+                "Canceled"
                 );
 
             return new PSDeploymentStack(finalStack);

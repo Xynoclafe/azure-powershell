@@ -109,6 +109,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         HelpMessage = "Do not ask for confirmation when overwriting an existing stack.")]
         public SwitchParameter Force { get; set; }
 
+        [Parameter(Mandatory = false, HelpMessage = "Run cmdlet in the background")]
+        public SwitchParameter AsJob { get; set; }
+
         #endregion
 
         #region Cmdlet Overrides
