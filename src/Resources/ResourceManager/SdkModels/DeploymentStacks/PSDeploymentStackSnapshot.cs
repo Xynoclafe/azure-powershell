@@ -41,7 +41,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
 
         public IList<ManagedResourceReference> managedResources { get; set; }
 
-        public IList<ResourceReference> detatchedResources { get; set; }
+        public IList<ResourceReference> detachedResources { get; set; }
 
         public IList<ResourceReference> deletedResources { get; set; }
 
@@ -68,7 +68,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
             this.locks = deploymentStackSnapshot.Locks;
             this.error = deploymentStackSnapshot.Error;
             this.managedResources = deploymentStackSnapshot.ManagedResources;
-            this.detatchedResources = deploymentStackSnapshot.DetachedResources;
+            this.detachedResources = deploymentStackSnapshot.DetachedResources;
             this.deletedResources = deploymentStackSnapshot.DeletedResources;
             this.failedResources = deploymentStackSnapshot.FailedResources;
         }
