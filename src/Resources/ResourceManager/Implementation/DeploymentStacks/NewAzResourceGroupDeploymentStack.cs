@@ -174,7 +174,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         Name,
                         throwIfNotExists: false) != null)
                 {
-                    string confirmationMessage = ($"The stack '{Name}' in Resource Group '{ResourceGroupName}' you're trying to create already exists. Do you want to overwrite it?");
+                    string confirmationMessage = ($"The DeploymentStack '{Name}' in Resource Group '{ResourceGroupName}' you're trying to create already exists. Do you want to overwrite it?");
 
                     ConfirmAction(
                         Force.IsPresent,

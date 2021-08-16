@@ -175,7 +175,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         throwIfNotExists: false) == null)
                 {
                     string confirmationMessage =
-                        $"The stack '{Name}' you're trying to modify does not exist in '{ResourceGroupName}'. Do you want to create a new stack?";
+                        $"The DeploymentStack '{Name}' you're trying to modify does not exist in '{ResourceGroupName}'. Do you want to create a new stack?";
 
                     ConfirmAction(
                         Force.IsPresent,
