@@ -385,17 +385,17 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             return;
         }
 
-        internal void DeleteSubscriptionDeploymentStackSnapshot(string name, string snapshotName)
+        internal void DeleteSubscriptionDeploymentStackSnapshot(string stackname, string snapshotName)
         {
             var deleteResponse = DeploymentStacksClient.DeploymentStackSnapshots
-                .DeleteAtSubscriptionWithHttpMessagesAsync(name, snapshotName)
+                .DeleteAtSubscriptionWithHttpMessagesAsync(stackname, snapshotName)
                 .GetAwaiter()
                 .GetResult();
 
             if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
                 throw new PSArgumentException(
-                        $"DeploymentStack snapshot '{snapshotName}' of the DeploymentStack '{name}' not found."
+                        $"DeploymentStack snapshot '{snapshotName}' of the DeploymentStack '{stackname}' not found."
                     );
             }
 

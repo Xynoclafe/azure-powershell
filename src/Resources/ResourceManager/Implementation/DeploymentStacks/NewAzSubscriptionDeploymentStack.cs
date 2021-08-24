@@ -73,7 +73,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "ResourceId of the TemplateSpec to be used to create the stack")]
         [Parameter(Position = 1, ParameterSetName = ParameterlessTemplateSpecParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "ResourceId of the TemplateSpec to be used to create the stack")]
-        public string TemplateSpec { get; set; }
+        public string TemplateSpecId { get; set; }
 
         [Parameter(Position = 2, ParameterSetName = ParameterFileTemplateFileParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Parameter file to use for the template")]
@@ -157,7 +157,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                     Name,
                     Location,
                     TemplateUri,
-                    TemplateSpec,
+                    TemplateSpecId,
                     ParameterUri,
                     parameters,
                     Description,

@@ -32,18 +32,18 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         internal const string GetByResourceIdParameterSetName = "GetDeploymentStackByResourceId";
         internal const string ListParameterSetname = "ListDeploymentStacks";
 
-        [Alias("StackName")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByStackNameParameterSetname,
             HelpMessage = "The name of the deploymentStack to get")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ListParameterSetname,
             HelpMessage = "The name of the deploymentStack to get")]
         [ValidateNotNullOrEmpty]
-        public string Name { get; set; }
+        public string StackName { get; set; }
 
+        [Alias("SnapshotName")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByStackNameParameterSetname,
             HelpMessage = "The name of the deploymentStack to get")]
         [ValidateNotNullOrEmpty]
-        public string SnapshotName { get; set; }
+        public string Name { get; set; }
 
         [Alias("Id")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByResourceIdParameterSetName,
@@ -62,16 +62,16 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 switch (ParameterSetName)
                 {
                     case GetByStackNameParameterSetname:
-                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStackSnapshot(Name, SnapshotName));
+                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStackSnapshot(StackName, Name));
                         break;
                     case GetByResourceIdParameterSetName:
                         ResourceIdentifier resourceIdentifier = new ResourceIdentifier(ResourceId);
-                        Name = ResourceIdUtility.GetResourceName(ResourceId).Split('/')[0];
-                        SnapshotName = resourceIdentifier.ResourceName;
-                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStackSnapshot(Name, SnapshotName));
+                        StackName = ResourceIdUtility.GetResourceName(ResourceId).Split('/')[0];
+                        Name = resourceIdentifier.ResourceName;
+                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStackSnapshot(StackName, Name));
                         break;
                     case ListParameterSetname:
-                        WriteObject(DeploymentStacksSdkClient.ListSubscriptionDeploymentStackSnapshot(Name));
+                        WriteObject(DeploymentStacksSdkClient.ListSubscriptionDeploymentStackSnapshot(StackName));
                         break;
                     default:
                         throw new PSInvalidOperationException();

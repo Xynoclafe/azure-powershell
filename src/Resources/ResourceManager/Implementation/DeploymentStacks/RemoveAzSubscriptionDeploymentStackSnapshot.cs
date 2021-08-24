@@ -30,16 +30,16 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         internal const string RemoveByResourceIdParameterSetName = "RemoveByResourceId";
         internal const string RemoveByResourceNameParameterSetname = "RemoveByResourceName";
 
-        [Alias("StackName")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceNameParameterSetname,
             HelpMessage = "The name of the deploymentStack to delete")]
         [ValidateNotNullOrEmpty]
-        public string Name { get; set; }
+        public string StackName { get; set; }
 
+        [Alias("SnapshotName")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceNameParameterSetname,
             HelpMessage = "The name of the deploymentStack snapshot to delete")]
         [ValidateNotNullOrEmpty]
-        public string SnapshotName { get; set; }
+        public string Name { get; set; }
 
         [Alias("Id")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceIdParameterSetName,
@@ -62,22 +62,22 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                     ? new ResourceIdentifier(ResourceId)
                     : null;
 
-                Name = Name ?? ResourceIdUtility.GetResourceName(ResourceId);
+                StackName = StackName ?? ResourceIdUtility.GetResourceName(ResourceId);
 
-                if (ResourceId != null && SnapshotName == null)
+                if (ResourceId != null && Name == null)
                 {
-                    Name = Name.Split('/')[0];
-                    SnapshotName = resourceIdentifier.ResourceName;
+                    StackName = StackName.Split('/')[0];
+                    Name = resourceIdentifier.ResourceName;
                 }
 
-                string confirmationMessage = $"Are you sure you want to remove snapshot '{SnapshotName}' of DeploymentStack '{Name}'";
+                string confirmationMessage = $"Are you sure you want to remove snapshot '{Name}' of DeploymentStack '{StackName}'";
 
                 ConfirmAction(
                     Force.IsPresent,
                     confirmationMessage,
                     "Deleting Deployment Stack Snapshot...",
-                    SnapshotName,
-                    () => DeploymentStacksSdkClient.DeleteSubscriptionDeploymentStackSnapshot(Name, SnapshotName)
+                    Name,
+                    () => DeploymentStacksSdkClient.DeleteSubscriptionDeploymentStackSnapshot(StackName, Name)
                 );
 
                 WriteObject(true);

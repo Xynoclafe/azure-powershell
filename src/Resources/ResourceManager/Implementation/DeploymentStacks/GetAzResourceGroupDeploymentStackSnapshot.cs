@@ -40,15 +40,15 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         [ValidateNotNullOrEmpty]
         public string ResourceGroupName { get; set; }
 
-        [Alias("StackName")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackName)]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ListByResourceGroupNameParameterSetName)]
         [ValidateNotNullOrEmpty]
-        public string Name { get; set; }
+        public string StackName { get; set; }
 
+        [Alias("SnapshotName")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackName)]
         [ValidateNotNullOrEmpty]
-        public string SnapshotName { get; set; }
+        public string Name { get; set; }
 
         #endregion
 
@@ -61,17 +61,15 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 {
                     case GetByResourceIdParameterSetName:
                         ResourceIdentifier resourceIdentifier = new ResourceIdentifier(ResourceId);
-                        Name = ResourceIdUtility.GetResourceName(ResourceId).Split('/')[0];
-                        WriteObject(ResourceIdUtility.GetResourceName(ResourceId));
-                        WriteObject(Name);
-                        SnapshotName = resourceIdentifier.ResourceName;
-                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStackSnapshot(ResourceIdUtility.GetResourceGroupName(ResourceId), Name, SnapshotName));
+                        StackName = ResourceIdUtility.GetResourceName(ResourceId).Split('/')[0];
+                        Name = resourceIdentifier.ResourceName;
+                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStackSnapshot(ResourceIdUtility.GetResourceGroupName(ResourceId), StackName, Name));
                         break;
                     case ListByResourceGroupNameParameterSetName:
-                        WriteObject(DeploymentStacksSdkClient.ListResourceGroupDeploymentStackSnapshot(ResourceGroupName, Name));
+                        WriteObject(DeploymentStacksSdkClient.ListResourceGroupDeploymentStackSnapshot(ResourceGroupName, StackName));
                         break;
                     case GetByDeploymentStackName:
-                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStackSnapshot(ResourceGroupName, Name, SnapshotName));
+                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStackSnapshot(ResourceGroupName, StackName, Name));
                         break;
                     default:
                         throw new PSInvalidOperationException();
