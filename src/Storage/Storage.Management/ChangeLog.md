@@ -18,13 +18,43 @@
         - Additional information about change #1
 -->
 ## Upcoming Release
+
+## Version 3.11.0
+* Supported get/set blob tags on a specific blob
+    -  `Get-AzStorageBlobTag`
+    -  `Set-AzStorageBlobTag`
+* Supported create destination blob with specific blob tags while upload/copy Blob
+    -  `Set-AzStorageBlobContent`
+    -  `Start-AzStorageBlobCopy`
+* Supported list blobs across containers with a blob tag filter sql expression
+    -  `Get-AzStorageBlobByTag`
+* Supported list blobs inside a container and include Blob Tags
+    -  `Get-AzStorageBlob`
+* Supported run blob operation with blob tag condition, and fail the cmdlet when blob tag condition not match
+    -  `Get-AzStorageBlob`
+    -  `Get-AzStorageBlobContent`
+    -  `Get-AzStorageBlobTag`
+    -  `Remove-AzStorageBlob`
+    -  `Set-AzStorageBlobContent`
+    -  `Set-AzStorageBlobTag`
+    -  `Start-AzStorageBlobCopy`
+    -  `Stop-AzStorageBlobCopy`
+* Generate blob sas token with new API version
+    -  `New-AzStorageBlobSASToken` 
+    -  `New-AzStorageContainerSASToken` 
+    -  `New-AzStorageAccountSASToken`
+* Fixed blob copy failure with OAuth credential when client and server has time difference [#15644]
+    -  `Copy-AzStorageBlob` 
+* Fixed remove Data Lake Gen2 item fail with readonly SAS token
+    -  `Remove-AzDataLakeGen2Item` 
+* Revised destination existing check in move Data Lake Gen2 item
+    -  `Move-AzDataLakeGen2Item` 
+
+## Version 3.10.0
 * Supported Blob Last Access Time
     -  `Enable-AzStorageBlobLastAccessTimeTracking`
     -  `Disable-AzStorageBlobLastAccessTimeTracking`
     -  `Add-AzStorageAccountManagementPolicyAction`
-* Supported Parquest as input text config in blob quick query
-    -  `New-AzStorageBlobQueryConfig`
-    -  `Get-AzStorageBlobQueryResult`
 * Made `Get-AzDataLakeGen2ChildItem` list all datalake gen2 items by default, instead of needing user to list chunk by chunk.
 * Fixed BlobProperties is empty issue when using sas without prefix '?' [#15460]
 * Fixed synchronously copy small blob failure [#15548]
