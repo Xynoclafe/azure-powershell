@@ -68,7 +68,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                     confirmationMessage,
                     "Deleting Deployment Stack ...",
                     Name,
-                    () => DeploymentStacksSdkClient.DeleteSubscriptionDeploymentStack(Name, deleteBehavior)
+                    () => DeploymentStacksSdkClientForDelete.DeleteSubscriptionDeploymentStack(Name, deleteBehavior)
                 );
 
                 WriteObject(true);
@@ -79,6 +79,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                     throw new PSArgumentException(dex.Message + " : " + dex.Body.Error.Code + " : " + dex.Body.Error.Message);
                 else
                     WriteExceptionError(ex);
+            }
+            finally
+            {
+                UnregisterDelegatingHandlerIfRegistered();
             }
         }
 

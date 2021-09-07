@@ -31,6 +31,17 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
         public DeploymentStacksSdkClient(IDeploymentStacksClient deploymentStacksClient)
         {
+            //Remove delegationHandler - Temporarily being used for purge delete calls
+            //TODO: remove once cascade delete is implemented
+
+            var customHandlers = AzureSession.Instance.ClientFactory.GetCustomHandlers();
+            var StacksDeletePollingHandler = customHandlers?.Where(handler => handler.GetType().Equals(typeof(StacksDeletePollingHandler))).FirstOrDefault();
+
+            if (StacksDeletePollingHandler != null)
+            {
+                AzureSession.Instance.ClientFactory.RemoveHandler(StacksDeletePollingHandler.GetType());
+            }
+
             this.DeploymentStacksClient = deploymentStacksClient;
         }
 
@@ -46,6 +57,16 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                 AzureSession.Instance.ClientFactory.CreateArmClient<DeploymentStacksClient>(context,
                     AzureEnvironment.Endpoint.ResourceManager))
         {
+            this.azureContext = context;
+        }
+
+        //TODO: remove once cascade delete is implemented
+        public DeploymentStacksSdkClient(IAzureContext context, StacksDeletePollingHandler handler)
+        {
+            AzureSession.Instance.ClientFactory.AddHandler(handler);
+            this.DeploymentStacksClient =
+                AzureSession.Instance.ClientFactory.CreateArmClient<DeploymentStacksClient>(context,
+                    AzureEnvironment.Endpoint.ResourceManager);
             this.azureContext = context;
         }
 
