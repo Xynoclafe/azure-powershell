@@ -45,6 +45,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         internal const string ParameterUriTemplateUriParameterSetName = "ByTemplateUriWithParameterUri";
         internal const string ParameterUriTemplateSpecParameterSetName = "ByTemplateSpecWithParameterUri";
 
+        [Flags]
+        public enum updateBehvaiorEnum { detachResources, purgeResources }
+
         [Alias("StackName")]
         [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true,
             HelpMessage = "The name of the deploymentStack to create")]
@@ -100,9 +103,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         public string Location { get; set; }
 
         [Parameter(Mandatory = false, ValueFromPipeline = true,
-            HelpMessage = "Update behavior for the stack. Value can be \"Detach\" or \"Purge\".")]
-        public string UpdateBehavior { get; set; }
-        
+            HelpMessage = "Update behavior for the stack. Value can be detachResources or failedResources.")]
+        public updateBehvaiorEnum UpdateBehavior { get; set; }
+
         [Parameter(Mandatory = false,
             HelpMessage = "The scope at which the initial deployment should be created. If a scope isn't specified, it will default to the scope of the deployment stack.")]
         public string DeploymentScope { get; set; }
@@ -161,7 +164,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                     ParameterUri,
                     parameters,
                     Description,
-                    UpdateBehavior == null ? "detach" : UpdateBehavior,
+                    (UpdateBehavior.ToString() == "detachResources") ? "detach" : "purge",
                     DeploymentScope
                     );
                     WriteObject(deploymentStack);
