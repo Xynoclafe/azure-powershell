@@ -66,7 +66,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
             this.debugSetting = deploymentStack.DebugSetting;
             this.provisioningState = deploymentStack.ProvisioningState;
             this.deploymentScope = deploymentStack.DeploymentScope;
-            this.description = deploymentStack.DeploymentScope;
+            this.description = deploymentStack.Description;
             this.managedResources = deploymentStack.ManagedResources;
             this.deploymentId = deploymentStack.DeploymentId;
             this.locks = deploymentStack.Locks;

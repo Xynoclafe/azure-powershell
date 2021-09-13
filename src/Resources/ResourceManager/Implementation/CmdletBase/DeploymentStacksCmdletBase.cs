@@ -90,10 +90,30 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             return parameters;
         }
 
-        /// <summary>
-        /// Unregisters delegating handler if registered.
-        /// </summary>
-        protected void UnregisterDelegatingHandlerIfRegistered()
+        protected Hashtable GetTemplateParameterObject(Hashtable templateParameterObject)
+        {
+            //create a new Hashtable so that user can re-use the templateParameterObject.
+            var parameterObject = new Hashtable();
+            foreach (var parameterKey in templateParameterObject.Keys)
+            {
+                // Let default behavior of a value parameter if not a KeyVault reference Hashtable
+                var hashtableParameter = templateParameterObject[parameterKey] as Hashtable;
+                if (hashtableParameter != null && hashtableParameter.ContainsKey("reference"))
+                {
+                    parameterObject[parameterKey] = templateParameterObject[parameterKey];
+                }
+                else
+                {
+                    parameterObject[parameterKey] = new Hashtable { { "value", templateParameterObject[parameterKey] } };
+                }
+            }
+            return parameterObject;
+        }
+
+            /// <summary>
+            /// Unregisters delegating handler if registered.
+            /// </summary>
+            protected void UnregisterDelegatingHandlerIfRegistered()
         {
             var apiExpandHandler = GetStacksHandler();
 
