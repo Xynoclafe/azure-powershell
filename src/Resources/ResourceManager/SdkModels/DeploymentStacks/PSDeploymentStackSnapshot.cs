@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Management.ResourceManager.Models;
+﻿using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkExtensions;
+using Microsoft.Azure.Management.ResourceManager.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -45,7 +46,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
 
         public IList<ResourceReference> deletedResources { get; set; }
 
-        public object failedResources { get; set; }
+        public IList<ResourceReferenceExtended> failedResources { get; set; }
 
         public PSDeploymentStackSnapshot() { }
 
@@ -71,6 +72,26 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
             this.detachedResources = deploymentStackSnapshot.DetachedResources;
             this.deletedResources = deploymentStackSnapshot.DeletedResources;
             this.failedResources = deploymentStackSnapshot.FailedResources;
+        }
+
+        public string managedResourcesString
+        {
+            get { return ResourcesExtensions.GetStackResourcesAsString(managedResources); }
+        }
+
+        public string detachedResourcesString
+        {
+            get { return ResourcesExtensions.GetStackResourcesAsString(detachedResources); }
+        }
+
+        public string deletedResourcesString
+        {
+            get { return ResourcesExtensions.GetStackResourcesAsString(deletedResources); }
+        }
+
+        public string failedResourcesString
+        {
+            get { return ResourcesExtensions.GetStackResourcesAsString(failedResources); }
         }
 
         internal static PSDeploymentStackSnapshot FromAzureSDKDeploymentStack(DeploymentStackSnapshot stackSnapshot)

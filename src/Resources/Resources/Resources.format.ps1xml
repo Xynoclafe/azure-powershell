@@ -544,7 +544,7 @@
 							  <ItemSelectionCondition>
 								  <ScriptBlock>$_.managedResources -ne $null</ScriptBlock>
 							  </ItemSelectionCondition>
-							  <ScriptBlock>$managedResourcesList=@(); foreach ($managedResource in $_.managedResources){$managedResourcesList+="'$($managedResource.Id)'"}; $managedResourcesList</ScriptBlock>
+							  <ScriptBlock>$_.managedResourcesString</ScriptBlock>
 						  </ListItem>
 						  <ListItem>
 							  <Label>DeploymentId</Label>
@@ -623,28 +623,28 @@
 							  <ItemSelectionCondition>
 								  <ScriptBlock>$_.managedResources -ne $null</ScriptBlock>
 							  </ItemSelectionCondition>
-							  <ScriptBlock>$managedResourcesList=@(); foreach ($managedResource in $_.managedResources){$managedResourcesList+="'$($managedResource.Id)'"}; $managedResourcesList</ScriptBlock>
+							  <ScriptBlock>$_.managedResourcesString</ScriptBlock>
 						  </ListItem>
 						  <ListItem>
 							  <Label>DetachedResources</Label>
 							  <ItemSelectionCondition>
 								  <ScriptBlock>$_.detachedResources -ne $null</ScriptBlock>
 							  </ItemSelectionCondition>
-							  <ScriptBlock>$detachedResourcesList=@(); foreach ($detachedResource in $_.detachedResources){$detachedResourcesList+="'$($detachedResource.Id)'"}; $detachedResourcesList</ScriptBlock>
+							  <ScriptBlock>$_.detachedResourcesString</ScriptBlock>
 						  </ListItem>
 						  <ListItem>
 							  <Label>DeletedResources</Label>
 							  <ItemSelectionCondition>
 								  <ScriptBlock>$_.deletedResources -ne $null</ScriptBlock>
 							  </ItemSelectionCondition>
-							  <ScriptBlock>$deletedResourcesList=@(); foreach ($deletedResource in $_.deletedResources){$deletedResourcesList+="'$($deletedResource.Id)'"}; $deletedResourcesList</ScriptBlock>
+							  <ScriptBlock>$_.deletedResourcesString</ScriptBlock>
 						  </ListItem>
 						  <ListItem>
 							  <Label>FailedResources</Label>
 							  <ItemSelectionCondition>
 								  <ScriptBlock>$_.failedResources -ne $null</ScriptBlock>
 							  </ItemSelectionCondition>
-							  <ScriptBlock>$failedResourcesList=@(); foreach ($failedResource in $_.failedResources){$failedResourcesList+="'$($failedResource.Id)'"}; $failedResourcesList</ScriptBlock>
+							  <ScriptBlock>$_.failedResourcesString</ScriptBlock>
 						  </ListItem>
 						  <ListItem>
 							  <Label>DeploymentId</Label>

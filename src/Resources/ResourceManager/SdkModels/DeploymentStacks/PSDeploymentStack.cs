@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Management.ResourceManager.Models;
+﻿using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkExtensions;
+using Microsoft.Azure.Management.ResourceManager.Models;
 using Microsoft.Rest;
 using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
@@ -72,6 +73,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
             this.locks = deploymentStack.Locks;
             this.error = deploymentStack.Error;
             this.snapshotId = deploymentStack.SnapshotId;
+        }
+
+        public string managedResourcesString
+        {
+            get { return ResourcesExtensions.GetStackResourcesAsString(managedResources); }
         }
 
         internal static PSDeploymentStack FromAzureSDKDeploymentStack(DeploymentStack stack)
