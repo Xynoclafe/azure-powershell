@@ -158,7 +158,7 @@ CmdletsToExport = 'Get-AzProviderOperation', 'Remove-AzRoleAssignment',
                'New-AzSubscriptionDeploymentStack', 'Remove-AzResourceGroupDeploymentStack',
                'Remove-AzResourceGroupDeploymentStackSnapshot', 'Remove-AzSubscriptionDeploymentStack',
                'Remove-AzSubscriptionDeploymentStackSnapshot', 'Set-AzResourceGroupDeploymentStack',
-               'Set-AzSubscriptionDeploymentStack', 'Get-AzDeploymentStack', 'Get-AzDeploymentStackSnapshot'
+               'Set-AzSubscriptionDeploymentStack', 'Get-AzSubscriptionDeploymentStack', 'Get-AzSubscriptionDeploymentStackSnapshot'
 
 # Variables to export from this module
 # VariablesToExport = @()
@@ -174,9 +174,7 @@ AliasesToExport = 'Get-AzResourceProviderAction',
                'Stop-AzSubscriptionDeployment', 
                'Save-AzSubscriptionDeploymentTemplate', 
                'Get-AzSubscriptionDeploymentOperation', 
-               'Get-AzSubscriptionDeploymentWhatIfResult',
-               'Get-AzSubscriptionDeploymentStack',
-               'Get-AzSubscriptionDeploymentStackSnapshot'
+               'Get-AzSubscriptionDeploymentWhatIfResult'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()

@@ -209,7 +209,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         throwIfNotExists: false) == null)
                 {
                     string confirmationMessage =
-                        $"The DeploymentStack '{Name}' you're trying to modify does not exist in the current subscription. Do you want to create a new stack?";
+                        $"The DeploymentStack '{Name}' you're trying to modify does not exist in the current subscription scope. Do you want to create a new stack?";
 
                     ConfirmAction(
                         Force.IsPresent,

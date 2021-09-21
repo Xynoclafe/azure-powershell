@@ -47,7 +47,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
         [Parameter(Mandatory = false,
         HelpMessage = "Delete all resources along with the stack.")]
-        public SwitchParameter Purge { get; set; }
+        public SwitchParameter PurgeResources { get; set; }
 
         #endregion
 
@@ -61,7 +61,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
                 string confirmationMessage = $"Are you sure you want to remove DeploymentStack '{Name}'";
 
-                string deleteBehavior = Purge.IsPresent ? "all" : null;
+                string deleteBehavior = PurgeResources.IsPresent ? "all" : null;
 
                 ConfirmAction(
                     Force.IsPresent,

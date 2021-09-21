@@ -21,10 +21,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Management.Automation;
     using System.Text;
 
-    [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "DeploymentStackSnapshot",
-        DefaultParameterSetName = GetAzDeploymentStackSnapshot.ListParameterSetname), OutputType(typeof(PSDeploymentStackSnapshot))]
-    [Alias("Get-AzSubscriptionDeploymentStackSnapshot")]
-    public class GetAzDeploymentStackSnapshot : DeploymentStacksCmdletBase
+    [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "SubscriptionDeploymentStack",
+        DefaultParameterSetName = GetAzSubscriptionDeploymentStack.ListParameterSetname), OutputType(typeof(PSDeploymentStack))]
+    public class GetAzSubscriptionDeploymentStack : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
 
@@ -32,14 +31,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         internal const string GetByResourceIdParameterSetName = "GetDeploymentStackByResourceId";
         internal const string ListParameterSetname = "ListDeploymentStacks";
 
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByStackNameParameterSetname,
-            HelpMessage = "The name of the deploymentStack to get")]
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ListParameterSetname,
-            HelpMessage = "The name of the deploymentStack to get")]
-        [ValidateNotNullOrEmpty]
-        public string StackName { get; set; }
-
-        [Alias("SnapshotName")]
+        [Alias("StackName")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByStackNameParameterSetname,
             HelpMessage = "The name of the deploymentStack to get")]
         [ValidateNotNullOrEmpty]
@@ -62,16 +54,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 switch (ParameterSetName)
                 {
                     case GetByStackNameParameterSetname:
-                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStackSnapshot(StackName, Name));
+                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(Name));
                         break;
                     case GetByResourceIdParameterSetName:
-                        ResourceIdentifier resourceIdentifier = new ResourceIdentifier(ResourceId);
-                        StackName = ResourceIdUtility.GetResourceName(ResourceId).Split('/')[0];
-                        Name = resourceIdentifier.ResourceName;
-                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStackSnapshot(StackName, Name));
+                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(ResourceIdUtility.GetResourceName(ResourceId)));
                         break;
                     case ListParameterSetname:
-                        WriteObject(DeploymentStacksSdkClient.ListSubscriptionDeploymentStackSnapshot(StackName));
+                        WriteObject(DeploymentStacksSdkClient.ListSubscriptionDeploymentStack());
                         break;
                     default:
                         throw new PSInvalidOperationException();
@@ -84,6 +73,5 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         }
 
         #endregion
-
     }
 }

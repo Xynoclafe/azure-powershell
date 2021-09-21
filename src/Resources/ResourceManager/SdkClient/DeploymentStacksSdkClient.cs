@@ -214,7 +214,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                             return null;
                         else
                             throw new PSArgumentException(
-                            $"DeploymentStack '{stackName}' not found in current subscription."
+                            $"DeploymentStack '{stackName}' not found in current subscription scope."
                         );
                     }
                     else
@@ -308,7 +308,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                             return null;
                         else
                             throw new PSArgumentException(
-                            $"DeploymentStackSnapshot '{snapshotName}' of DeploymentStack '{stackName}' not found in current subscription."
+                            $"DeploymentStackSnapshot '{snapshotName}' of DeploymentStack '{stackName}' not found in current subscription scope."
                         );
                     }
                     else
@@ -414,7 +414,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
                 throw new PSArgumentException(
-                        $"DeploymentStack snapshot '{snapshotName}' of the DeploymentStack '{stackname}' not found."
+                        $"DeploymentStack snapshot '{snapshotName}' of the DeploymentStack '{stackname}' not found in the current subscription scope."
                     );
             }
 
@@ -448,7 +448,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
                 throw new PSArgumentException(
-                        $"DeploymentStack '{name}' not found."
+                        $"DeploymentStack '{name}' not found in the curent subscription scope."
                     );
             }
 
