@@ -197,7 +197,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         TemplateParameterUri,
                         parameters,
                         Description,
-                        (UpdateBehavior.ToString() == "detachResources") ? "detach" : "purge",
+                        (UpdateBehavior.ToString() == "detachResources") ? "detachResources" : "purgeResources",
                         DeploymentScope
                         );
 

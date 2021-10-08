@@ -100,7 +100,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Parameter file to use for the template")]
         [Parameter(Position = 3, ParameterSetName = ParameterFileTemplateSpecParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Parameter file to use for the template")]
-        public string ParameterFile { get; set; }
+        public string TemplateParameterFile { get; set; }
 
         [Parameter(Position = 3, ParameterSetName = ParameterUriTemplateFileParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Parameter file to use for the template")]
@@ -108,7 +108,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Parameter file to use for the template")]
         [Parameter(Position = 3, ParameterSetName = ParameterUriTemplateSpecParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Parameter file to use for the template")]
-        public string ParameterUri { get; set; }
+        public string TemplateParameterUri { get; set; }
 
         [Parameter(ParameterSetName = ParameterObjectTemplateFileParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "A hash table which represents the parameters.")]
@@ -156,7 +156,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         break;
                     case ParameterFileTemplateSpecParameterSetName:
                     case ParameterFileTemplateUriParameterSetName:
-                        parameters = this.GetParameterObject(ParameterFile);
+                        parameters = this.GetParameterObject(TemplateParameterFile);
                         break;
                     case ParameterFileTemplateFileParameterSetName:
                         string templatePath = this.TryResolvePath(TemplateFile);
@@ -165,7 +165,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                             throw new PSInvalidOperationException(
                                 string.Format(ProjectResources.InvalidFilePath, TemplateFile));
                         }
-                        parameters = this.GetParameterObject(ParameterFile);
+                        parameters = this.GetParameterObject(TemplateParameterFile);
                         TemplateUri = templatePath;
                         break;
                     case ParameterObjectTemplateFileParameterSetName:
@@ -191,10 +191,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                     ResourceGroupName,
                     TemplateUri,
                     TemplateSpecId,
-                    ParameterUri,
+                    TemplateParameterUri,
                     parameters,
                     Description,
-                    (UpdateBehavior.ToString() == "detachResources") ? "detach" : "purge"
+                    (UpdateBehavior.ToString() == "detachResources") ? "detachResources" : "purgeResources"
                     );
                     WriteObject(deploymentStack);
                 };

@@ -18,6 +18,7 @@ using System.Management.Automation;
 using System.Linq;
 using Microsoft.Rest.Azure;
 using System.Threading.Tasks;
+using ProjectResources = Microsoft.Azure.Commands.ResourceManager.Cmdlets.Properties.Resources;
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 {

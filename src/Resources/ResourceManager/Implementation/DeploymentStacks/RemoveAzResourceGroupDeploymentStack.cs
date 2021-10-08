@@ -22,7 +22,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Text;
 
     [Cmdlet("Remove", Common.AzureRMConstants.AzureRMPrefix + "ResourceGroupDeploymentStack",
-        SupportsShouldProcess = true, DefaultParameterSetName = RemoveAzResourceGroupDeploymentStack.RemoveByResourceIdParameterSetName), OutputType(typeof(bool))]
+        SupportsShouldProcess = true, DefaultParameterSetName = RemoveAzResourceGroupDeploymentStack.RemoveByResourceNameParameterSetname), OutputType(typeof(bool))]
     public class RemoveAzResourceGroupDeploymentStack : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
