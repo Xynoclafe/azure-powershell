@@ -1,5 +1,4 @@
-﻿using Microsoft.Azure.Commands.Common.Authentication;
-using Microsoft.Azure.Commands.Common.Authentication.Abstractions;
+﻿using Microsoft.Azure.Commands.Common.Authentication.Abstractions;
 using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient;
 using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Utilities;
 using Microsoft.Azure.Commands.ResourceManager.Common;
@@ -7,8 +6,6 @@ using Microsoft.WindowsAzure.Commands.Utilities.Common;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Text;
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
@@ -19,11 +16,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         /// Deployment stacks client instance field
         /// </summary>
         private DeploymentStacksSdkClient deploymentStacksSdkClient;
-
-        /// <summary>
-        /// Deployment stacks client instance field
-        /// </summary>
-        private DeploymentStacksSdkClient deploymentStacksSdkClientForDelete;
 
         /// <summary>
         /// Gets or sets the deployment stacks sdk client
@@ -42,26 +34,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             set
             {
                 this.deploymentStacksSdkClient = value;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the deployment stacks sdk client with delete handler
-        /// </summary>
-        public DeploymentStacksSdkClient DeploymentStacksSdkClientForDelete
-        {
-            get
-            {
-                if (this.deploymentStacksSdkClientForDelete == null)
-                {
-                    this.deploymentStacksSdkClientForDelete = new DeploymentStacksSdkClient(DefaultContext, new StacksDeletePollingHandler());
-                }
-                return this.deploymentStacksSdkClientForDelete;
-            }
-
-            set
-            {
-                this.deploymentStacksSdkClientForDelete = value;
             }
         }
 
@@ -108,28 +80,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 }
             }
             return parameterObject;
-        }
-
-            /// <summary>
-            /// Unregisters delegating handler if registered.
-            /// </summary>
-            protected void UnregisterDelegatingHandlerIfRegistered()
-        {
-            var apiExpandHandler = GetStacksHandler();
-
-            if (apiExpandHandler != null)
-            {
-                AzureSession.Instance.ClientFactory.RemoveHandler(apiExpandHandler.GetType());
-            }
-        }
-
-        /// <summary>
-        /// Returns expand handler, if exists.
-        /// </summary>
-        private DelegatingHandler GetStacksHandler()
-        {
-            return AzureSession.Instance.ClientFactory.GetCustomHandlers()?
-                .Where(handler => handler.GetType().Equals(typeof(StacksDeletePollingHandler))).FirstOrDefault();
         }
     }
 }
