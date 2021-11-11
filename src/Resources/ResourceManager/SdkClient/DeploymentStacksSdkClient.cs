@@ -6,6 +6,7 @@ using Microsoft.Azure.Commands.Common.Authentication;
 using Microsoft.Azure.Commands.Common.Authentication.Abstractions;
 using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components;
 using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
+using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Extensions;
 using Microsoft.Azure.Commands.ResourceManager.Common.Tags;
 using Microsoft.WindowsAzure.Commands.Common;
 using Microsoft.Azure.Management.ResourceManager;
@@ -26,9 +27,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
     {
         public IDeploymentStacksClient DeploymentStacksClient { get; set; }
 
-        private IAzureContext azureContext;
-
         public Action<string> VerboseLogger { get; set; }
+
+        public Action<string> ErrorLogger { get; set; }
+
+        public Action<string> WarningLogger { get; set; }
+
+        private IAzureContext azureContext;
 
         public DeploymentStacksSdkClient(IDeploymentStacksClient deploymentStacksClient)
         {
@@ -84,7 +89,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             }
         }
 
-        public IEnumerable<PSDeploymentStack> ListResourceGroupDeploymentStack(string resourceGroupName, bool throwIfNotExists = true)
+        public IList<PSDeploymentStack> ListResourceGroupDeploymentStack(string resourceGroupName, bool throwIfNotExists = true)
         {
             try
             {
@@ -109,7 +114,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
                 if (ex is DeploymentStacksErrorException dex)
                     throw new PSArgumentException(dex.Body.Error.Message);
-
+                
                 throw ex;
             }
         }
@@ -616,6 +621,22 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             if (VerboseLogger != null)
             {
                 VerboseLogger(progress);
+            }
+        }
+
+        private void WriteWarning(string warning)
+        {
+            if (WarningLogger != null)
+            {
+                WarningLogger(warning);
+            }
+        }
+
+        private void WriteError(string error)
+        {
+            if (ErrorLogger != null)
+            {
+                ErrorLogger(error);
             }
         }
     }

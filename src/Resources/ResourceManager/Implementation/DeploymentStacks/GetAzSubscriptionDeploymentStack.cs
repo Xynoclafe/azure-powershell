@@ -47,20 +47,20 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
         #region Cmdlet Overrides
 
-        public override void ExecuteCmdlet()
+        protected override void OnProcessRecord()
         {
             try
             {
                 switch (ParameterSetName)
                 {
                     case GetByStackNameParameterSetname:
-                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(Name));
+                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(Name), true);
                         break;
                     case GetByResourceIdParameterSetName:
-                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(ResourceIdUtility.GetResourceName(ResourceId)));
+                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(ResourceIdUtility.GetResourceName(ResourceId)), true);
                         break;
                     case ListParameterSetname:
-                        WriteObject(DeploymentStacksSdkClient.ListSubscriptionDeploymentStack());
+                        WriteObject(DeploymentStacksSdkClient.ListSubscriptionDeploymentStack(), true);
                         break;
                     default:
                         throw new PSInvalidOperationException();

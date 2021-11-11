@@ -10,8 +10,9 @@ using System.Text;
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 {
-    public class DeploymentStacksCmdletBase : AzureRMCmdlet
+    public abstract class DeploymentStacksCmdletBase : ResourceManagerCmdletBase
     {
+
         /// <summary>
         /// Deployment stacks client instance field
         /// </summary>
@@ -28,6 +29,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 {
                     this.deploymentStacksSdkClient = new DeploymentStacksSdkClient(DefaultContext);
                 }
+
+                this.deploymentStacksSdkClient.VerboseLogger = WriteVerboseWithTimestamp;
+                this.deploymentStacksSdkClient.ErrorLogger = WriteErrorWithTimestamp;
+                this.deploymentStacksSdkClient.WarningLogger = WriteWarningWithTimestamp;
+
                 return this.deploymentStacksSdkClient;
             }
 

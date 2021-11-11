@@ -49,7 +49,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
         #region Cmdlet Overrides
 
-        public override void ExecuteCmdlet()
+        protected override void OnProcessRecord()
         {
             try
             {

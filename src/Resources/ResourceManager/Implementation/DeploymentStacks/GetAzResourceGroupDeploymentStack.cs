@@ -44,20 +44,20 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
-        public override void ExecuteCmdlet()
+        protected override void OnProcessRecord()
         {
             try
             {
                 switch (ParameterSetName)
                 {
                     case GetByResourceIdParameterSetName:
-                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStack(ResourceIdUtility.GetResourceGroupName(ResourceId), ResourceIdUtility.GetDeploymentName(ResourceId)));
+                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStack(ResourceIdUtility.GetResourceGroupName(ResourceId), ResourceIdUtility.GetDeploymentName(ResourceId)), true);
                         break;
                     case ListByResourceGroupNameParameterSetName:
-                        WriteObject(DeploymentStacksSdkClient.ListResourceGroupDeploymentStack(ResourceGroupName));
+                        WriteObject(DeploymentStacksSdkClient.ListResourceGroupDeploymentStack(ResourceGroupName), true);
                         break;
                     case GetByDeploymentStackName:
-                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStack(ResourceGroupName, Name));
+                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStack(ResourceGroupName, Name), true);
                         break;
                     default:
                         throw new PSInvalidOperationException();

@@ -53,7 +53,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         #endregion
 
         #region Cmdlet Overrides
-        public override void ExecuteCmdlet()
+        protected override void OnProcessRecord()
         {
             try
             {
@@ -63,13 +63,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         ResourceIdentifier resourceIdentifier = new ResourceIdentifier(ResourceId);
                         StackName = ResourceIdUtility.GetResourceName(ResourceId).Split('/')[0];
                         Name = resourceIdentifier.ResourceName;
-                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStackSnapshot(ResourceIdUtility.GetResourceGroupName(ResourceId), StackName, Name));
+                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStackSnapshot(ResourceIdUtility.GetResourceGroupName(ResourceId), StackName, Name), true);
                         break;
                     case ListByResourceGroupNameParameterSetName:
-                        WriteObject(DeploymentStacksSdkClient.ListResourceGroupDeploymentStackSnapshot(ResourceGroupName, StackName));
+                        WriteObject(DeploymentStacksSdkClient.ListResourceGroupDeploymentStackSnapshot(ResourceGroupName, StackName), true);
                         break;
                     case GetByDeploymentStackName:
-                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStackSnapshot(ResourceGroupName, StackName, Name));
+                        WriteObject(DeploymentStacksSdkClient.GetResourceGroupDeploymentStackSnapshot(ResourceGroupName, StackName, Name), true);
                         break;
                     default:
                         throw new PSInvalidOperationException();
