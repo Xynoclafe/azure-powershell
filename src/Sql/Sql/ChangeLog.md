@@ -18,6 +18,11 @@
         - Additional information about change #1
 -->
 ## Upcoming Release
+* Fixed FirewallRuleName wildcard filtering in `Get-AzSqlServerFirewallRule` [#16199]
+
+## Version 3.5.1
+
+* Fixed `Get-AzSqlDatabaseImportExportStatus` to report the error encountered
 
 ## Version 3.5.0
 * Changed the underlying implementation of `Get-AzSqlDatabase` to support a paginated response from the server

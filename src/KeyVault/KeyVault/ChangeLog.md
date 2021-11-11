@@ -18,7 +18,18 @@
         - Additional information about change #1
 -->
 ## Upcoming Release
-* Supports Encrypt/Decrypt/Wrap/Unwrap using keys [#15679]
+
+## Version 3.6.1
+* Added warning message of upcoming breaking change to `New-AzKeyVaultRoleDefinition` and `Get-AzKeyVaultRoleDefinition`.
+    - To comply with the syntax of `New-AzRoleDefinition` and `Get-AzRoleDefinition` we are going to rename some of the properties of `PSKeyVaultPermission` model, which might affect these two cmdlets.
+* Added warnings of upcoming breaking change of migrating to Microsoft Graph.
+
+## Version 3.6.0
+* Supported custom role definitions on managed HSM:
+    - Create via `New-AzKeyVaultRoleDefinition`,
+    - Delete via `Remove-AzKeyVaultRoleDefinition`,
+    - Filter all custom roles via `Get-AzKeyVaultRoleDefinition -Custom`.
+* Supported Encrypt/Decrypt/Wrap/Unwrap using keys [#15679]
 * Enabled managing resources in other subscriptions without switching the context by adding `-Subscription <String>`.
 
 ## Version 3.5.0
