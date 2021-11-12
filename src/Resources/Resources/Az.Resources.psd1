@@ -12,7 +12,7 @@
 # RootModule = ''
 
 # Version number of this module.
-ModuleVersion = '4.3.1'
+ModuleVersion = '9.0.0'
 
 # Supported PSEditions
 CompatiblePSEditions = 'Core', 'Desktop'
@@ -152,7 +152,14 @@ CmdletsToExport = 'Get-AzProviderOperation', 'Remove-AzRoleAssignment',
                'Get-AzManagementGroupDeploymentWhatIfResult', 
                'Get-AzTenantDeploymentWhatIfResult', 'Get-AzTemplateSpec', 
                'New-AzTemplateSpec', 'Set-AzTemplateSpec', 'Export-AzTemplateSpec', 
-               'Remove-AzTemplateSpec'
+               'Remove-AzTemplateSpec',
+               'Publish-AzBicepModule', 'Get-AzResourceGroupDeploymentStack',
+               'Get-AzResourceGroupDeploymentStackSnapshot',
+               'New-AzResourceGroupDeploymentStack',
+               'New-AzSubscriptionDeploymentStack', 'Remove-AzResourceGroupDeploymentStack',
+               'Remove-AzResourceGroupDeploymentStackSnapshot', 'Remove-AzSubscriptionDeploymentStack',
+               'Remove-AzSubscriptionDeploymentStackSnapshot', 'Set-AzResourceGroupDeploymentStack',
+               'Set-AzSubscriptionDeploymentStack', 'Get-AzSubscriptionDeploymentStack', 'Get-AzSubscriptionDeploymentStackSnapshot'
 
 # Variables to export from this module
 # VariablesToExport = @()
@@ -223,4 +230,3 @@ PrivateData = @{
 # DefaultCommandPrefix = ''
 
 }
-
