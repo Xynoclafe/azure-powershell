@@ -25,6 +25,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 {
     public class DeploymentStacksSdkClient
     {
+        public const string ErrorFormat = "Error: Code={0}; Message={1}\r\n";
+
         public IDeploymentStacksClient DeploymentStacksClient { get; set; }
 
         public Action<string> VerboseLogger { get; set; }
@@ -369,6 +371,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                 "Failed",
                 "Canceled"
                 );
+            errorValidation(finalStack);
             return new PSDeploymentStack(finalStack);
         }
 
@@ -505,7 +508,29 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                 "Canceled"
                 );
 
+
+            errorValidation(finalStack);
+
             return new PSDeploymentStack(finalStack);
+        }
+
+        private void errorValidation(DeploymentStack deploymentStack)
+        {
+            if (deploymentStack.Error != null)
+            {
+                var error = deploymentStack.Error;
+                var sb = new StringBuilder();
+                List<string> errorMessages = processErrorMessages(error);
+                sb.AppendFormat(ProjectResources.DeploymentStackOperationOuterError, deploymentStack.Name, errorMessages.Count, errorMessages.Count);
+                sb.AppendLine();
+
+                foreach (string message in errorMessages)
+                {
+                   sb.AppendLine(message);
+                }
+
+                WriteError(sb.ToString());
+            }
         }
 
         private DeploymentStack waitStackCompletion(Func<Task<AzureOperationResponse<DeploymentStack>>> getStack, params string[] status)
@@ -613,6 +638,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             }
 
             var deploymentStack = DeploymentStacksClient.DeploymentStacks.BeginCreateOrUpdateAtResourceGroup(resourceGroupName, deploymentStackName, deploymentStackModel);
+            errorValidation(deploymentStack);
             return new PSDeploymentStack(deploymentStack);
         }
 
@@ -638,6 +664,43 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             {
                 ErrorLogger(error);
             }
+        }
+
+        private List<string> processErrorMessages(ErrorResponse error)
+        {
+            List<string> errorMessages = new List<string>();
+
+            Stack<ErrorResponse> stack = new Stack<ErrorResponse>();
+            stack.Push(error);
+
+            while (stack.Count > 0)
+            {
+                var currentError = stack.Pop();
+                errorMessages.Add(string.Format(ErrorFormat, currentError.Code, currentError.Message));
+                if (currentError.Details != null)
+                {
+                    foreach (ErrorResponse detail in currentError.Details)
+                    {
+                        stack.Push(detail);
+                    }
+                }
+            }
+
+
+            //while length of count of error > 2
+                //loop through all details
+
+            /*while (error.Details != null && error.Details.Count >= 0)
+            {
+                errorMessages.Add(string.Format(ErrorFormat, error.Code, error.Message));
+                if (error.Details.Count == 0)
+                {
+                    break;
+                }
+                error = error.Details[0];
+            }*/
+
+            return errorMessages;
         }
     }
 }
