@@ -508,9 +508,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                 "Canceled"
                 );
 
-
             errorValidation(finalStack);
-
             return new PSDeploymentStack(finalStack);
         }
 
@@ -685,21 +683,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                     }
                 }
             }
-
-
-            //while length of count of error > 2
-                //loop through all details
-
-            /*while (error.Details != null && error.Details.Count >= 0)
-            {
-                errorMessages.Add(string.Format(ErrorFormat, error.Code, error.Message));
-                if (error.Details.Count == 0)
-                {
-                    break;
-                }
-                error = error.Details[0];
-            }*/
-
             return errorMessages;
         }
     }

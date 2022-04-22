@@ -63,7 +63,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkExtensions
             {
                 deployment = CreatePSDeployment(result, managementGroupId, resourceGroupName);
             }
-            
             return deployment;
         }
 
