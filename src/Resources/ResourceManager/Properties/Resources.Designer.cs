@@ -377,7 +377,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The deployment validation faileddddd.
+        ///   Looks up a localized string similar to The deployment validation failed.
         /// </summary>
         internal static string FailedDeploymentValidation {
             get {
