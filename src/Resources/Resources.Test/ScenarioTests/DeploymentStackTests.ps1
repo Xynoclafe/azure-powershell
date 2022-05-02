@@ -29,7 +29,7 @@ function Test-GetResourceGroupDeploymentStack
 		# Prepare 
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -TemplateParameterFile sampleTemplateParams.json
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -TemplateParameterFile simpleTemplateParams.json
 		$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname"
 
 		# Test - GetByNameAndResourceGroup
@@ -338,7 +338,7 @@ function Test-NewSubscriptionDeploymentStack
 	try {
 
 		# Test - NewByNameAndTemplateFile
-		$NewByNameAndTemplateFile = New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile simpleTemplate.json -TemplateParameterFile simpleTemplateParams.json
+		$NewByNameAndTemplateFile = New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile sampleTemplate.json -TemplateParameterFile sampleTemplateParams.json
 
 		# Assert
 		Assert-NotNull $NewByNameAndTemplateFile
@@ -583,7 +583,7 @@ function Test-SetResourceGroupDeploymentStack
 		$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname"
 
 		#Test - SetByNameAndResourceGroupAndTemplateFile
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -UpdateBehavior "detachResources" -force
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -TemplateParameterFile sampleTemplateParams.json -UpdateBehavior "detachResources" -force
 
 		#Assert
 		Assert-NotNull $deployment
@@ -595,7 +595,7 @@ function Test-SetResourceGroupDeploymentStack
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 
 		#Test - SetByNameAndResourceGroupAndTemplateFileAndTemplateParameterFile
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -TemplateParameterFile simpleTemplateParams.json -UpdateBehavior "detachResources" -force
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -TemplateParameterFile sampleTemplateParams.json -UpdateBehavior "detachResources" -force
 
 		#Assert
 		Assert-NotNull $deployment
