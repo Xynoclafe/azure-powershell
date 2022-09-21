@@ -21,8 +21,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Management.Automation;
     using System.Text;
 
-    [Cmdlet("Remove", Common.AzureRMConstants.AzureRMPrefix + "ResourceGroupDeploymentStackSnapshot",
-        SupportsShouldProcess = true, DefaultParameterSetName = RemoveAzResourceGroupDeploymentStackSnapshot.RemoveByResourceIdParameterSetName), OutputType(typeof(bool))]
+    // TODO: Remove code for deprecated snapshot functionality.
+/*    [Cmdlet("Remove", Common.AzureRMConstants.AzureRMPrefix + "ResourceGroupDeploymentStackSnapshot",
+        SupportsShouldProcess = true, DefaultParameterSetName = RemoveAzResourceGroupDeploymentStackSnapshot.RemoveByResourceIdParameterSetName), OutputType(typeof(bool))]*/
     public class RemoveAzResourceGroupDeploymentStackSnapshot : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
@@ -59,8 +60,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         #endregion
 
         #region Cmdlet Overrides
-
-        protected override void OnProcessRecord()
+/*        protected override void OnProcessRecord()
         {
             try
             {
@@ -71,7 +71,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 ResourceGroupName = ResourceGroupName ?? resourceIdentifier.ResourceGroupName;
                 StackName = StackName ?? ResourceIdUtility.GetResourceName(ResourceId);
 
-                if(ResourceId != null && Name == null)
+                if (ResourceId != null && Name == null)
                 {
                     StackName = StackName.Split('/')[0];
                     Name = resourceIdentifier.ResourceName;
@@ -96,8 +96,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 else
                     WriteExceptionError(ex);
             }
-        }
-
+        }*/
         #endregion
     }
 }

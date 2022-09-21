@@ -14,7 +14,7 @@
 
 <#
 .SYNOPSIS
-Tests GET operation on deploymentStacks at the RG scope
+Tests GET operation on deploymentStacks at the RG scope.
 #>
 function Test-GetResourceGroupDeploymentStack
 {
@@ -60,61 +60,7 @@ function Test-GetResourceGroupDeploymentStack
 
 <#
 .SYNOPSIS
-Tests GET operation on deploymentStacksSnapshots at the RG scope
-#>
-function Test-GetResourceGroupDeploymentStackSnapshot
-{
-	# Setup
-	$rgname = Get-ResourceGroupName
-	$rname = Get-ResourceName
-	$rglocation = "West US 2"
-	$subId = (Get-AzContext).Subscription.SubscriptionId
-
-	try
-	{
-		# Prepare 
-		New-AzResourceGroup -Name $rgname -Location $rglocation
-
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -TemplateParameterFile simpleTemplateParams.json
-		$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname"
-
-		$getByNameAndResourceGroup = Get-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -StackName $rname 
-		$provisioningState = $getByNameAndResourceGroup.provisioningState
-
-		#Assert
-		Assert-AreEqual $provisioningState "succeeded"
-
-		$resourceId = $getByNameAndResourceGroup.SnapshotId
-		$snapshotName = $resourceId.Split("/")[-1]
-
-		#Test - GetByIdAndSnapshotName
-		$getByIdAndSnapshotName = Get-AzResourceGroupDeploymentStackSnapshot -ResourceId $resourceId
-
-		#Assert
-		Assert-NotNull $getByIdAndSnapshotName
-
-		#Test - ListSnapshots
-		$getByResourceGroupNameAndStackName = Get-AzResourceGroupDeploymentStackSnapshot -ResourceGroupName $rgname -StackName $rname
-
-		#Assert
-		Assert-NotNull $getByResourceGroupNameAndStackName
-
-		#Test - GetByResourceGroupNameAndStackNameAndSnapshotName
-		$getByResourceGroupNameAndStackName = Get-AzResourceGroupDeploymentStackSnapshot -ResourceGroupName $rgname -StackName $rname -SnapshotName $snapshotName
-
-		#Assert
-		Assert-NotNull = $getByResourceGroupNameAndStackName
-	}
-	finally
-    {
-        # Cleanup
-        Clean-ResourceGroup $rgname
-    }
-}
-
-<#
-.SYNOPSIS
-Tests GET operation on deploymentStacks at the Subscription scope
+Tests GET operation on deploymentStacks at the Subscription scope.
 #>
 function Test-GetSubscriptionDeploymentStack
 {
@@ -157,58 +103,7 @@ function Test-GetSubscriptionDeploymentStack
 
 <#
 .SYNOPSIS
-Tests GET operation on deploymentStacksSnapshot at the Subscription scope
-#>
-function Test-GetSubscriptionDeploymentStackSnapshot
-{
-	# Setup
-	$rname = Get-ResourceName
-	$location = "West US 2"
-
-	try
-	{
-		# Prepare 
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile subscription_level_template.json -TemplateParameterFile subscription_level_parameters.json
-		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
-
-		$getByName = Get-AzSubscriptionDeploymentStack -Name $rname 
-		$provisioningState = $getByName.provisioningState
-
-		#Assert
-		Assert-AreEqual $provisioningState "succeeded"
-
-		$resourceId = $getByName.SnapshotId
-		$snapshotName = $resourceId.Split("/")[-1]
-
-		# Test - GetByStackAndSnapshotName
-		$getByName = Get-AzSubscriptionDeploymentStackSnapshot -StackName $rname -Name $snapshotName
-
-		# Assert
-		Assert-NotNull $getByName
-
-		# Test - GetByResourceId
-		$getByResourceId = Get-AzSubscriptionDeploymentStackSnapshot -ResourceId $resourceId
-
-		#Assert
-		Assert-NotNull $getByResourceId
-
-		#Test - ListByResourceGroupName
-		$list = Get-AzSubscriptionDeploymentStackSnapshot -StackName $rname
-
-		# Assert
-		Assert-AreNotEqual 0 $list.Count
-		Assert-True { $list[0].name.contains($snapshotName) }
-	}
-	finally
-    {
-        # Cleanup
-        Clean-DeploymentAtSubscription $rname
-    }
-}
-
-<#
-.SYNOPSIS
-Tests NEW operation on deploymentStacks at the RG scope
+Tests NEW operation on deploymentStacks at the RG scope.
 #>
 function Test-NewResourceGroupDeploymentStack
 {
@@ -237,7 +132,7 @@ function Test-NewResourceGroupDeploymentStack
 
 <#
 .SYNOPSIS
-Tests NEW and SET operation on deploymentStacks at the RG scope using template specs
+Tests NEW and SET operation on deploymentStacks at the RG scope using template specs.
 #>
 
 function Test-NewAndSetResourceGroupDeploymentStackWithTemplateSpec
@@ -265,12 +160,11 @@ function Test-NewAndSetResourceGroupDeploymentStackWithTemplateSpec
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		# Test - Set-AzResourceGroupDeploymentStacks using templateSpecs
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateSpec $resourceId -TemplateParameterFile "sampleTemplateParams.json" -updateBehavior "detachResources"
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateSpec $resourceId -TemplateParameterFile "sampleTemplateParams.json"
 		$id = $deployment.id
 
 		# Assert
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
 	}
 
 	finally
@@ -282,40 +176,73 @@ function Test-NewAndSetResourceGroupDeploymentStackWithTemplateSpec
 
 <#
 .SYNOPSIS
-Tests NEW and SET operation on deploymentStacks at the subscription scope using template specs
+Tests NEW and NEW operation on deploymentStacks at the RG scope with deletion of resources.
 #>
 
-function Test-NewAndSetSubscriptionDeploymentStackWithTemplateSpec
+function Test-NewAndNewResourceGroupDeploymentStackDeleteStackResources
 {
 	# Setup
 	$rgname = Get-ResourceGroupName
-	$rname = Get-ResourceName
 	$stackname = Get-ResourceName
+	$rname = Get-ResourceName
 	$rglocation = "West US 2"
 
 	try {
 		# Prepare
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 
-		$sampleTemplateJson = Get-Content -Raw -Path "subscription_level_template.json"
-        $basicCreatedTemplateSpec = New-AzTemplateSpec -ResourceGroupName $rgname -Name $rname -Location $rgLocation -Version "v1" -TemplateJson $sampleTemplateJson
-
-		$resourceId = $basicCreatedTemplateSpec.Id + "/versions/v1"
-
-		# Test - New-AzSubscriptionDeploymentStacks using templateSpecs
-		$deployment = New-AzSubscriptionDeploymentStack -Name $stackname -TemplateSpec $resourceId -TemplateParameterFile "subscription_level_parameters.json" -Location $rglocation
+		# Test - New-AzResourceGroupDeploymentStacks using templateSpecs
+		$deployment = New-AzResourceGroupDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "sampleTemplate.json" -TemplateParameterFile "sampleTemplateParams.json"
 		$id = $deployment.id
 
 		# Assert
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		# Test - Set-AzSubscriptionDeploymentStacks using templateSpecs
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $stackname -TemplateSpec $resourceId -TemplateParameterFile "subscription_level_parameters.json" -Location $rglocation -updateBehavior "detachResources"
+		# Test - New-AzResourceGroupDeploymentStacks using templateSpecs
+		$deployment = New-AzResourceGroupDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "blankTemplate.json" -DeleteResources -Force
+		$id = $deployment.id
+
+		# Assert
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+	}
+
+	finally
+    {
+        # Cleanup
+        Clean-ResourceGroup $rgname
+    }
+}
+
+<#
+.SYNOPSIS
+Tests NEW and SET operation on deploymentStacks at the RG scope with deletion of resources and resource groups.
+#>
+
+function Test-NewAndSetResourceGroupDeploymentStackDeleteStackResourcesAndResourceGroups
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$stackname = Get-ResourceName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+
+	try {
+		# Prepare
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+
+		# Test - New-AzResourceGroupDeploymentStacks using templateSpecs
+		$deployment = New-AzResourceGroupDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "sampleTemplateWithRG.json" -TemplateParameterFile "sampleTemplateWithRGParams.json"
 		$id = $deployment.id
 
 		# Assert
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
+		# Test - Set-AzResourceGroupDeploymentStacks using templateSpecs
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "blankTemplate.json" -DeleteResources -DeleteResourceGroups -Force
+		$id = $deployment.id
+
+		# Assert
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 	}
 
 	finally
@@ -349,6 +276,130 @@ function Test-NewSubscriptionDeploymentStack
     {
         # Cleanup
         Clean-DeploymentAtSubscription $rname
+    }
+}
+
+
+<#
+.SYNOPSIS
+Tests NEW and SET operation on deploymentStacks at the subscription scope using template specs
+#>
+
+function Test-NewAndSetSubscriptionDeploymentStackWithTemplateSpec
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$stackname = Get-ResourceName
+	$rglocation = "West US 2"
+
+	try {
+		# Prepare
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+
+		$sampleTemplateJson = Get-Content -Raw -Path "subscription_level_template.json"
+        $basicCreatedTemplateSpec = New-AzTemplateSpec -ResourceGroupName $rgname -Name $rname -Location $rgLocation -Version "v1" -TemplateJson $sampleTemplateJson
+
+		$resourceId = $basicCreatedTemplateSpec.Id + "/versions/v1"
+
+		# Test - New-AzSubscriptionDeploymentStacks using templateSpecs
+		$deployment = New-AzSubscriptionDeploymentStack -Name $stackname -TemplateSpec $resourceId -TemplateParameterFile "subscription_level_parameters.json" -Location $rglocation
+		$id = $deployment.id
+
+		# Assert
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		# Test - Set-AzSubscriptionDeploymentStacks using templateSpecs
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $stackname -TemplateSpec $resourceId -TemplateParameterFile "subscription_level_parameters.json" -Location $rglocation
+		$id = $deployment.id
+
+		# Assert
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+	}
+
+	finally
+    {
+        # Cleanup
+        Clean-ResourceGroup $rgname
+    }
+}
+
+<#
+.SYNOPSIS
+Tests NEW and NEW operation on deploymentStacks at the RG scope with deletion of resources.
+#>
+
+function Test-NewAndNewResourceGroupDeploymentStackDeleteStackResources
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$stackname = Get-ResourceName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+
+	try {
+		# Prepare
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+
+		# Test - New-AzResourceGroupDeploymentStacks using templateSpecs
+		$deployment = New-AzSubscriptionDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "sampleTemplate.json" -TemplateParameterFile "sampleTemplateParams.json"
+		$id = $deployment.id
+
+		# Assert
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		# Test - New-AzResourceGroupDeploymentStacks using templateSpecs
+		$deployment = New-AzSubscriptionDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "blankTemplate.json" -DeleteResources -Force
+		$id = $deployment.id
+
+		# Assert
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+	}
+
+	finally
+    {
+        # Cleanup
+        Clean-ResourceGroup $rgname
+    }
+}
+
+<#
+.SYNOPSIS
+Tests NEW and SET operation on deploymentStacks at the RG scope with deletion of resources and resource groups.
+#>
+
+function Test-NewAndSetResourceGroupDeploymentStackDeleteStackResourcesAndResourceGroups
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$stackname = Get-ResourceName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+
+	try {
+		# Prepare
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+
+		# Test - New-AzResourceGroupDeploymentStacks using templateSpecs
+		$deployment = New-AzSubscriptionDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "sampleTemplateWithRG.json" -TemplateParameterFile "sampleTemplateWithRGParams.json"
+		$id = $deployment.id
+
+		# Assert
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		# Test - Set-AzResourceGroupDeploymentStacks using templateSpecs
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "blankTemplate.json" -DeleteResources -DeleteResourceGroups -Force
+		$id = $deployment.id
+
+		# Assert
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+	}
+
+	finally
+    {
+        # Cleanup
+        Clean-ResourceGroup $rgname
     }
 }
 
@@ -399,8 +450,241 @@ function Test-RemoveResourceGroupDeploymentStack
 
 <#
 .SYNOPSIS
-Tests REMOVE operation on deploymentStacksSnapshot
+Tests REMOVE operation on deploymentStacks at the subscription scope
 #>
+function Test-RemoveSubscriptionDeploymentStack
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+
+	try
+	{
+		# Prepare 
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -TemplateParameterFile subscription_level_parameters.json -location $rglocation
+		$resourceid = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
+
+		# Test - RemoveByName
+		$removeByName = Remove-AzSubscriptionDeploymentStack -Name $rname -force
+
+		# Assert
+		Assert-NotNull $removeByName 
+
+		# Prepare
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -TemplateParameterFile subscription_level_parameters.json -location $rglocation -force
+
+		# Test - RemoveByResourceId
+		$removeByResourceId = Remove-AzSubscriptionDeploymentStack -ResourceId $resourceid -force
+
+		#Assert
+		Assert-NotNull $removeByResourceId
+	}
+
+	finally
+	{
+		Clean-DeploymentAtSubscription $rname
+	}
+
+}
+
+<#
+.SYNOPSIS
+Tests Set operation on deploymentStacks at the RG scope
+#>
+function Test-SetResourceGroupDeploymentStack
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+	$subId = (Get-AzContext).Subscription.SubscriptionId
+
+
+	try {
+		# Prepare
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+
+		$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname"
+
+		#Test - SetByNameAndResourceGroupAndTemplateFile
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -TemplateParameterFile sampleTemplateParams.json -force
+
+		#Assert
+		Assert-NotNull $deployment
+
+		#Clean up
+		Clean-ResourceGroup $rgname
+
+		# Prepare
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+
+		#Test - SetByNameAndResourceGroupAndTemplateFileAndTemplateParameterFile
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -TemplateParameterFile sampleTemplateParams.json -force
+
+		#Assert
+		Assert-NotNull $deployment
+	}
+
+	finally
+    {
+        # Cleanup
+        Clean-ResourceGroup $rgname
+    }
+}
+
+<#
+.SYNOPSIS
+Tests Set operation on deploymentStacks at the Subscription scope
+#>
+function Test-SetSubscriptionDeploymentStack
+{
+	# Setup
+	$rname = Get-ResourceName
+	$location = "West US 2"
+	$subId = (Get-AzContext).Subscription.SubscriptionId
+
+
+	try {
+		# Prepare
+		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
+
+		#Test - SetByNameAndTemplateFile
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -force -location $location
+
+		#Assert
+		Assert-NotNull $deployment
+
+		#Clean up
+		Clean-DeploymentAtSubscription $rname
+
+		# Prepare
+
+		#Test - SetByNameAndTemplateFileAndTemplateParameterFile
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -TemplateParameterFile subscription_level_parameters.json -force -location $location
+
+		#Assert
+		Assert-NotNull $deployment
+	}
+
+	finally
+    {
+        # Cleanup
+        Clean-DeploymentAtSubscription $rname
+    }
+}
+
+<#
+.SYNOPSIS
+Tests GET operation on deploymentStacksSnapshots at the RG scope
+
+function Test-GetResourceGroupDeploymentStackSnapshot
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+	$subId = (Get-AzContext).Subscription.SubscriptionId
+
+	try
+	{
+		# Prepare 
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile simpleTemplate.json -TemplateParameterFile simpleTemplateParams.json
+		$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname"
+
+		$getByNameAndResourceGroup = Get-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -StackName $rname 
+		$provisioningState = $getByNameAndResourceGroup.provisioningState
+
+		#Assert
+		Assert-AreEqual $provisioningState "succeeded"
+
+		$resourceId = $getByNameAndResourceGroup.SnapshotId
+		$snapshotName = $resourceId.Split("/")[-1]
+
+		#Test - GetByIdAndSnapshotName
+		$getByIdAndSnapshotName = Get-AzResourceGroupDeploymentStackSnapshot -ResourceId $resourceId
+
+		#Assert
+		Assert-NotNull $getByIdAndSnapshotName
+
+		#Test - ListSnapshots
+		$getByResourceGroupNameAndStackName = Get-AzResourceGroupDeploymentStackSnapshot -ResourceGroupName $rgname -StackName $rname
+
+		#Assert
+		Assert-NotNull $getByResourceGroupNameAndStackName
+
+		#Test - GetByResourceGroupNameAndStackNameAndSnapshotName
+		$getByResourceGroupNameAndStackName = Get-AzResourceGroupDeploymentStackSnapshot -ResourceGroupName $rgname -StackName $rname -SnapshotName $snapshotName
+
+		#Assert
+		Assert-NotNull = $getByResourceGroupNameAndStackName
+	}
+	finally
+    {
+        # Cleanup
+        Clean-ResourceGroup $rgname
+    }
+}
+#>
+
+<#
+.SYNOPSIS
+Tests GET operation on deploymentStacksSnapshot at the Subscription scope
+
+function Test-GetSubscriptionDeploymentStackSnapshot
+{
+	# Setup
+	$rname = Get-ResourceName
+	$location = "West US 2"
+
+	try
+	{
+		# Prepare 
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile subscription_level_template.json -TemplateParameterFile subscription_level_parameters.json
+		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
+
+		$getByName = Get-AzSubscriptionDeploymentStack -Name $rname 
+		$provisioningState = $getByName.provisioningState
+
+		#Assert
+		Assert-AreEqual $provisioningState "succeeded"
+
+		$resourceId = $getByName.SnapshotId
+		$snapshotName = $resourceId.Split("/")[-1]
+
+		# Test - GetByStackAndSnapshotName
+		$getByName = Get-AzSubscriptionDeploymentStackSnapshot -StackName $rname -Name $snapshotName
+
+		# Assert
+		Assert-NotNull $getByName
+
+		# Test - GetByResourceId
+		$getByResourceId = Get-AzSubscriptionDeploymentStackSnapshot -ResourceId $resourceId
+
+		#Assert
+		Assert-NotNull $getByResourceId
+
+		#Test - ListByResourceGroupName
+		$list = Get-AzSubscriptionDeploymentStackSnapshot -StackName $rname
+
+		# Assert
+		Assert-AreNotEqual 0 $list.Count
+		Assert-True { $list[0].name.contains($snapshotName) }
+	}
+	finally
+    {
+        # Cleanup
+        Clean-DeploymentAtSubscription $rname
+    }
+}
+#>
+
+<#
+.SYNOPSIS
+Tests REMOVE operation on deploymentStacksSnapshot
+
 #Does this delete the snapshot for this deplpyment or also the deployment
 #backlog until new command works
 function Test-RemoveResourceGroupDeploymentStackSnapshot
@@ -457,51 +741,12 @@ function Test-RemoveResourceGroupDeploymentStackSnapshot
         Clean-ResourceGroup $rgname
 	}
 }
-
-<#
-.SYNOPSIS
-Tests REMOVE operation on deploymentStacks at the subscription scope
 #>
-function Test-RemoveSubscriptionDeploymentStack
-{
-	# Setup
-	$rgname = Get-ResourceGroupName
-	$rname = Get-ResourceName
-	$rglocation = "West US 2"
-
-	try
-	{
-		# Prepare 
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -TemplateParameterFile subscription_level_parameters.json -location $rglocation
-		$resourceid = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
-
-		# Test - RemoveByName
-		$removeByName = Remove-AzSubscriptionDeploymentStack -Name $rname -force
-
-		# Assert
-		Assert-NotNull $removeByName 
-
-		# Prepare
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -TemplateParameterFile subscription_level_parameters.json -location $rglocation -force
-
-		# Test - RemoveByResourceId
-		$removeByResourceId = Remove-AzSubscriptionDeploymentStack -ResourceId $resourceid -force
-
-		#Assert
-		Assert-NotNull $removeByResourceId
-	}
-
-	finally
-	{
-		Clean-DeploymentAtSubscription $rname
-	}
-
-}
 
 <#
 .SYNOPSIS
 Tests REMOVE operation on deploymentStacksSnapshot
-#>
+
 function Test-RemoveSubscriptionDeploymentStackSnapshot
 {
 	# Setup
@@ -562,89 +807,4 @@ function Test-RemoveSubscriptionDeploymentStackSnapshot
         Clean-DeploymentAtSubscription $rname
 	}
 }
-
-<#
-.SYNOPSIS
-Tests Set operation on deploymentStacks at the RG scope
 #>
-function Test-SetResourceGroupDeploymentStack
-{
-	# Setup
-	$rgname = Get-ResourceGroupName
-	$rname = Get-ResourceName
-	$rglocation = "West US 2"
-	$subId = (Get-AzContext).Subscription.SubscriptionId
-
-
-	try {
-		# Prepare
-		New-AzResourceGroup -Name $rgname -Location $rglocation
-
-		$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname"
-
-		#Test - SetByNameAndResourceGroupAndTemplateFile
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -TemplateParameterFile sampleTemplateParams.json -UpdateBehavior "detachResources" -force
-
-		#Assert
-		Assert-NotNull $deployment
-
-		#Clean up
-		Clean-ResourceGroup $rgname
-
-		# Prepare
-		New-AzResourceGroup -Name $rgname -Location $rglocation
-
-		#Test - SetByNameAndResourceGroupAndTemplateFileAndTemplateParameterFile
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -TemplateParameterFile sampleTemplateParams.json -UpdateBehavior "detachResources" -force
-
-		#Assert
-		Assert-NotNull $deployment
-	}
-
-	finally
-    {
-        # Cleanup
-        Clean-ResourceGroup $rgname
-    }
-}
-
-<#
-.SYNOPSIS
-Tests Set operation on deploymentStacks at the Subscription scope
-#>
-function Test-SetSubscriptionDeploymentStack
-{
-	# Setup
-	$rname = Get-ResourceName
-	$location = "West US 2"
-	$subId = (Get-AzContext).Subscription.SubscriptionId
-
-
-	try {
-		# Prepare
-		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
-
-		#Test - SetByNameAndTemplateFile
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -UpdateBehavior "detachResources" -force -location $location
-
-		#Assert
-		Assert-NotNull $deployment
-
-		#Clean up
-		Clean-DeploymentAtSubscription $rname
-
-		# Prepare
-
-		#Test - SetByNameAndTemplateFileAndTemplateParameterFile
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -TemplateParameterFile subscription_level_parameters.json -UpdateBehavior "detachResources" -force -location $location
-
-		#Assert
-		Assert-NotNull $deployment
-	}
-
-	finally
-    {
-        # Cleanup
-        Clean-DeploymentAtSubscription $rname
-    }
-}

@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <PsModuleName>Resources</PsModuleName>
+    <Configurations>Debug;Release;Powershell</Configurations>
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)..\..\Az.props" />
@@ -13,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="6.2.2" />
-    <PackageReference Include="Microsoft.Azure.Management.ResourceManager" Version="3.14.9-stacks" />
+    <PackageReference Include="Microsoft.Azure.Management.ResourceManager" Version="3.17.4-preview" />
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.2.0" />
   </ItemGroup>

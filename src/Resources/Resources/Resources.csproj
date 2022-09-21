@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <PsModuleName>Resources</PsModuleName>
+    <Configurations>Debug;Release;Powershell</Configurations>
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)..\..\Az.props" />
@@ -14,7 +15,7 @@
     <PackageReference Include="Microsoft.Azure.Graph.RBAC" Version="3.8.0-preview" />
     <PackageReference Include="Microsoft.Azure.Management.Authorization" Version="2.13.0-preview" />
     <PackageReference Include="Microsoft.Azure.Management.ManagementGroups" Version="1.1.1-preview" />
-    <PackageReference Include="Microsoft.Azure.Management.ResourceManager" Version="3.14.9-stacks" />
+    <PackageReference Include="Microsoft.Azure.Management.ResourceManager" Version="3.17.4-preview" />
   </ItemGroup>
 
   <ItemGroup>

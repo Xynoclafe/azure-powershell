@@ -12,13 +12,14 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
 {
     public class PSDeploymentStack
     {
-        public string updateBehavior { get; set; }
 
         public string id { get; set; }
 
         public string name { get; set; }
 
         public string type { get; set; }
+
+        public DeploymentStackPropertiesSharedActionOnUnmanage actionOnUnmanage { get; set; }
 
         public SystemData systemData { get; set; }
 
@@ -40,15 +41,15 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
 
         public string description { get; set; }
 
-        public IList<ManagedResourceReference> managedResources { get; set; }
+        public IList<ManagedResourceReference> resources { get; set; }
 
         public string deploymentId { get; set; }
 
-        public LockSettings locks { get; set; }
+        // public LockSettings locks { get; set; }
 
         public ErrorResponse error { get; set; }
 
-        public string snapshotId { get; set; }
+        // public string snapshotId { get; set; }
 
         public PSDeploymentStack() { }
 
@@ -58,7 +59,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
             this.name = deploymentStack.Name;
             this.type = deploymentStack.Type;
             this.systemData = deploymentStack.SystemData;
-            this.updateBehavior = deploymentStack.UpdateBehavior;
+            this.actionOnUnmanage = deploymentStack.ActionOnUnmanage;
             this.location = deploymentStack.Location;
             this.template = deploymentStack.Template;
             this.templateLink = deploymentStack.TemplateLink;
@@ -68,16 +69,15 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
             this.provisioningState = deploymentStack.ProvisioningState;
             this.deploymentScope = deploymentStack.DeploymentScope;
             this.description = deploymentStack.Description;
-            this.managedResources = deploymentStack.ManagedResources;
+            this.resources = deploymentStack.Resources;
             this.deploymentId = deploymentStack.DeploymentId;
-            this.locks = deploymentStack.Locks;
+            // this.locks = deploymentStack.Locks;
             this.error = deploymentStack.Error;
-            this.snapshotId = deploymentStack.SnapshotId;
         }
 
         public string managedResourcesString
         {
-            get { return ResourcesExtensions.GetStackResourcesAsString(managedResources); }
+            get { return ResourcesExtensions.GetStackResourcesAsString(resources); }
         }
 
         internal static PSDeploymentStack FromAzureSDKDeploymentStack(DeploymentStack stack)

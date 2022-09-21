@@ -49,9 +49,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         internal const string ParameterObjectTemplateUriParameterSetName = "ByTemplateUriWithParameterObject";
         internal const string ParameterObjectTemplateSpecParameterSetName = "ByTemplateSpecWithParameterObject";
 
-        [Flags]
-        public enum updateBehvaiorEnum { detachResources, purgeResources }
-
         [Alias("StackName")]
         [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true,
             HelpMessage = "The name of the deploymentStack to create")]
@@ -122,9 +119,18 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             HelpMessage = "Description for the stack")]
         public string Description { get; set; }
 
-        [Parameter(Mandatory = false, ValueFromPipeline = true,
-            HelpMessage = "Update behavior for the stack. Value can be detachResources or failedResources.")]
-        public updateBehvaiorEnum UpdateBehavior { get; set; }
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete both resources and resource groups after updating stack.")]
+        public SwitchParameter DeleteAll { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack resources after upating stack.")]
+        public SwitchParameter DeleteResources { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack resource groups after updating stack.")]
+        public SwitchParameter DeleteResourceGroups { get; set; }
+
+        // Not Yet Supported.
+        /*[Parameter(Mandatory = false, HelpMessage = "Singal to delete unmanaged stack management groups after updating stack.")]
+        public SwitchParameter DeleteManagementGroups { get; set; }*/
 
         [Parameter(Mandatory = false,
         HelpMessage = "Do not ask for confirmation when overwriting an existing stack.")]
@@ -185,6 +191,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         break;
                 }
 
+                
+
+                var shouldDeleteResources = (DeleteAll.ToBool() || DeleteResources.ToBool()) ? true : false;
+                var shouldDeleteResourceGroups = (DeleteAll.ToBool() || DeleteResourceGroups.ToBool()) ? true : false;
+
                 Action createOrUpdateAction = () =>
                 {
                     var deploymentStack = DeploymentStacksSdkClient.ResourceGroupCreateOrUpdateDeploymentStack(
@@ -195,8 +206,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         TemplateParameterUri,
                         parameters,
                         Description,
-                        (UpdateBehavior.ToString() == "detachResources") ? "detachResources" : "purgeResources"
-                        );
+                        resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
+                        resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach",
+                        managementGroupsCleanupAction: "detach"
+                    );
+
                     WriteObject(deploymentStack);
                 };
 

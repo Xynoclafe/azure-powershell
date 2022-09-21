@@ -1111,12 +1111,12 @@ namespace Microsoft.Azure.Commands.Resources.Test.Models
                         Body = true
                     }));
 
-            resourceGroupMock.Setup(f => f.DeleteWithHttpMessagesAsync(resourceGroupName, null, new CancellationToken()))
+            resourceGroupMock.Setup(f => f.DeleteWithHttpMessagesAsync(resourceGroupName, null, null, new CancellationToken()))
                 .Returns(Task.Factory.StartNew(() => new Rest.Azure.AzureOperationResponse()));
 
             resourcesClient.DeleteResourceGroup(resourceGroupName);
 
-            resourceGroupMock.Verify(f => f.DeleteWithHttpMessagesAsync(resourceGroupName, null, It.IsAny<CancellationToken>()), Times.Once());
+            resourceGroupMock.Verify(f => f.DeleteWithHttpMessagesAsync(resourceGroupName, null, null, It.IsAny<CancellationToken>()), Times.Once());
         }
 
         [Fact]

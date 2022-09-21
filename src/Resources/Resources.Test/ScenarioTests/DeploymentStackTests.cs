@@ -31,12 +31,12 @@ namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
             TestRunner.RunTestScript("Test-GetResourceGroupDeploymentStack");
         }
 
-        [Fact()]
+/*      [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestResourceGroupDeploymentStackSnapshotGet()
         {
             TestRunner.RunTestScript("Test-GetResourceGroupDeploymentStackSnapshot");
-        }
+        }*/
 
         [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
@@ -45,12 +45,12 @@ namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
             TestRunner.RunTestScript("Test-GetSubscriptionDeploymentStack");
         }
 
-        [Fact()]
+/*      [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestSubscriptionDeploymentStackSnapshotGet()
         {
             TestRunner.RunTestScript("Test-GetSubscriptionDeploymentStackSnapshot");
-        }
+        }*/
 
         [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
@@ -87,12 +87,12 @@ namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
             TestRunner.RunTestScript("Test-RemoveResourceGroupDeploymentStack");
         }
 
-        [Fact()]
+/*      [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestResourceGroupDeploymentStackSnapshotDelete()
         {
             TestRunner.RunTestScript("Test-RemoveResourceGroupDeploymentStackSnapshot");
-        }
+        }*/
 
         [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
@@ -101,12 +101,12 @@ namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
             TestRunner.RunTestScript("Test-RemoveSubscriptionDeploymentStack");
         }
 
-        [Fact()]
+/*      [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestSubscriptionDeploymentStackSnapshotDelete()
         {
             TestRunner.RunTestScript("Test-RemoveSubscriptionDeploymentStackSnapshot");
-        }
+        }*/
 
         [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]

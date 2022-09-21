@@ -19,7 +19,7 @@ namespace Microsoft.Azure.Commands.Profile.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -300,6 +300,15 @@ namespace Microsoft.Azure.Commands.Profile.Properties {
         internal static string ClearContextUserTarget {
             get {
                 return ResourceManager.GetString("ClearContextUserTarget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided client id and assertion will be included in the &apos;{0}&apos; file found in the user profile ( {1} ). Please ensure that this directory has appropriate protections..
+        /// </summary>
+        internal static string ClientAssertionWarning {
+            get {
+                return ResourceManager.GetString("ClientAssertionWarning", resourceCulture);
             }
         }
         
@@ -1029,15 +1038,6 @@ namespace Microsoft.Azure.Commands.Profile.Properties {
         internal static string ServicePrincipalWarning {
             get {
                 return ResourceManager.GetString("ServicePrincipalWarning", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to The provided service principal secret will be included in the &apos;{0}&apos; file found in the user profile ( {1} ). Please ensure that this directory has appropriate protections..
-        /// </summary>
-        internal static string ClientAssertionWarning {
-            get {
-                return ResourceManager.GetString("ClientAssertionWarning", resourceCulture);
             }
         }
         

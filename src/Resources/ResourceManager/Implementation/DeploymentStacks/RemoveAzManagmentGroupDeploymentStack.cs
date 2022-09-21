@@ -21,26 +21,20 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Management.Automation;
     using System.Text;
 
-    [Cmdlet("Remove", Common.AzureRMConstants.AzureRMPrefix + "ResourceGroupDeploymentStack",
-        SupportsShouldProcess = true, DefaultParameterSetName = RemoveAzResourceGroupDeploymentStack.RemoveByResourceNameParameterSetname), OutputType(typeof(bool))]
-    public class RemoveAzResourceGroupDeploymentStack : DeploymentStacksCmdletBase
+    [Cmdlet("Remove", Common.AzureRMConstants.AzureRMPrefix + "ManagementGroupDeploymentStack",
+        SupportsShouldProcess = true, DefaultParameterSetName = RemoveAzManagementGroupDeploymentStack.RemoveByResourceIdParameterSetName), OutputType(typeof(bool))]
+    public class RemoveAzManagementGroupDeploymentStack : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
 
         internal const string RemoveByResourceIdParameterSetName = "RemoveByResourceId";
         internal const string RemoveByResourceNameParameterSetname = "RemoveByResourceName";
-        internal const string RemoveByResourceBehaviorParameterDeleteBehavior = "RemoveByDeleteBehavior";
 
         [Alias("StackName")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceNameParameterSetname,
             HelpMessage = "The name of the deploymentStack to delete")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
-
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceNameParameterSetname,
-        HelpMessage = "The name of the Resource Group with the stack to delete")]
-        [ValidateNotNullOrEmpty]
-        public string ResourceGroupName { get; set; }
 
         [Alias("Id")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceIdParameterSetName,
@@ -75,11 +69,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 var shouldDeleteResources = (DeleteAll.ToBool() || DeleteResources.ToBool()) ? true : false;
                 var shouldDeleteResourceGroups = (DeleteAll.ToBool() || DeleteResourceGroups.ToBool()) ? true : false;
 
-                ResourceIdentifier resourceIdentifier = (ResourceId != null)
-                    ? new ResourceIdentifier(ResourceId)
-                    : null;
-
-                ResourceGroupName = ResourceGroupName ?? resourceIdentifier.ResourceGroupName;
                 Name = Name ?? ResourceIdUtility.GetResourceName(ResourceId);
 
                 string confirmationMessage = $"Are you sure you want to remove DeploymentStack '{Name}'";
@@ -89,10 +78,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                     confirmationMessage,
                     "Deleting Deployment Stack ...",
                     Name,
-                    () => DeploymentStacksSdkClient.DeleteResourceGroupDeploymentStack(
-                        ResourceGroupName, 
-                        Name, 
-                        resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach", 
+                    () => DeploymentStacksSdkClient.DeleteManagementGroupDeploymentStack(
+                        Name,
+                        resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
                         resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach"
                     )
                 );

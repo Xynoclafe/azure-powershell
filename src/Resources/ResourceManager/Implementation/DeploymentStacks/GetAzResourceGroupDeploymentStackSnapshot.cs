@@ -21,8 +21,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Management.Automation;
     using System.Text;
 
-    [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "ResourceGroupDeploymentStackSnapshot",
-        DefaultParameterSetName = GetAzResourceGroupDeploymentStackSnapshot.ListByResourceGroupNameParameterSetName), OutputType(typeof(PSDeploymentStackSnapshot))]
+    // TODO: Remove code for deprecated snapshot functionality.
+/*    [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "ResourceGroupDeploymentStackSnapshot",
+        DefaultParameterSetName = GetAzResourceGroupDeploymentStackSnapshot.ListByResourceGroupNameParameterSetName), OutputType(typeof(PSDeploymentStackSnapshot))]*/
     public class GetAzResourceGroupDeploymentStackSnapshot : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
@@ -53,7 +54,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         #endregion
 
         #region Cmdlet Overrides
-        protected override void OnProcessRecord()
+      /*  protected override void OnProcessRecord()
         {
             try
             {
@@ -79,9 +80,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             {
                 WriteExceptionError(ex);
             }
-        }
-
-
+        }*/
         #endregion
 
     }

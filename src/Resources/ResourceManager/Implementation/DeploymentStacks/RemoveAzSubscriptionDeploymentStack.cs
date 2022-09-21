@@ -42,6 +42,19 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         [ValidateNotNullOrEmpty]
         public string ResourceId { get; set; }
 
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete both resources and resource groups after updating stack.")]
+        public SwitchParameter DeleteAll { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack resources after updating stack.")]
+        public SwitchParameter DeleteResources { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack resource groups after updating stack.")]
+        public SwitchParameter DeleteResourceGroups { get; set; }
+
+        // Not Yet Supported.
+        /*[Parameter(Mandatory = false, HelpMessage = "Singal to delete unmanaged stack management groups after updating stack.")]
+        public SwitchParameter DeleteManagementGroups { get; set; }*/
+
         [Parameter(Mandatory = false, HelpMessage = "Do not ask for confirmation.")]
         public SwitchParameter Force { get; set; }
 
@@ -53,6 +66,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         {
             try
             {
+                var shouldDeleteResources = (DeleteAll.ToBool() || DeleteResources.ToBool()) ? true : false;
+                var shouldDeleteResourceGroups = (DeleteAll.ToBool() || DeleteResourceGroups.ToBool()) ? true : false;
+
                 Name = Name ?? ResourceIdUtility.GetResourceName(ResourceId);
 
                 string confirmationMessage = $"Are you sure you want to remove DeploymentStack '{Name}'";
@@ -62,7 +78,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                     confirmationMessage,
                     "Deleting Deployment Stack ...",
                     Name,
-                    () => DeploymentStacksSdkClient.DeleteSubscriptionDeploymentStack(Name)
+                    () => DeploymentStacksSdkClient.DeleteSubscriptionDeploymentStack(
+                        Name,
+                        resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
+                        resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach"
+                    )
                 );
 
                 WriteObject(true);

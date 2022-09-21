@@ -21,8 +21,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Management.Automation;
     using System.Text;
 
-    [Cmdlet("Remove", Common.AzureRMConstants.AzureRMPrefix + "SubscriptionDeploymentStackSnapshot",
-        SupportsShouldProcess = true, DefaultParameterSetName = RemoveAzSubscriptionDeploymentStackSnapshot.RemoveByResourceIdParameterSetName), OutputType(typeof(bool))]
+    // TODO: Remove code for deprecated snapshot functionality.
+/*    [Cmdlet("Remove", Common.AzureRMConstants.AzureRMPrefix + "SubscriptionDeploymentStackSnapshot",
+        SupportsShouldProcess = true, DefaultParameterSetName = RemoveAzSubscriptionDeploymentStackSnapshot.RemoveByResourceIdParameterSetName), OutputType(typeof(bool))]*/
     public class RemoveAzSubscriptionDeploymentStackSnapshot : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
@@ -53,8 +54,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         #endregion
 
         #region Cmdlet Overrides
-
-        protected override void OnProcessRecord()
+/*        protected override void OnProcessRecord()
         {
             try
             {
@@ -89,8 +89,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 else
                     WriteExceptionError(ex);
             }
-        }
-
+        }*/
         #endregion
     }
 }
