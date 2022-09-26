@@ -18,6 +18,18 @@
         - Additional information about change #1
 -->
 ## Upcoming Release
+* Added cmdlet:
+    - `Get-AzVMwareDatastore`
+    - `New-AzVMwareDatastore`
+    - `Remove-AzVMwareDatastore`
+
+## Version 0.4.0
+* Upgrade API version to 2021-12-01
+* Added cmdlet:
+    - `Get-AzVMwareVirtualMachine`
+    - `New-AzVMwarePlacementPolicy`
+    - `Update-AzVMwarePlacementPolicy`
+    - `Remove-AzVMwarePlacementPolicy`
 
 ## Version 0.3.0
 * Updated api version to `2021-06-01`.

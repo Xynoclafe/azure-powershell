@@ -19,7 +19,7 @@ namespace Microsoft.Azure.Commands.Aks.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -232,7 +232,7 @@ namespace Microsoft.Azure.Commands.Aks.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Since control-plane-only argument is not specified, this will upgrade the control plane AND all nodepools to version {0}. Continue?.
+        ///   Looks up a localized string similar to Since control-plane-only argument is not specified, this will upgrade the control plane AND all node pools to version {0}. Continue?.
         /// </summary>
         internal static string ConfirmNotControlPlaneOnly {
             get {
@@ -430,6 +430,15 @@ namespace Microsoft.Azure.Commands.Aks.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Do you want to execute the command on cluster {0}?.
+        /// </summary>
+        internal static string DoYouWantToExecuteCommandOnCluster {
+            get {
+                return ResourceManager.GetString("DoYouWantToExecuteCommandOnCluster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Do you want to import the Kubernetes config?.
         /// </summary>
         internal static string DoYouWantToImportTheKubernetesConfig {
@@ -444,6 +453,15 @@ namespace Microsoft.Azure.Commands.Aks.Properties {
         internal static string DoYouWantToOverwriteExistingFile {
             get {
                 return ResourceManager.GetString("DoYouWantToOverwriteExistingFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Executing command on cluster {0}..
+        /// </summary>
+        internal static string ExecutingCommandOnCluster {
+            get {
+                return ResourceManager.GetString("ExecutingCommandOnCluster", resourceCulture);
             }
         }
         
@@ -543,6 +561,24 @@ namespace Microsoft.Azure.Commands.Aks.Properties {
         internal static string LocationCannotBeUpdateForExistingCluster {
             get {
                 return ResourceManager.GetString("LocationCannotBeUpdateForExistingCluster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please set &apos;-EnableManagedIdentity&apos; first if you want to set &apos;AssignIdentity&apos;..
+        /// </summary>
+        internal static string NeedEnableManagedIdentity {
+            get {
+                return ResourceManager.GetString("NeedEnableManagedIdentity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot attach folder with anothe file or folder at the same time. Please put them in a same parent folder..
+        /// </summary>
+        internal static string NeedSameParentFolder {
+            get {
+                return ResourceManager.GetString("NeedSameParentFolder", resourceCulture);
             }
         }
         

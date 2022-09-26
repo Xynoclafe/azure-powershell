@@ -267,9 +267,18 @@ function Test-VolumeReplication
     $doubleUsage = 2 * $usageThreshold
     $srcResourceGroupLocation = "westus2"
     $destResourceGroupLocation = "eastus"
-    #$srcResourceLocation = "westus2stage"
+    
+    #$srcResourceGroupLocation = "eastus2euap"
+    #$destResourceGroupLocation = "southcentralus"
     $srcResourceLocation = "westus2"
     $destResourceLocation = "eastus"
+    #for when using stage regions (southcentralusstage then vnet is created in southcentralus)
+    $destVnetLocation = "eastus"
+
+    #$srcResourceLocation = "eastus2euap"
+    #$destResourceLocation = "southcentralusstage"
+    #$destVnetLocation = "southcentralus"
+    
     $subnetName = "default"
     $poolSize = 4398046511104
     $serviceLevel = "Premium"
@@ -286,7 +295,7 @@ function Test-VolumeReplication
             $sourceVolume = Get-AzNetAppFilesVolume -ResourceGroupName $srcResourceGroup -AccountName $srcAccName -PoolName $srcPoolName -VolumeName $srcVolName
             $dpVolume = Get-AzNetAppFilesVolume -ResourceGroupName $destResourceGroup -AccountName $destAccName -PoolName $destPoolName -VolumeName $destVolName
 
-           Start-Sleep -Seconds 1.0
+           Start-TestSleep -Seconds 1
         }
         while (($sourceVolume.ProvisioningState -ne "Succeeded") -or ($dpVolume.ProvisioningState -ne "Succeeded"));
     }
@@ -308,24 +317,15 @@ function Test-VolumeReplication
                     throw 
                 }                
             }
-            Start-Sleep -Seconds 10.0
+            Start-TestSleep -Seconds 10
             $i++
         }
-        until ($replicationStatus.MirrorState -eq $targetState -or $i -eq 20);
+        until ($replicationStatus.MirrorState -eq $targetState -or $i -eq 40);
 
         $replicationStatus = Get-AnfReplicationStatus -ResourceGroupName $destResourceGroup -AccountName $destAccName -PoolName $destPoolName -VolumeName $destVolName                
         Assert-AreEqual $targetState $replicationStatus.MirrorState
                 
         #while ($replicationStatus.MirrorState -ne $targetState)
-    }
-
-    function SleepDuringRecord
-    {
-        if ($env:AZURE_TEST_MODE -eq "Record")
-        {
-            Write-Output "Sleep in record mode"
-            Start-Sleep -Seconds 30.0
-        }
     }
 
     try
@@ -344,7 +344,7 @@ function Test-VolumeReplication
         Add-AzVirtualNetworkSubnetConfig -Name $subnetName -VirtualNetwork $virtualNetwork -AddressPrefix "10.0.2.0/24" -Delegation $delegation | Set-AzVirtualNetwork
 
         # create virtual network destination
-        $virtualNetwork = New-AzVirtualNetwork -ResourceGroupName $destResourceGroup -Location $destResourceLocation -Name $destVnetName -AddressPrefix 10.0.0.0/16
+        $virtualNetwork = New-AzVirtualNetwork -ResourceGroupName $destResourceGroup -Location $destVnetLocation -Name $destVnetName -AddressPrefix 10.0.0.0/16
         $delegation = New-AzDelegation -Name "netAppVolumes" -ServiceName "Microsoft.Netapp/volumes"
         Add-AzVirtualNetworkSubnetConfig -Name $subnetName -VirtualNetwork $virtualNetwork -AddressPrefix "10.0.3.0/24" -Delegation $delegation | Set-AzVirtualNetwork
 
@@ -377,7 +377,7 @@ function Test-VolumeReplication
         #Assert-NotNull $destinationVolume.DataProtection
         WaitForSucceeded
         #Start-Sleep -Seconds 30.0
-        SleepDuringRecord
+        Start-TestSleep -Seconds 30
 
         # authorize the replication
         Approve-AnfReplication -ResourceGroupName $srcResourceGroup -AccountName $srcAccName -PoolName $srcPoolName -VolumeName $srcVolName -DataProtectionVolumeId $destinationVolume.Id
@@ -389,7 +389,7 @@ function Test-VolumeReplication
         Suspend-AnfReplication -ResourceGroupName $destResourceGroup -AccountName $destAccName -PoolName $destPoolName -VolumeName $destVolName
 
         WaitForRepliationStatus "Broken"
-        SleepDuringRecord
+        Start-TestSleep -Seconds 30
         #Start-Sleep -Seconds 30.0
         WaitForSucceeded
 
@@ -397,14 +397,14 @@ function Test-VolumeReplication
         Resume-AnfReplication -ResourceGroupName $destResourceGroup -AccountName $destAccName -PoolName $destPoolName -VolumeName $destVolName
 
         WaitForRepliationStatus "Mirrored"
-        SleepDuringRecord
+        Start-TestSleep -Seconds 30
         #Start-Sleep -Seconds 30.0
 
         # break the replication again
         Suspend-AnfReplication -ResourceGroupName $destResourceGroup -AccountName $destAccName -PoolName $destPoolName -VolumeName $destVolName -ForceBreak
 
         WaitForRepliationStatus "Broken"
-        SleepDuringRecord
+        Start-TestSleep -Seconds 30
         #Start-Sleep -Seconds 30.0
 
         # delete the data protection object
@@ -436,7 +436,7 @@ function Test-SetVolumePool
     $gibibyte = 1024 * 1024 * 1024
     $usageThreshold = 100 * $gibibyte    
     #$resourceLocation = Get-ProviderLocation "Microsoft.NetApp" "eastus" -UseCanonical
-    $resourceLocation = "westus2"
+    $resourceLocation = "eastus"
     $subnetName = "default"
     $poolSize = 4398046511104
     $serviceLevel = "Premium"
@@ -543,7 +543,7 @@ function Update-AzNetAppFilesVolumeSnapshotPolicy
     $gibibyte = 1024 * 1024 * 1024
     $usageThreshold = 100 * $gibibyte    
     #$resourceLocation = Get-ProviderLocation "Microsoft.NetApp" "eastus" -UseCanonical
-    $resourceLocation = "westus2"
+    $resourceLocation = "eastus"
     $subnetName = "default"
     $poolSize = 4398046511104
     $serviceLevel = "Premium"
@@ -658,7 +658,7 @@ function Test-VolumePipelines
     $doubleUsage = 2 * $usageThreshold
     #$resourceLocation = Get-ProviderLocation "Microsoft.NetApp" "eastus" -UseCanonical
     #$resourceLocation = Get-ProviderLocation "Microsoft.NetApp" "westcentralus" -UseCanonical
-    $resourceLocation = "westus2"
+    $resourceLocation = "eastus"
     $subnetName = "default"
     $poolSize = 4398046511104
     $serviceLevel = "Premium"

@@ -119,8 +119,13 @@ Creates the test environment needed to perform the Synapse SQL related tests
 function Create-SqlTestEnvironmentWithParams ($params, $location)
 {
 	Create-BasicTestEnvironmentWithParams $params $location
-	New-AzSynapseSqlPool -ResourceGroupName $params.rgname -WorkspaceName $params.workspaceName -SqlPoolName $params.sqlPoolName -PerformanceLevel $params.perfLevel
-	Wait-Seconds 10
+    if(!($params.tags -eq $null) -and !($params.storageAccountType -eq $null))
+    {
+	    New-AzSynapseSqlPool -ResourceGroupName $params.rgname -WorkspaceName $params.workspaceName -SqlPoolName $params.sqlPoolName -PerformanceLevel $params.perfLevel -Tag $params.tags -StorageAccountType $params.storageAccountType
+	}else{
+        New-AzSynapseSqlPool -ResourceGroupName $params.rgname -WorkspaceName $params.workspaceName -SqlPoolName $params.sqlPoolName -PerformanceLevel $params.perfLevel
+    }
+     Wait-Seconds 10
 }
 
 <#
@@ -176,7 +181,7 @@ function Get-SqlBlobAuditingTestEnvironmentParameters ($testSuffix)
 			  loginName = "testlogin";
 			  pwd = "testp@ssMakingIt1007Longer";
 			  perfLevel = 'DW200c';
-			  location = "canadacentral";
+			  location = "eastus";
 			  eventHubNamespace = "audit-cmdlet-event-hub-ns" + $testSuffix
 			  logworkspaceName = "audit-cmdlet-logworkspace" +$testSuffix
 			  storageAccountResourceId = "/subscriptions/" + $subscriptionId + "/resourceGroups/" + "audit-cmdlet-test-rg" + $testSuffix + "/providers/Microsoft.Storage/storageAccounts/" + "sqlstorage" + $testSuffix

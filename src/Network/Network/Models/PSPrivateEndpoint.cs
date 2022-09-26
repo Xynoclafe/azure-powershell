@@ -31,6 +31,12 @@ namespace Microsoft.Azure.Commands.Network.Models
         public List<PSPrivateEndpointCustomDnsConfig> CustomDnsConfigs { get; set; }
         public PSExtendedLocation ExtendedLocation { get; set; }
 
+        public List<PSApplicationSecurityGroup> ApplicationSecurityGroups { get; set; }
+
+        public List<PSPrivateEndpointIPConfiguration> IpConfigurations { get; set; }
+
+        public string CustomNetworkInterfaceName { get; internal set; }
+
         [JsonIgnore]
         public string SubnetText
         {
@@ -65,6 +71,18 @@ namespace Microsoft.Azure.Commands.Network.Models
         public string ExtendedLocationText
         {
             get { return JsonConvert.SerializeObject(ExtendedLocation, Formatting.Indented, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }); }
+        }
+
+        [JsonIgnore]
+        public string ApplicationSecurityGroupsText
+        {
+            get { return JsonConvert.SerializeObject(ApplicationSecurityGroups, Formatting.Indented, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }); }
+        }
+
+        [JsonIgnore]
+        public string IpConfigurationsText
+        {
+            get { return JsonConvert.SerializeObject(IpConfigurations, Formatting.Indented, new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore }); }
         }
 
         public bool ShouldSerializeNetworkInterfaces()

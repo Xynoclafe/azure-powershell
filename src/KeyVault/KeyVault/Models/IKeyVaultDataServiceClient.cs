@@ -40,11 +40,11 @@ namespace Microsoft.Azure.Commands.KeyVault.Models
 
         PSDeletedKeyVaultKey GetDeletedKey(string managedHsmName, string keyName);
 
+        IEnumerable<PSDeletedKeyVaultKeyIdentityItem> GetDeletedKeys(KeyVaultObjectFilterOptions options);
+
         IEnumerable<PSKeyVaultKeyIdentityItem> GetKeys(KeyVaultObjectFilterOptions options);
 
         IEnumerable<PSKeyVaultKeyIdentityItem> GetKeyVersions(KeyVaultObjectFilterOptions options);
-
-        IEnumerable<PSDeletedKeyVaultKeyIdentityItem> GetDeletedKeys(KeyVaultObjectFilterOptions options);
 
         PSKeyVaultKey ImportKey(string vaultName, string keyName, PSKeyVaultKeyAttributes keyAttributes, JsonWebKey webKey, bool? importToHsm);
 
@@ -59,6 +59,15 @@ namespace Microsoft.Azure.Commands.KeyVault.Models
         PSKeyVaultKey RecoverKey(string vaultName, string keyName);
 
         PSKeyVaultKey RestoreKey(string vaultName, string inputBlobPath);
+
+        #region Key rotation
+        PSKeyVaultKey RotateKey(string vaultName, string keyName);
+
+        PSKeyRotationPolicy GetKeyRotationPolicy(string vaultName, string keyName);
+
+        PSKeyRotationPolicy SetKeyRotationPolicy(PSKeyRotationPolicy KeyRotationPolicy);
+        #endregion
+
         #endregion
 
         #region Managed Hsm key actions
@@ -81,13 +90,13 @@ namespace Microsoft.Azure.Commands.KeyVault.Models
 
         PSKeyVaultKey ImportManagedHsmKey(string managedHsmName, string keyName, Track2Sdk.JsonWebKey webKey);
 
-        PSKeyOperationResult ManagedHsmKeyDecrypt(string vaultName, string keyName, string version, byte[] value, string encryptAlgorithm);
+        PSKeyOperationResult ManagedHsmKeyDecrypt(string managedHsmName, string keyName, string version, byte[] value, string encryptAlgorithm);
 
-        PSKeyOperationResult ManagedHsmKeyEncrypt(string vaultName, string keyName, string version, byte[] value, string encryptAlgorithm);
+        PSKeyOperationResult ManagedHsmKeyEncrypt(string managedHsmName, string keyName, string version, byte[] value, string encryptAlgorithm);
 
-        PSKeyOperationResult ManagedHsmUnwrapKey(string vaultName, string keyName, string keyVersion, byte[] value, string wrapAlgorithm);
+        PSKeyOperationResult ManagedHsmUnwrapKey(string managedHsmName, string keyName, string keyVersion, byte[] value, string wrapAlgorithm);
 
-        PSKeyOperationResult ManagedHsmWrapKey(string vaultName, string keyName, string keyVersion, byte[] wrapKey, string wrapAlgorithm);
+        PSKeyOperationResult ManagedHsmWrapKey(string managedHsmName, string keyName, string keyVersion, byte[] wrapKey, string wrapAlgorithm);
 
         PSKeyVaultKey UpdateManagedHsmKey(string managedHsmName, string keyName, string keyVersion, PSKeyVaultKeyAttributes keyAttributes);
 
@@ -96,6 +105,17 @@ namespace Microsoft.Azure.Commands.KeyVault.Models
         PSKeyVaultKey RecoverManagedHsmKey(string managedHsmName, string keyName);
 
         PSKeyVaultKey RestoreManagedHsmKey(string managedHsmName, string inputBlobPath);
+
+        byte[] GetManagedHsmRandomNumber(string managedHsmName, int count);
+
+        #region Key rotation
+        PSKeyVaultKey RotateManagedHsmKey(string managedHsmName, string keyName);
+
+        PSKeyRotationPolicy GetManagedHsmKeyRotationPolicy(string managedHsmName, string keyName);
+
+        PSKeyRotationPolicy SetManagedHsmKeyRotationPolicy(PSKeyRotationPolicy keyRotationPolicy);
+        #endregion
+
         #endregion
 
         #region Secret actions
@@ -142,9 +162,13 @@ namespace Microsoft.Azure.Commands.KeyVault.Models
 
         PSKeyVaultCertificate MergeCertificate(string vaultName, string certName, X509Certificate2Collection certs, IDictionary<string, string> tags);
 
-        PSKeyVaultCertificate ImportCertificate(string vaultName, string certName, string base64CertColl, SecureString certPassword, IDictionary<string, string> tags);
+        PSKeyVaultCertificate MergeCertificate(string vaultName, string certName, byte[] certBytes, Dictionary<string, string> tags);
 
-        PSKeyVaultCertificate ImportCertificate(string vaultName, string certName, X509Certificate2Collection certificateCollection, IDictionary<string, string> tags);
+        PSKeyVaultCertificate ImportCertificate(string vaultName, string certName, byte[] certificate, SecureString certPassword, IDictionary<string, string> tags, string contentType = Constants.Pkcs12ContentType);
+
+        PSKeyVaultCertificate ImportCertificate(string vaultName, string certName, string base64CertString, SecureString certPassword, IDictionary<string, string> tags, string contentType = Constants.Pkcs12ContentType);
+
+        PSKeyVaultCertificate ImportCertificate(string vaultName, string certName, X509Certificate2Collection certificateCollection, IDictionary<string, string> tags, string contentType = Constants.Pkcs12ContentType);
 
         PSDeletedKeyVaultCertificate DeleteCertificate(string vaultName, string certName);
 

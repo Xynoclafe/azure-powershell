@@ -1,5 +1,5 @@
 ---
-external help file:
+external help file: Az.Aks-help.xml
 Module Name: Az.Aks
 online version: https://docs.microsoft.com/powershell/module/az.aks/get-azaksnodepoolupgradeprofile
 schema: 2.0.0
@@ -14,13 +14,17 @@ Gets the details of the upgrade profile for an agent pool with a specified resou
 
 ### Get (Default)
 ```
-Get-AzAksNodePoolUpgradeProfile -AgentPoolName <String> -ClusterName <String> -ResourceGroupName <String>
- [-SubscriptionId <String[]>] [-DefaultProfile <PSObject>] [<CommonParameters>]
+Get-AzAksNodePoolUpgradeProfile -ClusterName <String> -NodePoolName <String> -ResourceGroupName <String>
+ [-SubscriptionId <String[]>] [-DefaultProfile <PSObject>] [-Break] [-HttpPipelineAppend <SendAsyncStep[]>]
+ [-HttpPipelinePrepend <SendAsyncStep[]>] [-Proxy <Uri>] [-ProxyCredential <PSCredential>]
+ [-ProxyUseDefaultCredentials] [<CommonParameters>]
 ```
 
 ### GetViaIdentity
 ```
-Get-AzAksNodePoolUpgradeProfile -InputObject <IAksIdentity> [-DefaultProfile <PSObject>] [<CommonParameters>]
+Get-AzAksNodePoolUpgradeProfile -InputObject <IAksIdentity> [-DefaultProfile <PSObject>] [-Break]
+ [-HttpPipelineAppend <SendAsyncStep[]>] [-HttpPipelinePrepend <SendAsyncStep[]>] [-Proxy <Uri>]
+ [-ProxyCredential <PSCredential>] [-ProxyUseDefaultCredentials] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,8 +34,10 @@ Gets the details of the upgrade profile for an agent pool with a specified resou
 
 ### Example 1: Get Aks node pool upgrade profile with resource group name and cluster name
 ```powershell
-PS C:\> Get-AzAksNodePoolUpgradeProfile -ResourceGroupName group -ClusterName myCluster -AgentPoolName default
+Get-AzAksNodePoolUpgradeProfile -ResourceGroupName group -ClusterName myCluster -AgentPoolName default
+```
 
+```output
 Name    Type
 ----    ----
 default Microsoft.ContainerService/managedClusters/agentPools/upgradeProfiles
@@ -41,17 +47,17 @@ Get Aks node pool upgrade profile with resource group name and cluster name.
 
 ## PARAMETERS
 
-### -AgentPoolName
-The name of the agent pool.
+### -Break
+Wait for .NET debugger to attach
 
 ```yaml
-Type: System.String
-Parameter Sets: Get
+Type: System.Management.Automation.SwitchParameter
+Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -86,6 +92,36 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -HttpPipelineAppend
+SendAsync Pipeline Steps to be appended to the front of the pipeline
+
+```yaml
+Type: Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.SendAsyncStep[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -HttpPipelinePrepend
+SendAsync Pipeline Steps to be prepended to the front of the pipeline
+
+```yaml
+Type: Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.SendAsyncStep[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -InputObject
 Identity Parameter
 To construct, see NOTES section for INPUTOBJECT properties and create a hash table.
@@ -99,6 +135,66 @@ Required: True
 Position: Named
 Default value: None
 Accept pipeline input: True (ByValue)
+Accept wildcard characters: False
+```
+
+### -NodePoolName
+The name of the agent pool.
+
+```yaml
+Type: System.String
+Parameter Sets: Get
+Aliases: AgentPoolName
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Proxy
+The URI for the proxy server to use
+
+```yaml
+Type: System.Uri
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProxyCredential
+Credentials for a proxy server to use for the remote call
+
+```yaml
+Type: System.Management.Automation.PSCredential
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProxyUseDefaultCredentials
+Use the default credentials for the proxy
+
+```yaml
+Type: System.Management.Automation.SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
@@ -153,9 +249,10 @@ COMPLEX PARAMETER PROPERTIES
 To create the parameters described below, construct a hash table containing the appropriate properties. For information on hash tables, run Get-Help about_Hash_Tables.
 
 
-INPUTOBJECT <IAksIdentity>: Identity Parameter
+`INPUTOBJECT <IAksIdentity>`: Identity Parameter
   - `[AgentPoolName <String>]`: The name of the agent pool.
   - `[Id <String>]`: Resource identity path
+  - `[Location <String>]`: The name of a supported Azure region.
   - `[PrivateEndpointConnectionName <String>]`: The name of the private endpoint connection.
   - `[ResourceGroupName <String>]`: The name of the resource group.
   - `[ResourceName <String>]`: The name of the managed cluster resource.
@@ -163,4 +260,3 @@ INPUTOBJECT <IAksIdentity>: Identity Parameter
   - `[SubscriptionId <String>]`: Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.
 
 ## RELATED LINKS
-

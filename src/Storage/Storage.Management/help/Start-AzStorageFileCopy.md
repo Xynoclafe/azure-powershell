@@ -94,6 +94,7 @@ Start-AzStorageFileCopy -AbsoluteUri <String> -DestFile <CloudFile> [-Force] [-S
 
 ## DESCRIPTION
 The **Start-AzStorageFileCopy** cmdlet starts to copy a source file to a destination file.
+This cmdlet will trigger asynchronous blob copy, the copy process is handled by server. If this is a cross account blob copy, there is no SLA for the blob copy.
 
 ## EXAMPLES
 
@@ -446,7 +447,7 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

@@ -200,6 +200,26 @@ namespace Microsoft.Azure.Commands.Synapse.Models
         public const string SqlScript = nameof(SqlScript);
 
         public const int DefaultResultLimit = 5000;
+        
+        public const string KqlScript = nameof(KqlScript);
+
+        public const string DefaultAutoPauseDelayInMinute = "15";
+
+        public const string DefaultMinExecutorCount = "1";
+
+        public const string DefaultMaxExecutorCount = "2";
+
+        public const string ActiveDirectoryOnlyAuthentication = nameof(ActiveDirectoryOnlyAuthentication);
+
+        public const string LinkConnectionLinkTable = nameof(LinkConnectionLinkTable);
+
+        public const string LinkConnectionLinkTableStatus = nameof(LinkConnectionLinkTableStatus);
+
+        public const string LinkConnectionLandingZoneCredential = nameof(LinkConnectionLandingZoneCredential);
+
+        public const string LinkConnection = nameof(LinkConnection);
+
+        public const string LinkConnectionDetailedStatus = nameof(LinkConnectionDetailedStatus);
 
         public static Dictionary<string, ComputeNodeSize> ComputeNodeSizes = new Dictionary<string, ComputeNodeSize>
         {
@@ -286,6 +306,18 @@ namespace Microsoft.Azure.Commands.Synapse.Models
         {
             Add,
             Remove
+        }
+        public enum UserAssignedManagedIdentityActionType
+        {
+            Add,
+            Remove,
+            Set
+        }
+
+        public class PublicNetworkAccess
+        {
+            public const string Enabled = "Enabled";
+            public const string Disabled = "Disabled";
         }
 
         public const string SparkConfiguration = nameof(SparkConfiguration);

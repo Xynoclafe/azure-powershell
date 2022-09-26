@@ -34,23 +34,31 @@ Gets a Kusto cluster database script.
 
 ## EXAMPLES
 
-### Example 1: {{ Add title here }}
+### Example 1: List all Kusto cluster database scripts
 ```powershell
-PS C:\> {{ Add code here }}
-
-{{ Add output here }}
+Get-AzKustoScript -ClusterName testnewkustocluster -ResourceGroupName testrg -DatabaseName mykustodatabase
 ```
 
-{{ Add description here }}
-
-### Example 2: {{ Add title here }}
-```powershell
-PS C:\> {{ Add code here }}
-
-{{ Add output here }}
+```output
+Name                                               Type
+----                                               ----
+testnewkustocluster/mykustodatabase/newkustoscript Microsoft.Kusto/Clusters/Databases/Scripts
 ```
 
-{{ Add description here }}
+The above command returns all Kusto cluster database scripts in the cluster "testnewkustocluster" found in the resource group "testrg".
+
+### Example 2: Get a specific Kusto database script by name
+```powershell
+Get-AzKustoScript -ClusterName testnewkustocluster -ResourceGroupName testrg -DatabaseName mykustodatabase -Name newkustoscript
+```
+
+```output
+Name                                               Type
+----                                               ----
+testnewkustocluster/mykustodatabase/newkustoscript Microsoft.Kusto/Clusters/Databases/Scripts
+```
+
+The above command returns the Kusto database script named "newkustoscript" in the cluster "testnewkustocluster" found in the resource group "testrg".
 
 ## PARAMETERS
 
@@ -170,7 +178,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### Microsoft.Azure.PowerShell.Cmdlets.Kusto.Models.Api202101.IScript
+### Microsoft.Azure.PowerShell.Cmdlets.Kusto.Models.Api20220201.IScript
 
 ## NOTES
 
@@ -181,15 +189,18 @@ COMPLEX PARAMETER PROPERTIES
 To create the parameters described below, construct a hash table containing the appropriate properties. For information on hash tables, run Get-Help about_Hash_Tables.
 
 
-INPUTOBJECT <IKustoIdentity>: Identity Parameter
+INPUTOBJECT `<IKustoIdentity>`: Identity Parameter
   - `[AttachedDatabaseConfigurationName <String>]`: The name of the attached database configuration.
   - `[ClusterName <String>]`: The name of the Kusto cluster.
   - `[DataConnectionName <String>]`: The name of the data connection.
   - `[DatabaseName <String>]`: The name of the database in the Kusto cluster.
   - `[Id <String>]`: Resource identity path
   - `[Location <String>]`: Azure location (region) name.
+  - `[ManagedPrivateEndpointName <String>]`: The name of the managed private endpoint.
   - `[OperationId <String>]`: The Guid of the operation ID
   - `[PrincipalAssignmentName <String>]`: The name of the Kusto principalAssignment.
+  - `[PrivateEndpointConnectionName <String>]`: The name of the private endpoint connection.
+  - `[PrivateLinkResourceName <String>]`: The name of the private link resource.
   - `[ResourceGroupName <String>]`: The name of the resource group containing the Kusto cluster.
   - `[ScriptName <String>]`: The name of the Kusto database script.
   - `[SubscriptionId <String>]`: Gets subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.

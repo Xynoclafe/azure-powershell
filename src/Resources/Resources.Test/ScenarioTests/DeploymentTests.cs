@@ -19,7 +19,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
 {
-    public class DeploymentTests : ResourceTestRunner
+    public class DeploymentTests : ResourcesTestRunner
     {
         public DeploymentTests(ITestOutputHelper output) : base(output)
         {
@@ -71,7 +71,7 @@ namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
             TestRunner.RunTestScript("Test-NewFailedSubscriptionDeploymentFromTemplateSpec");
         }
 
-        [Fact]
+        [Fact(Skip = "Need to update the Resources")]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         [Trait(Category.RunType, Category.CoreOnly)]
         public void TestNewMGDeploymentTemplateSpec()
@@ -124,7 +124,7 @@ namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
         }
 
         [Fact(Skip = "Fix acquisition of TenantId in KeyVault Test.")]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        [Trait(Category.AcceptanceType, Category.LiveOnly)]
         public void TestNewDeploymentWithKeyVaultReference()
         {
             TestRunner.RunTestScript("Test-NewDeploymentWithKeyVaultReference");

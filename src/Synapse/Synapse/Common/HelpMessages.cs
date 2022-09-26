@@ -46,6 +46,18 @@ namespace Microsoft.Azure.Commands.Synapse.Common
 
         public const string GitRepository = "Git Repository Settings. Connect workspace to the repository for source control and collaboration for work on your workspace pipelines";
 
+        public const string PublicNetworkAccess = "Enable or Disable public network access to workspace. Possible values include: 'Enabled', 'Disabled'";
+
+        public const string UserAssignedIdentityAction = 
+@"Action must be specified when you add/remove/set user assigned managed identities for workspace. 
+The supported actions are:
+Add
+Remove
+Set
+Add means to add user assigned managed identities for workspace, Remove means to remove user assigned managed identities from workspace, Set can be used when you want to add and remove user assigned managed identities at the same time, current identities will be coverd by specified ones.";
+
+        public const string UserAssignedIdentityId = "User assigned managed identity Id for workspace.";
+
         public const string RepositoryType = "Select the repository type that you want to use to store your artifacts for this Synapse Analytics workspace, the type include DevOps and GitHub.";
 
         public const string HostName = "GitHub Enterprise host name. For example: https://github.mydomain.com";
@@ -63,6 +75,8 @@ namespace Microsoft.Azure.Commands.Synapse.Common
         public const string RootFolder = "Displays the name of the folder to the location of your Azure Data Factory JSON resources are imported. The default value is /";
 
         public const string TenantId = "Select the tenant Id to use when signing in into the Azure DevOps Git repository.";
+
+        public const string LastCommitId = "The last published commit Id.";
 
         public const string DoNotAssignManagedIdentity = "Do not assign the workspace's system-assigned managed identity CONTROL permissions to SQL pools for pipeline integration.";
 
@@ -88,9 +102,15 @@ namespace Microsoft.Azure.Commands.Synapse.Common
 
         public const string DisableAutoPause = "Indicates whether Auto-pause should be disabled.";
 
-        public const string AutoPauseDelayInMinute = "Number of minutes idle. This parameter must be specified when Auto-pause is enabled.";
+        public const string AutoPauseDelayInMinute = "Number of minutes idle. This parameter can be specified when Auto-pause is enabled. If it is not specified manually, the default value will be " + SynapseConstants.DefaultAutoPauseDelayInMinute + ".";
 
-        public const string SparkVersion = "Apache Spark version. Allowed values: 2.4";
+        public const string EnableDynamicExecutorAllocation = "Indicates whether dynamic executor allocation should be enabled.";
+
+        public const string MinExecutorCount = "Minimum number of executors to be allocated in the specified Spark pool. This parameter can be specified when DynamicExecutorAllocation is enabled. The value should lie between 1 (inclusive) and maxExecutors (exclusive). If it is not specified manually, the default value will be " + SynapseConstants.DefaultMinExecutorCount + "."; 
+
+        public const string MaxExecutorCount = "Maximum number of executors to be allocated in the specified Spark pool. This parameter can be specified when DynamicExecutorAllocation is enabled. The value should lie between 1 (inclusive) and maximumNodeCount (exclusive). If it is not specified manually, the default value will be " + SynapseConstants.DefaultMaxExecutorCount + ".";
+
+        public const string SparkVersion = "Apache Spark version. Allowed values: 2.3,2.4,3.1,3.2";
 
         public const string LibraryRequirementsFilePath = "Environment configuration file (\"PIP freeze\" output).";
 
@@ -227,6 +247,18 @@ namespace Microsoft.Azure.Commands.Synapse.Common
         public const string DisplayName = "Specifies the display name of the user or group for whom to grant permissions. This display name must exist in the active directory associated with the current subscription.";
 
         public const string ObjectId = "Specifies the object ID of the user or group in Azure Active Directory for which to grant permissions.";
+
+        public const string LinkConnectionName = "Name of link connection.";
+
+        public const string MaxSegmentCount = "Max segment count to query table status.";
+
+        public const string SasToken = "Landing zone's sas token.";
+
+        public const string EditTablesRequestFile = "Specifies a local file path for a file to edit link tables";
+
+        public const string LinkTableContinuationToken = "Continuation token to query table status.";
+
+        public const string LinkConnectionObject = "The information about the link connection.";
 
         // TODO: need to update to Synapse link in future
         public const string AuditActionGroup =
@@ -548,5 +580,21 @@ For more information, see https://docs.microsoft.com/en-us/sql/relational-databa
         public const string SparkConfigurationName = "The Spark Configuration name.";
 
         public const string SparkConfigurationObject = "The Spark configuration object.";
+        
+        public const string KqlScriptName = "KQL script name.";
+
+        public const string KqlScriptObject = "KQL script object.";
+
+        public const string KqlScriptOutputFolder = "The folder where the KQL script should be placed.";
+
+        public const string KqlFilePath = "The KQL file path.";
+
+        public const string KustoPoolName = "Name of Synapse Kusto pool.";
+
+        public const string KustoPoolDatabaseName = "Name of Synapse Kusto database.";
+
+        public const string StorageAccountType = "The storage account type used to store backups for the sql pool. Possible values include: 'GRS', 'LRS'.";
+
+        public const string ForceApplySetting = "Whether to stop any running jobs in the Big Data pool.";
     }
 }

@@ -23,6 +23,8 @@ using Microsoft.Azure.Management.EventHub.Models;
 using Microsoft.Azure.Commands.Common.Authentication.Abstractions;
 using System.Management.Automation;
 using Newtonsoft.Json;
+using System.Collections;
+using Microsoft.Azure.Commands.ResourceManager.Common.Tags;
 
 namespace Microsoft.Azure.Commands.Eventhub
 {
@@ -45,6 +47,13 @@ namespace Microsoft.Azure.Commands.Eventhub
             private set;
         }
 
+        public const string SystemAssigned = "SystemAssigned";
+        public const string UserAssigned = "UserAssigned";
+        public const string SystemAssignedUserAssigned = "SystemAssigned, UserAssigned";
+        public const string None = "None";
+
+        public const int maxApplicationGroups = 100;
+
         #region Namespace
         public PSNamespaceAttributes GetNamespace(string resourceGroupName, string namespaceName)
         {
@@ -54,244 +63,134 @@ namespace Microsoft.Azure.Commands.Eventhub
 
         public IEnumerable<PSNamespaceAttributes> ListNamespacesByResourceGroup(string resourceGroupName)
         {
-            var response = Client.Namespaces.ListByResourceGroup(resourceGroupName);
-            var resourceList = response.Select(resource => new PSNamespaceAttributes(resource));
-            return resourceList;
+            var listOfNamespaces = new List<PSNamespaceAttributes>();
+
+            string nextPageLink = null;
+
+            do
+            {
+                var pageOfNamespaces = new List<PSNamespaceAttributes>();
+
+                if (!String.IsNullOrEmpty(nextPageLink))
+                {
+                    var result = Client.Namespaces.ListByResourceGroupNext(nextPageLink);
+                    nextPageLink = result.NextPageLink;
+                    pageOfNamespaces = result.Select(resource => new PSNamespaceAttributes(resource)).ToList();
+                }
+                else
+                {
+                    var result = Client.Namespaces.ListByResourceGroup(resourceGroupName);
+                    nextPageLink = result.NextPageLink;
+                    pageOfNamespaces = result.Select(resource => new PSNamespaceAttributes(resource)).ToList();
+                }
+
+                listOfNamespaces.AddRange(pageOfNamespaces);
+
+            } while (!String.IsNullOrEmpty(nextPageLink));
+
+            return listOfNamespaces;
         }
 
         public IEnumerable<PSNamespaceAttributes> ListNamespacesBySubscription()
         {
-            var response = Client.Namespaces.List();
-            var resourceList = response.Select(resource => new PSNamespaceAttributes(resource));
-            return resourceList;
-        }
+            var listOfNamespaces = new List<PSNamespaceAttributes>();
 
-        public PSNamespaceAttributes BeginCreateNamespace(string resourceGroupName, string namespaceName, string location, string skuName, int? skuCapacity, Dictionary<string, string> tags, bool isAutoInflateEnabled, int? maximumThroughputUnits, bool isKafkaEnabled, string clusterARMId, bool isZoneRedundant, bool isDisableLocalAuth, bool isIdentity)
-        {
-            EHNamespace parameter = new EHNamespace();
-            parameter.Location = location;
+            string nextPageLink = null;
 
-            if (tags != null)
+            do
             {
-                parameter.Tags = new Dictionary<string, string>(tags);
-            }
+                var pageOfNamespaces = new List<PSNamespaceAttributes>();
 
-            if (skuName != null)
-            {
-                parameter.Sku = new Sku
+                if (!String.IsNullOrEmpty(nextPageLink))
                 {
-                    Name = skuName,
-                    Tier = skuName
-                };
-            }
-
-            if (clusterARMId != null)
-            {
-                parameter.ClusterArmId = clusterARMId;
-            }
-
-            if (skuCapacity.HasValue)
-            {
-                parameter.Sku.Capacity = skuCapacity;
-            }
-
-            if (isAutoInflateEnabled)
-                parameter.IsAutoInflateEnabled = isAutoInflateEnabled;
-
-            if (maximumThroughputUnits.HasValue)
-                parameter.MaximumThroughputUnits = maximumThroughputUnits;
-
-            if (isKafkaEnabled)
-                parameter.KafkaEnabled = isKafkaEnabled;
-
-            if (isZoneRedundant)
-                parameter.ZoneRedundant = isZoneRedundant;
-
-            if (isDisableLocalAuth)
-                parameter.DisableLocalAuth = isDisableLocalAuth;
-
-            if (isIdentity)
-                parameter.Identity = new Identity() { Type = ManagedServiceIdentityType.SystemAssigned};
-
-            var response = Client.Namespaces.CreateOrUpdate(resourceGroupName, namespaceName, parameter);
-            return new PSNamespaceAttributes(response);
-        }
-
-        // Update Namespace                                                     (ResourceGroupName, Name, Location, SkuName, SkuCapacity, tagDictionary, EnableAutoInflate.IsPresent, MaximumThroughputUnits, EnableKafka.IsPresent, ZoneRedundant.IsPresent, Identity.IsPresent, IdentityUserDefined, KeySource, KeyProperties));                    
-        public PSNamespaceAttributes BeginUpdateNamespace(string resourceGroupName,
-            string namespaceName,
-            string location,
-            string skuName,
-            int? skuCapacity,
-            Dictionary<string, string> tags,
-            bool isAutoInflateEnabled,
-            int? maximumThroughputUnits,
-            bool isKafkaEnabled, bool isIdentity, string identityUserDefined, string keySource, List<string []> KeyProperties, bool isDisableLocalAuth)
-        {          
-
-            EHNamespace parameter = Client.Namespaces.Get(resourceGroupName, namespaceName);
-
-            if (parameter.Identity != null && parameter.Encryption == null)
-            {
-                parameter.Encryption = new Encryption();
-                parameter.Encryption.KeyVaultProperties = new List<KeyVaultProperties>();
-            }
-
-            parameter.Location = location;
-
-            if (tags != null)
-            {
-                parameter.Tags = new Dictionary<string, string>(tags);
-            }
-
-            if (skuName != null)
-            {
-                parameter.Sku = new Sku
-                {
-                    Name = skuName,
-                    Tier = skuName
-                };
-            }
-
-            if (skuCapacity.HasValue)
-            {
-                parameter.Sku.Capacity = skuCapacity;
-            }
-
-            if (isAutoInflateEnabled)
-                parameter.IsAutoInflateEnabled = isAutoInflateEnabled;
-
-            if (maximumThroughputUnits.HasValue)
-                parameter.MaximumThroughputUnits = maximumThroughputUnits;
-
-            if (isKafkaEnabled)
-                parameter.KafkaEnabled = isKafkaEnabled;
-
-            if (isIdentity)
-                parameter.Identity = new Identity() { Type = ManagedServiceIdentityType.SystemAssigned };
-
-            if (isDisableLocalAuth)
-                parameter.DisableLocalAuth = isDisableLocalAuth;
-
-
-            //IdentityUserDefined, KeySource, KeyProperties
-            if (!String.IsNullOrEmpty(identityUserDefined) && identityUserDefined.ToLower() == "none")
-            {
-                parameter.Identity = new Identity() { Type = null};
-            }
-
-            if (!String.IsNullOrEmpty(keySource))
-            {
-                if (parameter.Encryption == null)
-                {
-                    parameter.Encryption = new Encryption()
-                    {
-                        KeySource = KeySource.MicrosoftKeyVault
-                    };
+                    var result = Client.Namespaces.ListNext(nextPageLink);
+                    nextPageLink = result.NextPageLink;
+                    pageOfNamespaces = result.Select(resource => new PSNamespaceAttributes(resource)).ToList();
                 }
                 else
                 {
-                    parameter.Encryption.KeySource = KeySource.MicrosoftKeyVault;
+                    var result = Client.Namespaces.List();
+                    nextPageLink = result.NextPageLink;
+                    pageOfNamespaces = result.Select(resource => new PSNamespaceAttributes(resource)).ToList();
                 }
-            }
 
-            if (KeyProperties != null)
-            {
-                parameter.Encryption.KeyVaultProperties = new List<KeyVaultProperties>();
+                listOfNamespaces.AddRange(pageOfNamespaces);
 
-                if (KeyProperties.Count > 2)
-                {
-                    if (KeyProperties[0].Length == 1)
-                    {
-                        KeyVaultProperties item = new KeyVaultProperties();
+            } while (!String.IsNullOrEmpty(nextPageLink));
 
-                        switch (KeyProperties.Count)
-                        {
-                            case 2:
-                                {
-                                    item.KeyName = KeyProperties[0].ToString();
-                                    item.KeyVaultUri = KeyProperties[0].ToString();
-                                    break;
-                                }
-                            case 3:
-                                {
-                                    item.KeyName = KeyProperties[0].GetValue(0).ToString();
-                                    item.KeyVaultUri = KeyProperties[1].GetValue(0).ToString();
-                                    item.KeyVersion = KeyProperties[2].GetValue(0).ToString();
-                                    break;
-                                }
-                        }
-                        parameter.Encryption.KeyVaultProperties.Add(item);
-                    }
-                    else
-                    {
-                        foreach (string[] item in KeyProperties)
-                        {
-                            KeyVaultProperties singleItem = new KeyVaultProperties();
-                            switch (item.Length)
-                            {
-                                case 2:
-                                    {
-                                        singleItem.KeyName = item[0];
-                                        singleItem.KeyVaultUri = item[1];
-                                        break;
-                                    }
-                                case 3:
-                                    {
-                                        singleItem.KeyName = item[0];
-                                        singleItem.KeyVaultUri = item[1];
-                                        singleItem.KeyVersion = item[2];
-                                        break;
-                                    }
-                            }
+            return listOfNamespaces;
+        }
 
-                            parameter.Encryption.KeyVaultProperties.Add(singleItem);
-                        }
-                    }
-                }                
-            }
-            var response = Client.Namespaces.CreateOrUpdate(resourceGroupName, namespaceName, parameter);
+        public PSNamespaceAttributes SendNamespaceCreateOrUpdateRequest(string resourceGroupName, string namespaceName, EHNamespace namespacePayload)
+        {
+            EHNamespace response = Client.Namespaces.CreateOrUpdate(resourceGroupName, namespaceName, namespacePayload);
             return new PSNamespaceAttributes(response);
         }
 
-        public PSNamespaceAttributes UpdateNamespace(string resourceGroupName, string namespaceName, string location, string skuName, int? skuCapacity, NamespaceState? state, Dictionary<string, string> tags, bool? isAutoInflateEnabled, int? maximumThroughputUnits)
+
+        public ManagedServiceIdentityType FindIdentity(string identityType)
+        {
+            ManagedServiceIdentityType Type = ManagedServiceIdentityType.None;
+            if (identityType == SystemAssigned)
+                Type = ManagedServiceIdentityType.SystemAssigned;
+
+            else if (identityType == UserAssigned)
+                Type = ManagedServiceIdentityType.UserAssigned;
+
+            else if (identityType == SystemAssignedUserAssigned)
+                Type = ManagedServiceIdentityType.SystemAssignedUserAssigned;
+
+            else if (identityType == None)
+                Type = ManagedServiceIdentityType.None;
+
+            return Type;
+        }
+
+        public Dictionary<string, UserAssignedIdentity> MapIdentityId(string[] IdentityId)
+        {
+            Dictionary<string, UserAssignedIdentity> UserAssignedIdentities = new Dictionary<string, UserAssignedIdentity>();
+
+            UserAssignedIdentities = IdentityId.Where(id => id != null).ToDictionary(id => id, id => new UserAssignedIdentity());
+
+            return UserAssignedIdentities;
+        }
+
+        public List<KeyVaultProperties> MapEncryptionConfig(PSEncryptionConfigAttributes[] EncryptionConfig)
         {
 
-            var parameter = new EHNamespace()
-            {
-                Location = location
-            };
+            return EncryptionConfig?.Where(x => x != null)
+                                   .Select(x =>
+                                   {
+                                        KeyVaultProperties kvp = new KeyVaultProperties();
 
-            Sku tempSku = new Sku();
+                                        if (x.KeyName == null || x.KeyVaultUri == null)
+                                            throw new Exception("KeyName and KeyVaultUri cannot be null");
 
-            if (skuName != null)
-            {
-                tempSku.Name = skuName;
-                tempSku.Tier = skuName;
-            }
+                                        kvp.KeyName = x.KeyName;
 
-            if (skuCapacity.HasValue)
-            {
-                tempSku.Capacity = skuCapacity;
-            }
+                                        kvp.KeyVaultUri = x.KeyVaultUri;
 
-            parameter.Sku = tempSku;
+                                        kvp.KeyVersion = x?.KeyVersion;
 
-            if (tags != null && tags.Count() > 0)
-            {
-                parameter.Tags = new Dictionary<string, string>(tags);
-            }
+                                        if (x.UserAssignedIdentity != null)
+                                            kvp.Identity = new UserAssignedIdentityProperties(x.UserAssignedIdentity);
 
-            if (isAutoInflateEnabled.HasValue)
-                parameter.IsAutoInflateEnabled = isAutoInflateEnabled;
+                                        return kvp;
+                                   })
+                                   .ToList();
 
-            if (maximumThroughputUnits.HasValue)
-                parameter.MaximumThroughputUnits = maximumThroughputUnits;
-
-            var response = Client.Namespaces.CreateOrUpdate(resourceGroupName, namespaceName, parameter);
-
-            return new PSNamespaceAttributes(response);
         }
+
+        public void InvalidArgumentException(string message)
+        {
+            throw new PSArgumentException(message);
+        }
+
+        public EHNamespace GetEventHubNamespace(string resourceGroupName, string namespaceName)
+        {
+            return Client.Namespaces.Get(resourceGroupName, namespaceName);
+        }
+
 
         public void BeginDeleteNamespace(string resourceGroupName, string namespaceName)
         {
@@ -338,7 +237,7 @@ namespace Microsoft.Azure.Commands.Eventhub
             return new PSListKeysAttributes(listKeys);
         }
 
-        public PSListKeysAttributes SetRegenerateKeys(string resourceGroupName, string namespaceName, string authRuleName, string regenerateKeys, string keyValue=null)
+        public PSListKeysAttributes SetRegenerateKeys(string resourceGroupName, string namespaceName, string authRuleName, string regenerateKeys, string keyValue = null)
         {
             AccessKeys regenerateKeyslistKeys;
             RegenerateAccessKeyParameters regenParam = new RegenerateAccessKeyParameters();
@@ -350,7 +249,7 @@ namespace Microsoft.Azure.Commands.Eventhub
 
             regenParam.Key = keyValue;
 
-            regenerateKeyslistKeys = Client.Namespaces.RegenerateKeys(resourceGroupName, namespaceName, authRuleName, regenParam.KeyType);
+            regenerateKeyslistKeys = Client.Namespaces.RegenerateKeys(resourceGroupName, namespaceName, authRuleName, regenParam.KeyType, regenParam.Key);
 
             return new PSListKeysAttributes(regenerateKeyslistKeys);
         }
@@ -426,37 +325,16 @@ namespace Microsoft.Azure.Commands.Eventhub
             return new PSEventHubAttributes(response);
         }
 
-        public PSEventHubClusterAttributes CreateOrUpdateEventHubCluster(string resourceGroupName, string clusterName, PSEventHubClusterAttributes parameter)
+        public Cluster CreateOrUpdateEventHubCluster(string resourceGroupName, string clusterName, Cluster cluster)
         {
-            var parameterCluster = new Management.EventHub.Models.Cluster();
-
-            parameterCluster.Location = parameter.Location;
-            parameterCluster.Sku = new ClusterSku();
-            parameterCluster.Sku.Capacity = parameter.Sku.Capacity;
-            parameterCluster.Tags = parameter.Tags;
-
-            Management.EventHub.Models.Cluster response = Client.Clusters.CreateOrUpdate(resourceGroupName, clusterName, parameterCluster);
-            return new PSEventHubClusterAttributes(response);
+            var response = Client.Clusters.CreateOrUpdate(resourceGroupName, clusterName, cluster);
+            return response;
         }
 
-        public PSEventHubClusterAttributes UpdateEventHubCluster(string resourceGroupName, string clusterName, PSEventHubClusterAttributes parameter)
+        public Cluster GetEventHubCluster(string resourceGroupName, string clusterName)
         {
-            var parameterCluster = new Management.EventHub.Models.Cluster();
-
-            parameterCluster.Location = parameter.Location;
-            parameterCluster.Sku = new ClusterSku();
-            parameterCluster.Sku.Capacity = parameter.Sku.Capacity;
-            parameterCluster.Tags = parameter.Tags;
-
-            Management.EventHub.Models.Cluster response = Client.Clusters.Update(resourceGroupName, clusterName, parameterCluster);
-            return new PSEventHubClusterAttributes(response);
-        }
-
-
-        public PSEventHubClusterAttributes GetEventHubCluster(string resourceGroupName, string clusterName)
-        {
-            Management.EventHub.Models.Cluster response = Client.Clusters.Get(resourceGroupName, clusterName);
-            return new PSEventHubClusterAttributes(response);
+            Cluster response = Client.Clusters.Get(resourceGroupName, clusterName);
+            return response;
         }
 
         public IEnumerable<PSEventHubsAvailableCluster> GetEventHubAvailableClusters()
@@ -498,7 +376,7 @@ namespace Microsoft.Azure.Commands.Eventhub
             var resourceList = response.Select(resource => new PSSharedAccessAuthorizationRuleAttributes(resource));
             return resourceList;
         }
-                
+
         public PSSharedAccessAuthorizationRuleAttributes CreateOrUpdateEventHubAuthorizationRules(string resourceGroupName, string namespaceName, string eventHubName, string authorizationRuleName, PSSharedAccessAuthorizationRuleAttributes parameters)
         {
             var parameter1 = new AuthorizationRule()
@@ -572,7 +450,7 @@ namespace Microsoft.Azure.Commands.Eventhub
             if (!string.IsNullOrEmpty(parameter.AlternateName))
                 Parameter1.AlternateName = parameter.AlternateName;
 
-            var response = Client.DisasterRecoveryConfigs.CreateOrUpdate(resourceGroupName, namespaceName, alias,Parameter1.PartnerNamespace, Parameter1.AlternateName);
+            var response = Client.DisasterRecoveryConfigs.CreateOrUpdate(resourceGroupName, namespaceName, alias, Parameter1.PartnerNamespace, Parameter1.AlternateName);
 
             return new PSEventHubDRConfigurationAttributes(response);
         }
@@ -687,7 +565,7 @@ namespace Microsoft.Azure.Commands.Eventhub
 
         public PSCheckNameAvailabilityResultAttributes GetAliasCheckNameAvailability(string resourceGroup, string namespaceName, string aliasName)
         {
-            var response = Client.DisasterRecoveryConfigs.CheckNameAvailability(resourceGroup,namespaceName, aliasName);
+            var response = Client.DisasterRecoveryConfigs.CheckNameAvailability(resourceGroup, namespaceName, aliasName);
             return new PSCheckNameAvailabilityResultAttributes(response);
         }
 
@@ -715,6 +593,7 @@ namespace Microsoft.Azure.Commands.Eventhub
 
             networkRuleSet.DefaultAction = psNetworkRuleSetAttributes.DefaultAction;
             networkRuleSet.TrustedServiceAccessEnabled = psNetworkRuleSetAttributes.TrustedServiceAccessEnabled;
+            networkRuleSet.PublicNetworkAccess = psNetworkRuleSetAttributes.PublicNetworkAccess;
 
             foreach (PSNWRuleSetIpRulesAttributes psiprules in psNetworkRuleSetAttributes.IpRules)
             {
@@ -730,8 +609,301 @@ namespace Microsoft.Azure.Commands.Eventhub
             return new PSNetworkRuleSetAttributes(response);
         }
 
+        public PSNetworkRuleSetAttributes UpdateNetworkRuleSet(string resourceGroupName, string namespaceName, string publicNetworkAccess, bool? trustedServiceAccessEnabled, string defaultAction, PSNWRuleSetIpRulesAttributes[] iPRule, PSNWRuleSetVirtualNetworkRulesAttributes[] virtualNetworkRule)
+        {
+            NetworkRuleSet networkRuleSet = Client.Namespaces.GetNetworkRuleSet(resourceGroupName, namespaceName);
+
+            if (networkRuleSet == null)
+            {
+                networkRuleSet = new NetworkRuleSet();
+            }
+
+            if (defaultAction != null)
+            {
+                networkRuleSet.DefaultAction = defaultAction;
+            }
+
+            if (publicNetworkAccess != null)
+            {
+                networkRuleSet.PublicNetworkAccess = publicNetworkAccess;
+            }
+
+            if (trustedServiceAccessEnabled != null)
+            {
+                networkRuleSet.TrustedServiceAccessEnabled = trustedServiceAccessEnabled;
+            }
+
+            if (iPRule != null)
+            {
+                networkRuleSet.IpRules = new List<NWRuleSetIpRules>();
+
+                foreach (PSNWRuleSetIpRulesAttributes psiprules in iPRule)
+                {
+                    networkRuleSet.IpRules.Add(new NWRuleSetIpRules { Action = psiprules.Action, IpMask = psiprules.IpMask });
+                }
+            }
+
+            if (virtualNetworkRule != null)
+            {
+                networkRuleSet.VirtualNetworkRules = new List<NWRuleSetVirtualNetworkRules>();
+
+                foreach (PSNWRuleSetVirtualNetworkRulesAttributes psvisrtualnetworkrules in virtualNetworkRule)
+                {
+                    networkRuleSet.VirtualNetworkRules.Add(new NWRuleSetVirtualNetworkRules { Subnet = new Subnet { Id = psvisrtualnetworkrules.Subnet.Id }, IgnoreMissingVnetServiceEndpoint = psvisrtualnetworkrules.IgnoreMissingVnetServiceEndpoint });
+                }
+            }
+
+            var response = Client.Namespaces.CreateOrUpdateNetworkRuleSet(resourceGroupName, namespaceName, networkRuleSet);
+            return new PSNetworkRuleSetAttributes(response);
+
+        }
+
         #endregion
 
+        #region SchemaRegistry
+        public IEnumerable<PSEventHubsSchemaRegistryAttributes> ListSchemaGroupByNamespace(string resourceGroupName, string namespaceName)
+        {
+            var schemaGroups = Client.SchemaRegistry.ListByNamespace(resourceGroupName: resourceGroupName, namespaceName: namespaceName);
+            var resourceList = schemaGroups.Select(resource => new PSEventHubsSchemaRegistryAttributes(resource));
+            return resourceList;
+        }
+
+        public PSEventHubsSchemaRegistryAttributes GetSchemaGroup(string resourceGroupName, string namespaceName, string schemaGroupName)
+        {
+            var schemaGroup = Client.SchemaRegistry.Get(resourceGroupName: resourceGroupName, namespaceName: namespaceName, schemaGroupName: schemaGroupName);
+            return new PSEventHubsSchemaRegistryAttributes(schemaGroup);
+        }
+
+        public PSEventHubsSchemaRegistryAttributes BeginCreateNamespaceSchemaGroup(string resourceGroupName, string namespaceName, string schemaGroupName
+            , string schemaCompatibility, string schemaType, Hashtable groupProperties)
+        {
+            SchemaGroup schemaGroup = new SchemaGroup(schemaCompatibility: schemaCompatibility, schemaType: schemaType);
+            if (groupProperties != null)
+            {
+                schemaGroup.GroupProperties = TagsConversionHelper.CreateTagDictionary(groupProperties, validate: true); ;
+            }
+            var response = Client.SchemaRegistry.CreateOrUpdate(resourceGroupName: resourceGroupName, namespaceName: namespaceName, schemaGroupName: schemaGroupName, parameters: schemaGroup);
+            return new PSEventHubsSchemaRegistryAttributes(response);
+        }
+
+        public PSEventHubsSchemaRegistryAttributes BeginUpdateNamespaceSchemaGroup(string resourceGroupName, string namespaceName, string schemaGroupName
+            , string schemaCompatibility, string schemaType, IDictionary<string, string> groupProperties)
+        {
+            SchemaGroup parameters = Client.SchemaRegistry.Get(resourceGroupName: resourceGroupName, namespaceName: namespaceName, schemaGroupName: schemaGroupName);
+
+            if (groupProperties != null)
+            {
+                parameters.GroupProperties = groupProperties;
+            }
+
+            if (schemaCompatibility != null)
+            {
+                parameters.SchemaCompatibility = schemaCompatibility;
+            }
+
+            if (schemaType != null)
+            {
+                parameters.SchemaType = schemaType;
+            }
+
+            var response = Client.SchemaRegistry.CreateOrUpdate(resourceGroupName: resourceGroupName, namespaceName: namespaceName, schemaGroupName: schemaGroupName, parameters: parameters);
+            return new PSEventHubsSchemaRegistryAttributes(response);
+        }
+
+        public bool DeleteNamespaceSchemaGroup(string resourceGroupName, string namespaceName, string schemaGroupName)
+        {
+            Client.SchemaRegistry.Delete(resourceGroupName: resourceGroupName, namespaceName: namespaceName, schemaGroupName: schemaGroupName);
+            return true;
+        }
+
+
+        #endregion
+
+        #region ApplicationGroup
+
+        public PSEventHubApplicationGroupAttributes CreateApplicationGroup(string resourceGroupName, string namespaceName,
+            string appGroupName, string clientAppGroupIdentifier, bool? isEnabled, PSEventHubThrottlingPolicyConfigAttributes[] throttlingPolicy)
+        {
+            ApplicationGroup appGroup = new ApplicationGroup();
+
+            appGroup.ClientAppGroupIdentifier = clientAppGroupIdentifier;
+
+            appGroup.IsEnabled = isEnabled;
+
+            if (throttlingPolicy != null)
+            {
+                appGroup.Policies = new List<ApplicationGroupPolicy>();
+
+                foreach (var policy in throttlingPolicy)
+                {
+                    ThrottlingPolicy sdkpolicy = new ThrottlingPolicy()
+                    {
+                        Name = policy.Name,
+                        RateLimitThreshold = policy.RateLimitThreshold,
+                        MetricId = policy.MetricId
+                    };
+                    appGroup.Policies.Add(sdkpolicy);
+                }
+            }
+
+            var response = Client.ApplicationGroup.CreateOrUpdateApplicationGroup(resourceGroupName, namespaceName, appGroupName, appGroup);
+
+            return new PSEventHubApplicationGroupAttributes(response);
+        }
+
+        public PSEventHubApplicationGroupAttributes UpdateApplicationGroup(string resourceGroupName, string namespaceName,
+            string appGroupName, bool? isEnabled, PSEventHubThrottlingPolicyConfigAttributes[] throttlingPolicy)
+        {
+            var appGroup = Client.ApplicationGroup.Get(resourceGroupName, namespaceName, appGroupName);
+
+            if (isEnabled != null)
+            {
+                appGroup.IsEnabled = isEnabled;
+            }
+
+            if (throttlingPolicy != null)
+            {
+                appGroup.Policies = new List<ApplicationGroupPolicy>();
+
+                foreach (var policy in throttlingPolicy)
+                {
+                    ThrottlingPolicy sdkpolicy = new ThrottlingPolicy()
+                    {
+                        Name = policy.Name,
+                        RateLimitThreshold = policy.RateLimitThreshold,
+                        MetricId = policy.MetricId
+                    };
+
+                    appGroup.Policies.Add(sdkpolicy);
+                }
+            }
+
+            var response = Client.ApplicationGroup.CreateOrUpdateApplicationGroup(resourceGroupName, namespaceName, appGroupName, appGroup);
+
+            return new PSEventHubApplicationGroupAttributes(response);
+        }
+
+        public PSEventHubApplicationGroupAttributes GetApplicationGroup(string resourceGroupName, string namespaceName,
+            string appGroupName)
+        {
+            var response = Client.ApplicationGroup.Get(resourceGroupName, namespaceName, appGroupName);
+
+            return new PSEventHubApplicationGroupAttributes(response);
+        }
+
+        public IEnumerable<PSEventHubApplicationGroupAttributes> ListApplicationGroup(string resourceGroupName, string namespaceName)
+        {
+            var listOfAppGroups = new List<PSEventHubApplicationGroupAttributes>();
+
+            string nextPageLink = null;
+
+            do
+            {
+                var fetchAppGroups = new List<PSEventHubApplicationGroupAttributes>();
+
+                if (!String.IsNullOrEmpty(nextPageLink))
+                {
+                    var result = Client.ApplicationGroup.ListByNamespaceNext(nextPageLink);
+                    nextPageLink = result.NextPageLink;
+                    fetchAppGroups = result.Select(resource => new PSEventHubApplicationGroupAttributes(resource)).ToList();
+                }
+                else
+                {
+                    var result = Client.ApplicationGroup.ListByNamespace(resourceGroupName, namespaceName);
+                    nextPageLink = result.NextPageLink;
+                    fetchAppGroups = result.Select(resource => new PSEventHubApplicationGroupAttributes(resource)).ToList();
+                }
+
+                listOfAppGroups.AddRange(fetchAppGroups);
+
+            } while (!String.IsNullOrEmpty(nextPageLink));
+
+            return listOfAppGroups;
+        }
+
+        public void DeleteApplicationGroup(string resourceGroupName, string namespaceName, string appGroupName)
+        {
+            Client.ApplicationGroup.Delete(resourceGroupName, namespaceName, appGroupName);
+        }
+
+        #endregion
+
+        #region PrivateEndpoints
+
+        public PSEventHubPrivateEndpointConnectionAttributes UpdatePrivateEndpointConnection(string resourceGroupName, string namespaceName, string privateEndpointName, string connectionState, string description = null)
+        {
+            var privateEndpointConnection = Client.PrivateEndpointConnections.Get(resourceGroupName, namespaceName, privateEndpointName);
+
+            if (connectionState != null)
+            {
+                privateEndpointConnection.PrivateLinkServiceConnectionState.Status = connectionState;
+            }
+
+            if (description != null)
+            {
+                privateEndpointConnection.PrivateLinkServiceConnectionState.Description = description;
+            }
+
+            privateEndpointConnection = Client.PrivateEndpointConnections.CreateOrUpdate(resourceGroupName, namespaceName, privateEndpointName, privateEndpointConnection);
+
+            return new PSEventHubPrivateEndpointConnectionAttributes(privateEndpointConnection);
+
+        }
+
+        public PSEventHubPrivateEndpointConnectionAttributes GetPrivateEndpointConnection(string resourceGroupName, string namespaceName, string privateEndpointName)
+        {
+
+            var privateEndpointConnection = Client.PrivateEndpointConnections.Get(resourceGroupName, namespaceName, privateEndpointName);
+
+            return new PSEventHubPrivateEndpointConnectionAttributes(privateEndpointConnection);
+
+        }
+
+        public IEnumerable<PSEventHubPrivateEndpointConnectionAttributes> ListPrivateEndpointConnection(string resourceGroupName, string namespaceName)
+        {
+            var listOfPrivateEndpoints = new List<PSEventHubPrivateEndpointConnectionAttributes>();
+
+            string nextPageLink = null;
+
+            do
+            {
+                var pageOfPrivateEndpoints = new List<PSEventHubPrivateEndpointConnectionAttributes>();
+
+                if (!String.IsNullOrEmpty(nextPageLink))
+                {
+                    var result = Client.PrivateEndpointConnections.ListNext(nextPageLink);
+                    nextPageLink = result.NextPageLink;
+                    pageOfPrivateEndpoints = result.Select(resource => new PSEventHubPrivateEndpointConnectionAttributes(resource)).ToList();
+                }
+                else
+                {
+                    var result = Client.PrivateEndpointConnections.List(resourceGroupName, namespaceName);
+                    nextPageLink = result.NextPageLink;
+                    pageOfPrivateEndpoints = result.Select(resource => new PSEventHubPrivateEndpointConnectionAttributes(resource)).ToList();
+                }
+
+                listOfPrivateEndpoints.AddRange(pageOfPrivateEndpoints);
+
+            } while (!String.IsNullOrEmpty(nextPageLink));
+
+            return listOfPrivateEndpoints;
+        }
+
+        public void DeletePrivateEndpointConnection(string resourceGroupName, string namespaceName, string privateEndpointName)
+        {
+            Client.PrivateEndpointConnections.Delete(resourceGroupName, namespaceName, privateEndpointName);
+        }
+
+        public IEnumerable<PSEventHubPrivateLinkResourceAttributes> GetPrivateLinkResource(string resourceGroupName, string namespaceName)
+        {
+            var privateLinks = Client.PrivateLinkResources.Get(resourceGroupName, namespaceName).Value.ToList();
+
+            var resourceList = privateLinks.Select(resource => new PSEventHubPrivateLinkResourceAttributes(resource));
+
+            return resourceList;
+        }
+
+        #endregion
 
         public static int ReturnmaxCountvalueForSwtich(int? maxcount)
         {
@@ -774,13 +946,14 @@ namespace Microsoft.Azure.Commands.Eventhub
                 Exception emptyEx = new Exception("VirtualNetwork already exists");
                 return new ErrorRecord(emptyEx, "VirtualNetwork already exists", ErrorCategory.OpenError, emptyEx);
             }
-            else {
+            else
+            {
                 Exception emptyEx = new Exception("VirtualNetwork dosen't exists");
                 return new ErrorRecord(emptyEx, "VirtualNetwork dosen't exists", ErrorCategory.OpenError, emptyEx);
-            }            
+            }
         }
 
-        public static ErrorRecord WriteErrorIPRuleExists(string caller = "Add" )
+        public static ErrorRecord WriteErrorIPRuleExists(string caller = "Add")
         {
             if (caller.Equals("Add"))
             {

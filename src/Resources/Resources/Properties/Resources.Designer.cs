@@ -268,7 +268,7 @@ namespace Microsoft.Azure.Commands.Resources.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The User/Application doesn&apos;t have sufficient AAD graph permissions to perform the operation..
+        ///   Looks up a localized string similar to The User/Application doesn&apos;t have sufficient Microsoft Graph permissions to perform the operation..
         /// </summary>
         internal static string InSufficientGraphPermission {
             get {
@@ -1021,6 +1021,15 @@ namespace Microsoft.Azure.Commands.Resources.Properties {
         internal static string SubscriptionWithTheSpecifiedNameNotFount {
             get {
                 return ResourceManager.GetString("SubscriptionWithTheSpecifiedNameNotFount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Succesfully removed role assignment for AD object &apos;{0}&apos; on scope &apos;{1}&apos; with role definition &apos;{2}&apos;.
+        /// </summary>
+        internal static string SuccessfullRARemove {
+            get {
+                return ResourceManager.GetString("SuccessfullRARemove", resourceCulture);
             }
         }
         

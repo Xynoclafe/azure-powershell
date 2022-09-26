@@ -19,8 +19,75 @@
 -->
 
 ## Upcoming Release
-* Supported login hint
+* Supported tenant domain as input while using `Connect-AzAccount` with parameter `Tenant`. [#19471]
+* Upgraded Azure.Identity to 1.6.1
+* Changed target framework of AuthenticationAssemblyLoadContext to netcoreapp3.1.
+
+## Version 2.10.1
+* Deduplicated subscriptions belonging to multiple tenants while using `Get-AzSubscription` with parameter `SubscriptionName`. [#19427]
+
+## Version 2.10.0
+* Supported returning all subscriptions with specified name while using `Get-AzSubscription` with parameter `SubscriptionName`. [#19295]
+* Fixed null reference exception when cmdlet uses AzureRestOperation [#18104]
+* Updated survey message and settings
+
+## Version 2.9.1
+* Implemented `SupportsShouldProcess` for `Invoke-AzRestMethod`
+* Supported giving suggestions if an Azure PowerShell command cannot be found, for example when there is a typo in command name.
+
+## Version 2.9.0
+* Supported exporting and importing configurations by `Export-AzConfig` and `Import-AzConfig`.
+* Fixed an issue that Az.Accounts may fail to be imported in parallel PowerShell processes. [#18321] 
+* Fixed incorrect access token [#18105]
+* Upgraded version of Microsoft.Identity.Client for .NET Framework. [#18495]
+* Fixed an issue that Az.Accounts failed to be imported if multiple environment variables, which only differ by case, are set. [#18304]
+
+## Version 2.8.0
+* Added a preview feature allowing user to control the following configurations by using `Get-AzConfig`, `Update-AzConfig` and `Clear-AzConfig`:
+    - `DefaultSubscriptionForLogin`: Subscription name or GUID. Sets the default context for Azure PowerShell when logging in without specifying a subscription.
+    - `DisplayBreakingChangeWarning`: Controls if warning messages for breaking changes are displayed or suppressed.
+    - `EnableDataCollection`: When enabled, Azure PowerShell cmdlets send telemetry data to Microsoft to improve the customer experience.
+* Upgraded System.Reflection.DispatchProxy on Windows PowerShell [#17856]
+* Upgraded Azure.Identity to 1.6.0 and Azure.Core to 1.24.0
+
+## Version 2.7.6
+* Upgraded Microsoft.Rest.ClientRuntime to 2.3.24
+
+## Version 2.7.5
+* Added `SshCredentialFactory` to support get ssh credential of vm from msal.
+* Fixed the bug of cmdlet fails when -DefaultProfile is set to service principal login context. [#16617]
+* Fixed the issue that authorization does not work in Dogfood environment
+
+## Version 2.7.4
+* Changed target framework of AuthenticationAssemblyLoadContext to netcoreapp2.1 [#17428]
+
+## Version 2.7.3
+* Fixed the issue that authorization does not work in customized environment [#17157]
+* Enabled Continue Access Evaluation for MSGraph
+* Improved error message when login is blocked by AAD
+* Improved error message when silent reauthentication failed
+* Loaded System.Private.ServiceModel and System.ServiceModel.Primitives on Windows PowerShell [#17087]
+
+## Version 2.7.2
+* Removed legacy assembly System.Private.ServiceModel and System.ServiceModel.Primitives [#16063]
+
+## Version 2.7.1
+* Copied `ServicePrincipalSecret` and `CertificatePassword` from Az.Accounts buildin profile to customer set profile. [#16617]
+* Updated help message and help markdown for parameter `Tenant` of the cmdlet `Set-AzContext`. [#16515]
+* Fixed the issue that Azure PowerShell could not work in a workflow. [#16408]
+* Fixed the doubled Api Version in the URI of the underlying request issued by `Invoke-AzRestMethod`. [#16615]
+
+## Version 2.7.0
+* Removed `ServicePrincipalSecret` and `CertificatePassword` in `PSAzureRmAccount` [#15427]
+* Added optional parameter `MicrosoftGraphAccessToken` to `Connect-AzAccount`
+* Added optional parameters `MicrosoftGraphEndpointResourceId`, `MicrosoftGraphUrl` to `Add-AzEnvironment` and `Set-AzEnvironment`
+* Added `-AccountId` property to `UserWithSubscriptionId` parameter set of `Connect-AzAccount` which allows a user name to be pre-selected for interactive logins
+* Added `-Uri` and `-ResourceId` to `Invoke-AzRestMethod`
 * Added Environment auto completer to the following cmdlets: Connect-AzAccount, Get-AzEnvironment, Set-AzEnvironment, and Remove-AzEnvironment [#15991]
+* Added module name and version to User-Agent string [#16291]
+
+## Version 2.6.2
+* Upgraded Azure.Identity to 1.5.0
 
 ## Version 2.6.1
 * Added new version of AAD service client using Microsoft Graph API
@@ -177,7 +244,7 @@
 * Updated Add-AzEnvironment and Set-AzEnvironment to accept parameters AzureAttestationServiceEndpointResourceId and AzureAttestationServiceEndpointSuffix
 
 ## Version 1.6.6
-* Add client-side telemetry info for Az 4.0 preview
+* Add client-side telemetry info for Az 4.0 `preview`
 
 ## Version 1.6.5
 * Update references in .psd1 to use relative path

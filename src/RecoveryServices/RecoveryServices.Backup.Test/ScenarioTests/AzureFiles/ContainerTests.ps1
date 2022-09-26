@@ -12,12 +12,13 @@
 # limitations under the License.
 # ----------------------------------------------------------------------------------
 
-$location = "southeastasia"
-$resourceGroupName = "pstestrg8895"
-$vaultName = "pstestrsv8895"
+$location = "eastasia" 
+$resourceGroupName = "afs-pstest-rg" 
+$vaultName = "afs-pstest-vault" 
 $fileShareFriendlyName = "fs1"
-$fileShareName = "AzureFileShare;fs1"
-$saName = "pstestsa8895"
+$fileShareName = "azurefileshare;7f34af6cfe2f3f3204cfd4d18cd6b37f7dec2c84a2d759ffab3d1367f9e17356" 
+$saName = "afspstestsa"
+$saRgName = "afs-pstest-rg" 
 $skuName="Standard_LRS"
 $policyName = "afspolicy1"
 
@@ -107,7 +108,8 @@ function Test-AzureFSUnregisterContainer
 		-Force;
 	Unregister-AzRecoveryServicesBackupContainer `
 		-VaultId $vault.ID `
-		-Container $container
+		-Container $container `
+		-Force;
 
 	$container = Get-AzRecoveryServicesBackupContainer `
 		-VaultId $vault.ID `

@@ -21,6 +21,7 @@ using Microsoft.Azure.Commands.Synapse.Properties;
 using Microsoft.Azure.Management.Internal.Resources.Utilities.Models;
 using Microsoft.Azure.Management.Synapse.Models;
 using Microsoft.WindowsAzure.Commands.Utilities.Common;
+using System;
 using System.Collections;
 using System.IO;
 using System.Management.Automation;
@@ -107,7 +108,18 @@ namespace Microsoft.Azure.Commands.Synapse
             HelpMessage = HelpMessages.AutoPauseDelayInMinute)]
         [ValidateNotNullOrEmpty]
         [ValidateRange(5, 10080)]
-        public int AutoPauseDelayInMinute { get; set; }
+        public int AutoPauseDelayInMinute { get; set; } = int.Parse(SynapseConstants.DefaultAutoPauseDelayInMinute);
+       
+        [Parameter(ValueFromPipelineByPropertyName = false, Mandatory = false, HelpMessage = HelpMessages.EnableDynamicExecutorAllocation)]
+        public SwitchParameter EnableDynamicExecutorAllocation { get; set; }
+
+        [Parameter(ValueFromPipelineByPropertyName = false, Mandatory = false, HelpMessage = HelpMessages.MinExecutorCount)]
+        [ValidateNotNullOrEmpty]
+        public int MinExecutorCount { get; set; } = int.Parse(SynapseConstants.DefaultMinExecutorCount);
+
+        [Parameter(ValueFromPipelineByPropertyName = false, Mandatory = false, HelpMessage = HelpMessages.MaxExecutorCount)]
+        [ValidateNotNullOrEmpty]
+        public int MaxExecutorCount { get; set; } = int.Parse(SynapseConstants.DefaultMaxExecutorCount);
 
         [Parameter(ValueFromPipelineByPropertyName = false, Mandatory = true,
             HelpMessage = HelpMessages.SparkVersion)]
@@ -202,6 +214,12 @@ namespace Microsoft.Azure.Commands.Synapse
                 {
                     Enabled = EnableAutoPause.IsPresent,
                     DelayInMinutes = AutoPauseDelayInMinute
+                },
+                DynamicExecutorAllocation = !EnableDynamicExecutorAllocation ? new DynamicExecutorAllocation { Enabled = false } : new DynamicExecutorAllocation
+                { 
+                    Enabled = EnableDynamicExecutorAllocation.IsPresent,
+                    MinExecutors = MinExecutorCount,
+                    MaxExecutors = MaxExecutorCount
                 },
                 SparkVersion = this.SparkVersion,
                 SparkConfigProperties = sparkConfigProperties

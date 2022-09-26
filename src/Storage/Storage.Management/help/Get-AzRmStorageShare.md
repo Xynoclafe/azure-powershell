@@ -38,8 +38,8 @@ Get-AzRmStorageShare -StorageAccount <PSStorageAccount> [-IncludeDeleted] [-Incl
 
 ### ShareResourceId
 ```
-Get-AzRmStorageShare [-ResourceId] <String> [-Name <String>] [-GetShareUsage]
- [-DefaultProfile <IAzureContextContainer>] [<CommonParameters>]
+Get-AzRmStorageShare [-ResourceId] <String> [-GetShareUsage] [-DefaultProfile <IAzureContextContainer>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -48,6 +48,7 @@ The **Get-AzRmStorageShare** cmdlet gets or lists Storage file shares.
 ## EXAMPLES
 
 ### Example 1: Get a Storage file share with Storage account name and share name
+<!-- Skip: Output cannot be splitted from code -->
 ```
 PS C:\>Get-AzRmStorageShare -ResourceGroupName "myresourcegroup" -StorageAccountName "mystorageaccount" -Name "myshare"
 
@@ -61,6 +62,7 @@ myshare  5120
 This command gets a Storage file share with Storage account name and share name.
 
 ### Example 2: List all Storage file shares of a Storage account
+<!-- Skip: Output cannot be splitted from code -->
 ```
 PS C:\>Get-AzRmStorageShare -ResourceGroupName "myresourcegroup" -StorageAccountName "mystorageaccount"
 
@@ -75,6 +77,7 @@ share2   5120                     TransactionOptimized
 This command lists all Storage file shares of a Storage account with Storage account name.
 
 ### Example 3: Get a Storage blob container with Storage account object and container name.
+<!-- Skip: Output cannot be splitted from code -->
 ```
 Get-AzStorageAccount -ResourceGroupName "myresourcegroup" -StorageAccountName "mystorageaccount" | Get-AzRmStorageShare -Name "myshare"
 
@@ -88,6 +91,7 @@ myshare  5120
 This command gets a Storage blob container with Storage account object and container name.
 
 ### Example 4: Get a Storage file share with the share usage in bytes
+<!-- Skip: Output cannot be splitted from code -->
 ```
 PS C:\>Get-AzRmStorageShare -ResourceGroupName "myresourcegroup" -StorageAccountName "mystorageaccount" -Name "myshare" -GetShareUsage
 
@@ -101,6 +105,7 @@ myshare  5120                                                2097152
 This command gets a Storage file share with Storage account name and share name, and include the share usage in bytes.
 
 ### Example 5: List all Storage file shares of a Storage account, include the deleted shares, include the share snapshots
+<!-- Skip: Output cannot be splitted from code -->
 ```
 PS C:\> Get-AzRmStorageShare -ResourceGroupName "myresourcegroup" -StorageAccountName "mystorageaccount" -IncludeDeleted -IncludeSnapshot 
 
@@ -116,6 +121,7 @@ share1     100                      TransactionOptimized True    01D61FD1FC5498B
 This command lists all Storage file shares include the deleted shares and share snapshots.
 
 ### Example 6: Get a single share snapshot
+<!-- Skip: Output cannot be splitted from code -->
 ```
 PS C:\> Get-AzRmStorageShare -ResourceGroupName "myresourcegroup" -StorageAccountName "mystorageaccount" -Name "testshare1" -SnapshotTime "2021-05-10T08:04:08Z"
 
@@ -195,7 +201,7 @@ Share Name
 
 ```yaml
 Type: System.String
-Parameter Sets: AccountNameSingle, ShareResourceId
+Parameter Sets: AccountNameSingle
 Aliases: N, ShareName
 
 Required: False
@@ -293,7 +299,7 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

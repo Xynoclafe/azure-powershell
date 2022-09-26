@@ -7,6 +7,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
+
 using KeyVaultProperties = Microsoft.Azure.Commands.KeyVault.Properties;
 
 namespace Microsoft.Azure.Commands.KeyVault.Track2Models
@@ -116,6 +118,28 @@ namespace Microsoft.Azure.Commands.KeyVault.Track2Models
             throw new NotImplementedException();
         }
 
+        public byte[] GetRandomNumber()
+        {
+            throw new NotImplementedException();
+        }
+
+        #region Key rotation
+        public PSKeyVaultKey RotateKey(string vaultName, string keyName)
+        {
+            return VaultClient.RotateKey(vaultName, keyName);
+        }
+
+        public PSKeyRotationPolicy GetKeyRotationPolicy(string vaultName, string keyName)
+        {
+            return VaultClient.GetKeyRotationPolicy(vaultName, keyName);
+        }
+
+        public PSKeyRotationPolicy SetKeyRotationPolicy(PSKeyRotationPolicy psKeyRotationPolicy)
+        {
+            return VaultClient.SetKeyRotationPolicy(psKeyRotationPolicy);
+        }
+        #endregion
+
         public PSKeyVaultKey UpdateKey(string vaultName, string keyName, string keyVersion, PSKeyVaultKeyAttributes keyAttributes)
         {
             throw new NotImplementedException();
@@ -215,12 +239,17 @@ namespace Microsoft.Azure.Commands.KeyVault.Track2Models
             throw new NotImplementedException();
         }
 
-        public PSKeyVaultCertificate ImportCertificate(string vaultName, string certName, string base64CertColl, SecureString certPassword, IDictionary<string, string> tags)
+        public PSKeyVaultCertificate ImportCertificate(string vaultName, string certName, string certificate, SecureString certPassword, IDictionary<string, string> tags, string contentType = Constants.Pkcs12ContentType)
         {
-            throw new NotImplementedException();
+            return VaultClient.ImportCertificate(vaultName, certName, Encoding.ASCII.GetBytes(certificate), certPassword, tags, contentType);
         }
 
-        public PSKeyVaultCertificate ImportCertificate(string vaultName, string certName, X509Certificate2Collection certificateCollection, IDictionary<string, string> tags)
+        public PSKeyVaultCertificate ImportCertificate(string vaultName, string certName, byte[] certificate, SecureString certPassword, IDictionary<string, string> tags, string contentType = Constants.Pkcs12ContentType)
+        {
+            return VaultClient.ImportCertificate(vaultName, certName, certificate, certPassword, tags, contentType);
+        }
+
+        public PSKeyVaultCertificate ImportCertificate(string vaultName, string certName, X509Certificate2Collection certificateCollection, IDictionary<string, string> tags, string contentType = Constants.Pkcs12ContentType)
         {
             throw new NotImplementedException();
         }
@@ -228,6 +257,11 @@ namespace Microsoft.Azure.Commands.KeyVault.Track2Models
         public PSKeyVaultCertificate MergeCertificate(string vaultName, string certName, X509Certificate2Collection certs, IDictionary<string, string> tags)
         {
             throw new NotImplementedException();
+        }
+
+        public PSKeyVaultCertificate MergeCertificate(string vaultName, string name, byte[] certBytes, Dictionary<string, string> tags)
+        {
+            return VaultClient.MergeCertificate(vaultName, name, certBytes, tags);
         }
 
         public void PurgeCertificate(string vaultName, string certName)
@@ -467,6 +501,8 @@ namespace Microsoft.Azure.Commands.KeyVault.Track2Models
         /// <summary>
         /// Remove a custom role definition from an HSM.
         /// </summary>
+        /// <param name="hsmName"></param>
+        /// <param name="scope"></param>
         /// <param name="name">Name of the role. A GUID.</param>
         public void RemoveHsmRoleDefinition(string hsmName, string scope, string name)
         {
@@ -490,24 +526,24 @@ namespace Microsoft.Azure.Commands.KeyVault.Track2Models
         {
             return HsmClient.DeleteKey(managedHsmName, keyName);
         }
-        public PSKeyOperationResult ManagedHsmKeyDecrypt(string vaultName, string keyName, string version, byte[] value, string encryptAlgorithm)
+        public PSKeyOperationResult ManagedHsmKeyDecrypt(string managedHsmName, string keyName, string version, byte[] value, string encryptAlgorithm)
         {
-            return HsmClient.Decrypt(vaultName, keyName, version, value, encryptAlgorithm);
+            return HsmClient.Decrypt(managedHsmName, keyName, version, value, encryptAlgorithm);
         }
 
-        public PSKeyOperationResult ManagedHsmKeyEncrypt(string vaultName, string keyName, string version, byte[] value, string encryptAlgorithm)
+        public PSKeyOperationResult ManagedHsmKeyEncrypt(string managedHsmName, string keyName, string version, byte[] value, string encryptAlgorithm)
         {
-            return HsmClient.Encrypt(vaultName, keyName, version, value, encryptAlgorithm);
+            return HsmClient.Encrypt(managedHsmName, keyName, version, value, encryptAlgorithm);
         }
 
-        public PSKeyOperationResult ManagedHsmUnwrapKey(string vaultName, string keyName, string version, byte[] value, string wrapAlgorithm)
+        public PSKeyOperationResult ManagedHsmUnwrapKey(string managedHsmName, string keyName, string version, byte[] value, string wrapAlgorithm)
         {
-            return HsmClient.UnwrapKey(vaultName, keyName, version, wrapAlgorithm, value);
+            return HsmClient.UnwrapKey(managedHsmName, keyName, version, wrapAlgorithm, value);
         }
 
-        public PSKeyOperationResult ManagedHsmWrapKey(string vaultName, string keyName, string keyVersion, byte[] wrapKey, string wrapAlgorithm)
+        public PSKeyOperationResult ManagedHsmWrapKey(string managedHsmName, string keyName, string keyVersion, byte[] wrapKey, string wrapAlgorithm)
         {
-            return HsmClient.WrapKey(vaultName, keyName, keyVersion, wrapAlgorithm, wrapKey);
+            return HsmClient.WrapKey(managedHsmName, keyName, keyVersion, wrapAlgorithm, wrapKey);
         }
 
         public PSKeyVaultKey UpdateManagedHsmKey(string managedHsmName, string keyName, string keyVersion, PSKeyVaultKeyAttributes keyAttributes)
@@ -558,6 +594,29 @@ namespace Microsoft.Azure.Commands.KeyVault.Track2Models
         public PSKeyVaultKey RestoreManagedHsmKey(string managedHsmName, string inputBlobPath)
         {
             return HsmClient.RestoreKey(managedHsmName, inputBlobPath);
+        }
+
+        public byte[] GetManagedHsmRandomNumber(string managedHsmName, int count)
+        {
+            return HsmClient.GetRandomNumberBytes(managedHsmName, count);
+        }
+
+        #endregion
+
+        #region Key rotation
+        public PSKeyVaultKey RotateManagedHsmKey(string managedHsmName, string keyName)
+        {
+            return HsmClient.RotateKey(managedHsmName, keyName);
+        }
+
+        public PSKeyRotationPolicy GetManagedHsmKeyRotationPolicy(string managedHsmName, string keyName)
+        {
+            return HsmClient.GetKeyRotationPolicy(managedHsmName, keyName);
+        }
+
+        public PSKeyRotationPolicy SetManagedHsmKeyRotationPolicy(PSKeyRotationPolicy keyRotationPolicy)
+        {
+            return HsmClient.SetKeyRotationPolicy(keyRotationPolicy);
         }
         #endregion
 

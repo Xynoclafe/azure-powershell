@@ -14,6 +14,7 @@ using KeyProperties = Azure.Security.KeyVault.Keys.KeyProperties;
 using KeyVaultProperties = Microsoft.Azure.Commands.KeyVault.Properties;
 using Azure.Security.KeyVault.Keys.Cryptography;
 using Microsoft.WindowsAzure.Commands.Utilities.Common;
+using System.Xml;
 
 namespace Microsoft.Azure.Commands.KeyVault.Track2Models
 {
@@ -103,9 +104,14 @@ namespace Microsoft.Azure.Commands.KeyVault.Track2Models
             {
                 options = new CreateKeyOptions();
             }
+
+            // Common key attributes
             options.NotBefore = keyAttributes.NotBefore;
             options.ExpiresOn = keyAttributes.Expires;
             options.Enabled = keyAttributes.Enabled;
+            options.Exportable = keyAttributes.Exportable;
+            options.ReleasePolicy = keyAttributes.ReleasePolicy?.ToKeyReleasePolicy();
+
             if (keyAttributes.KeyOps != null)
             {
                 foreach (var keyOp in keyAttributes.KeyOps)
@@ -113,6 +119,7 @@ namespace Microsoft.Azure.Commands.KeyVault.Track2Models
                     options.KeyOperations.Add(new KeyOperation(keyOp));
                 }
             }
+
             if (keyAttributes.Tags != null)
             {
                 foreach (DictionaryEntry entry in keyAttributes.Tags)
@@ -139,9 +146,9 @@ namespace Microsoft.Azure.Commands.KeyVault.Track2Models
             }
         }
 
-        internal PSKeyOperationResult Decrypt(string vaultName, string keyName, string version, byte[] value, string encryptAlgorithm)
+        internal PSKeyOperationResult Decrypt(string managedHsmName, string keyName, string version, byte[] value, string encryptAlgorithm)
         {
-            var key = GetKey(vaultName, keyName, version);
+            var key = GetKey(managedHsmName, keyName, version);
             var cryptographyClient = CreateCryptographyClient(key.Id);
             EncryptionAlgorithm keyEncryptAlgorithm = new EncryptionAlgorithm(encryptAlgorithm);
             return Decrypt(cryptographyClient, keyEncryptAlgorithm, value);
@@ -180,9 +187,9 @@ namespace Microsoft.Azure.Commands.KeyVault.Track2Models
             return new PSDeletedKeyVaultKey(deletedKey, this._uriHelper, isHsm: true);
         }
 
-        internal PSKeyOperationResult Encrypt(string vaultName, string keyName, string version, byte[] value, string encryptAlgorithm)
+        internal PSKeyOperationResult Encrypt(string managedHsmName, string keyName, string version, byte[] value, string encryptAlgorithm)
         {
-            var key = GetKey(vaultName, keyName, version);
+            var key = GetKey(managedHsmName, keyName, version);
             var cryptographyClient = CreateCryptographyClient(key.Id);
             EncryptionAlgorithm keyEncryptAlgorithm = new EncryptionAlgorithm(encryptAlgorithm);
             return Encrypt(cryptographyClient, keyEncryptAlgorithm, value);
@@ -193,9 +200,9 @@ namespace Microsoft.Azure.Commands.KeyVault.Track2Models
             return new PSKeyOperationResult(cryptographyClient.Encrypt(keyEncryptAlgorithm, value));
         }
 
-        internal PSKeyOperationResult UnwrapKey(string vaultName, string keyName, string version, string wrapAlgorithm, byte[] value)
+        internal PSKeyOperationResult UnwrapKey(string managedHsmName, string keyName, string version, string wrapAlgorithm, byte[] value)
         {
-            var key = GetKey(vaultName, keyName, version);
+            var key = GetKey(managedHsmName, keyName, version);
             var cryptographyClient = CreateCryptographyClient(key.Id);
             KeyWrapAlgorithm keyWrapAlgorithm = new KeyWrapAlgorithm(wrapAlgorithm);
             return UnwrapKey(cryptographyClient, keyWrapAlgorithm, value);
@@ -206,9 +213,9 @@ namespace Microsoft.Azure.Commands.KeyVault.Track2Models
             return new PSKeyOperationResult(cryptographyClient.UnwrapKey(keyEncryptAlgorithm, value));
         }
 
-        internal PSKeyOperationResult WrapKey(string vaultName, string keyName, string keyVersion, string wrapAlgorithm, byte[] value)
+        internal PSKeyOperationResult WrapKey(string managedHsmName, string keyName, string keyVersion, string wrapAlgorithm, byte[] value)
         {
-            var key = GetKey(vaultName, keyName, keyVersion);
+            var key = GetKey(managedHsmName, keyName, keyVersion);
             var cryptographyClient = CreateCryptographyClient(key.Id);
             KeyWrapAlgorithm keyWrapAlgorithm = new KeyWrapAlgorithm(wrapAlgorithm);
             return WrapKey(cryptographyClient, keyWrapAlgorithm, value);
@@ -292,12 +299,17 @@ namespace Microsoft.Azure.Commands.KeyVault.Track2Models
 
         private PSKeyVaultKey UpdateKey(KeyClient client, string keyName, string keyVersion, PSKeyVaultKeyAttributes keyAttributes)
         {
-            KeyVaultKey keyBundle = client.GetKeyAsync(keyName, keyVersion).GetAwaiter().GetResult();
-            KeyProperties keyProperties = keyBundle.Properties;
-            keyProperties.Enabled = keyAttributes.Enabled;
-            keyProperties.ExpiresOn = keyAttributes.Expires;
-            keyProperties.NotBefore = keyAttributes.NotBefore;
+            KeyVaultKey keyBundle = null;
 
+            // Update updatable properties
+            KeyProperties keyProperties = new KeyProperties(_uriHelper.CreateaMagedHsmKeyUri(client.VaultUri, keyName, keyVersion))
+            {
+                Enabled = keyAttributes.Enabled,
+                ExpiresOn = keyAttributes.Expires,
+                NotBefore = keyAttributes.NotBefore,
+                ReleasePolicy = keyAttributes.ReleasePolicy?.ToKeyReleasePolicy()
+            };
+            
             if (keyAttributes.Tags != null)
             {
                 keyProperties.Tags.Clear();
@@ -309,8 +321,7 @@ namespace Microsoft.Azure.Commands.KeyVault.Track2Models
 
             try
             {
-                keyBundle = client.UpdateKeyPropertiesAsync(keyProperties, keyAttributes.KeyOps?.Cast<KeyOperation>().ToList())
-                    .GetAwaiter().GetResult();
+                keyBundle = client.UpdateKeyProperties(keyProperties, keyAttributes.KeyOps?.Select(op => new KeyOperation(op)));
             }
             catch (Exception ex)
             {
@@ -491,6 +502,66 @@ namespace Microsoft.Azure.Commands.KeyVault.Track2Models
             {
                 throw GetInnerException(ex);
             }
+        }
+
+        public byte[] GetRandomNumberBytes(string managedHsmName, int count)
+        {
+            if (string.IsNullOrEmpty(managedHsmName))
+                throw new ArgumentNullException(nameof(managedHsmName));
+            
+            var client = CreateKeyClient(managedHsmName);
+            return client.GetRandomBytes(count);
+        }
+
+        #endregion
+
+        #region Key rotation
+        internal PSKeyVaultKey RotateKey(string managedHsmName, string keyName)
+        {
+            var client = CreateKeyClient(managedHsmName);
+            return RotateKey(client, keyName);
+        }
+
+        private PSKeyVaultKey RotateKey(KeyClient client, string keyName)
+        {
+            return new PSKeyVaultKey(client.RotateKey(keyName), _uriHelper, isHsm: true);
+        }
+
+        internal PSKeyRotationPolicy GetKeyRotationPolicy(string managedHsmName, string keyName)
+        {
+            var client = CreateKeyClient(managedHsmName);
+            return GetKeyRotationPolicy(client, managedHsmName, keyName);
+        }
+
+        private PSKeyRotationPolicy GetKeyRotationPolicy(KeyClient client, string managedHsmName, string keyName)
+        {
+            return new PSKeyRotationPolicy(client.GetKeyRotationPolicy(keyName), managedHsmName, keyName);
+        }
+
+        internal PSKeyRotationPolicy SetKeyRotationPolicy(PSKeyRotationPolicy psKeyRotationPolicy)
+        {
+            var client = CreateKeyClient(psKeyRotationPolicy.VaultName);
+            var policy = new KeyRotationPolicy()
+            {
+                ExpiresIn = psKeyRotationPolicy.ExpiresIn,
+                LifetimeActions = { }
+            };
+
+            psKeyRotationPolicy.LifetimeActions?.ForEach(
+                psKeyRotationLifetimeAction => policy.LifetimeActions.Add(
+                    new KeyRotationLifetimeAction(new KeyRotationPolicyAction(psKeyRotationLifetimeAction.Action))
+                    {
+                        TimeAfterCreate = psKeyRotationLifetimeAction.TimeAfterCreate,
+                        TimeBeforeExpiry = psKeyRotationLifetimeAction.TimeBeforeExpiry
+                    }
+                ));
+
+            return SetKeyRotationPolicy(client, psKeyRotationPolicy.VaultName, psKeyRotationPolicy.KeyName, policy);
+        }
+
+        private PSKeyRotationPolicy SetKeyRotationPolicy(KeyClient client, string managedHsmName, string keyName, KeyRotationPolicy keyRotationPolicy)
+        {
+            return new PSKeyRotationPolicy(client.UpdateKeyRotationPolicy(keyName, keyRotationPolicy), managedHsmName, keyName);
         }
         #endregion
 

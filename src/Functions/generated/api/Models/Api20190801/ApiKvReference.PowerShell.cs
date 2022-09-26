@@ -31,7 +31,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801
         /// <summary>
         /// <c>BeforeDeserializeDictionary</c> will be called before the deserialization has commenced, allowing complete customization
         /// of the object before it is deserialized.
-        /// If you wish to disable the default deserialization entirely, return <c>true</c> in the <see "returnNow" /> output parameter.
+        /// If you wish to disable the default deserialization entirely, return <c>true</c> in the <paramref name="returnNow" /> output
+        /// parameter.
         /// Implement this method in a partial class to enable this behavior.
         /// </summary>
         /// <param name="content">The global::System.Collections.IDictionary content that should be used.</param>
@@ -43,7 +44,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801
         /// <summary>
         /// <c>BeforeDeserializePSObject</c> will be called before the deserialization has commenced, allowing complete customization
         /// of the object before it is deserialized.
-        /// If you wish to disable the default deserialization entirely, return <c>true</c> in the <see "returnNow" /> output parameter.
+        /// If you wish to disable the default deserialization entirely, return <c>true</c> in the <paramref name="returnNow" /> output
+        /// parameter.
         /// Implement this method in a partial class to enable this behavior.
         /// </summary>
         /// <param name="content">The global::System.Management.Automation.PSObject content that should be used.</param>
@@ -66,15 +68,42 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801
                 return;
             }
             // actually deserialize
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Reference = (string) content.GetValueForProperty("Reference",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Reference, global::System.Convert.ToString);
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Status = (Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ResolveStatus?) content.GetValueForProperty("Status",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Status, Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ResolveStatus.CreateFrom);
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).VaultName = (string) content.GetValueForProperty("VaultName",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).VaultName, global::System.Convert.ToString);
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).SecretName = (string) content.GetValueForProperty("SecretName",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).SecretName, global::System.Convert.ToString);
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).SecretVersion = (string) content.GetValueForProperty("SecretVersion",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).SecretVersion, global::System.Convert.ToString);
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).IdentityType = (Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ManagedServiceIdentityType?) content.GetValueForProperty("IdentityType",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).IdentityType, Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ManagedServiceIdentityType.CreateFrom);
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Detail = (string) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Detail, global::System.Convert.ToString);
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Source = (Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ConfigReferenceSource?) content.GetValueForProperty("Source",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Source, Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ConfigReferenceSource.CreateFrom);
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Location = (Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ConfigReferenceLocation?) content.GetValueForProperty("Location",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Location, Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ConfigReferenceLocation.CreateFrom);
+            if (content.Contains("Reference"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Reference = (string) content.GetValueForProperty("Reference",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Reference, global::System.Convert.ToString);
+            }
+            if (content.Contains("Status"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Status = (Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ResolveStatus?) content.GetValueForProperty("Status",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Status, Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ResolveStatus.CreateFrom);
+            }
+            if (content.Contains("VaultName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).VaultName = (string) content.GetValueForProperty("VaultName",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).VaultName, global::System.Convert.ToString);
+            }
+            if (content.Contains("SecretName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).SecretName = (string) content.GetValueForProperty("SecretName",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).SecretName, global::System.Convert.ToString);
+            }
+            if (content.Contains("SecretVersion"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).SecretVersion = (string) content.GetValueForProperty("SecretVersion",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).SecretVersion, global::System.Convert.ToString);
+            }
+            if (content.Contains("IdentityType"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).IdentityType = (Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ManagedServiceIdentityType?) content.GetValueForProperty("IdentityType",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).IdentityType, Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ManagedServiceIdentityType.CreateFrom);
+            }
+            if (content.Contains("Detail"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Detail = (string) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Detail, global::System.Convert.ToString);
+            }
+            if (content.Contains("Source"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Source = (Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ConfigReferenceSource?) content.GetValueForProperty("Source",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Source, Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ConfigReferenceSource.CreateFrom);
+            }
+            if (content.Contains("Location"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Location = (Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ConfigReferenceLocation?) content.GetValueForProperty("Location",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Location, Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ConfigReferenceLocation.CreateFrom);
+            }
             AfterDeserializeDictionary(content);
         }
 
@@ -92,15 +121,42 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801
                 return;
             }
             // actually deserialize
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Reference = (string) content.GetValueForProperty("Reference",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Reference, global::System.Convert.ToString);
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Status = (Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ResolveStatus?) content.GetValueForProperty("Status",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Status, Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ResolveStatus.CreateFrom);
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).VaultName = (string) content.GetValueForProperty("VaultName",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).VaultName, global::System.Convert.ToString);
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).SecretName = (string) content.GetValueForProperty("SecretName",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).SecretName, global::System.Convert.ToString);
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).SecretVersion = (string) content.GetValueForProperty("SecretVersion",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).SecretVersion, global::System.Convert.ToString);
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).IdentityType = (Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ManagedServiceIdentityType?) content.GetValueForProperty("IdentityType",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).IdentityType, Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ManagedServiceIdentityType.CreateFrom);
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Detail = (string) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Detail, global::System.Convert.ToString);
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Source = (Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ConfigReferenceSource?) content.GetValueForProperty("Source",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Source, Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ConfigReferenceSource.CreateFrom);
-            ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Location = (Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ConfigReferenceLocation?) content.GetValueForProperty("Location",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Location, Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ConfigReferenceLocation.CreateFrom);
+            if (content.Contains("Reference"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Reference = (string) content.GetValueForProperty("Reference",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Reference, global::System.Convert.ToString);
+            }
+            if (content.Contains("Status"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Status = (Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ResolveStatus?) content.GetValueForProperty("Status",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Status, Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ResolveStatus.CreateFrom);
+            }
+            if (content.Contains("VaultName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).VaultName = (string) content.GetValueForProperty("VaultName",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).VaultName, global::System.Convert.ToString);
+            }
+            if (content.Contains("SecretName"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).SecretName = (string) content.GetValueForProperty("SecretName",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).SecretName, global::System.Convert.ToString);
+            }
+            if (content.Contains("SecretVersion"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).SecretVersion = (string) content.GetValueForProperty("SecretVersion",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).SecretVersion, global::System.Convert.ToString);
+            }
+            if (content.Contains("IdentityType"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).IdentityType = (Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ManagedServiceIdentityType?) content.GetValueForProperty("IdentityType",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).IdentityType, Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ManagedServiceIdentityType.CreateFrom);
+            }
+            if (content.Contains("Detail"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Detail = (string) content.GetValueForProperty("Detail",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Detail, global::System.Convert.ToString);
+            }
+            if (content.Contains("Source"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Source = (Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ConfigReferenceSource?) content.GetValueForProperty("Source",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Source, Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ConfigReferenceSource.CreateFrom);
+            }
+            if (content.Contains("Location"))
+            {
+                ((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Location = (Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ConfigReferenceLocation?) content.GetValueForProperty("Location",((Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReferenceInternal)this).Location, Microsoft.Azure.PowerShell.Cmdlets.Functions.Support.ConfigReferenceLocation.CreateFrom);
+            }
             AfterDeserializePSObject(content);
         }
 
@@ -134,7 +190,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801
         /// Creates a new instance of <see cref="ApiKvReference" />, deserializing the content from a json string.
         /// </summary>
         /// <param name="jsonText">a string containing a JSON serialized instance of this model.</param>
-        /// <returns>an instance of the <see cref="className" /> model class.</returns>
+        /// <returns>an instance of the <see cref="ApiKvReference" /> model class.</returns>
         public static Microsoft.Azure.PowerShell.Cmdlets.Functions.Models.Api20190801.IApiKvReference FromJsonString(string jsonText) => FromJson(Microsoft.Azure.PowerShell.Cmdlets.Functions.Runtime.Json.JsonNode.Parse(jsonText));
 
         /// <summary>Serializes this instance to a json string.</summary>

@@ -25,8 +25,6 @@ using Microsoft.Azure.Management.ContainerService.Models;
 using Microsoft.Azure.Commands.Aks.Models;
 using Microsoft.Azure.Commands.ResourceManager.Common.ArgumentCompleters;
 using Microsoft.Azure.Commands.ResourceManager.Common.Tags;
-using Microsoft.Azure.Graph.RBAC.Version1_6;
-using Microsoft.Azure.Graph.RBAC.Version1_6.Models;
 using Microsoft.Azure.Management.Authorization.Version2015_07_01;
 using Microsoft.Azure.Management.Authorization.Version2015_07_01.Models;
 using Microsoft.Azure.Management.Internal.Resources;
@@ -39,11 +37,13 @@ using Microsoft.Rest.Azure.OData;
 using Microsoft.Azure.Management.Internal.Resources.Models;
 using Microsoft.WindowsAzure.Commands.Common.CustomAttributes;
 using Microsoft.Azure.Commands.Common.Exceptions;
-using Microsoft.WindowsAzure.Commands.Common;
+using Microsoft.Azure.Commands.Common.MSGraph.Version1_0.Applications.Models;
+using Microsoft.Azure.Commands.Common.MSGraph.Version1_0.Applications;
+using Microsoft.Azure.Commands.Common.MSGraph.Version1_0;
+using ResourceIdentityType = Microsoft.Azure.Management.ContainerService.Models.ResourceIdentityType;
 
 namespace Microsoft.Azure.Commands.Aks
 {
-    [GenericBreakingChange(Constants.BreakingChangeMSGraphMigration)]
     public abstract class CreateOrUpdateKubeBase : KubeCmdletBase
     {
         protected const string DefaultParamSet = "defaultParameterSet";
@@ -125,6 +125,66 @@ namespace Microsoft.Azure.Commands.Aks
 
         [Parameter(Mandatory = false)]
         public Hashtable Tag { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "The desired number of allocated SNAT ports per VM.")]
+        [ValidateRange(0, 64000)]
+        public int LoadBalancerAllocatedOutboundPort { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Desired managed outbound IPs count for the cluster load balancer.")]
+        public int LoadBalancerManagedOutboundIpCount { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Desired outbound IP resources for the cluster load balancer.")]
+        public string[] LoadBalancerOutboundIp { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Desired outbound IP Prefix resources for the cluster load balancer.")]
+        public string[] LoadBalancerOutboundIpPrefix { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Desired outbound flow idle timeout in minutes.")]
+        [ValidateRange(4, 120)]
+        public int LoadBalancerIdleTimeoutInMinute { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "The IP ranges authorized to access the Kubernetes API server.")]
+        public string[] ApiServerAccessAuthorizedIpRange { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Whether to create the cluster as a private cluster or not.")]
+        public SwitchParameter EnableApiServerAccessPrivateCluster { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "The private DNS zone mode for the cluster.")]
+        public string ApiServerAccessPrivateDnsZone { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Whether to create additional public FQDN for private cluster or not.")]
+        public SwitchParameter EnableApiServerAccessPrivateClusterPublicFQDN { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "The FQDN subdomain of the private cluster with custom private dns zone.")]
+        public string FqdnSubdomain { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Using a managed identity to manage cluster resource group.")]
+        public SwitchParameter EnableManagedIdentity { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "ResourceId of user assign managed identity for cluster.")]
+        public string AssignIdentity { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "The upgrade channel for auto upgrade. For more information see https://docs.microsoft.com/azure/aks/upgrade-cluster#set-auto-upgrade-channel.")]
+        [PSArgumentCompleter("rapid", "stable", "patch", "node-image", "none")]
+        public string AutoUpgradeChannel { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "The resource ID of the disk encryption set to use for enabling encryption.")]
+        public string DiskEncryptionSetID { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Local accounts should be disabled on the Managed Cluster.")]
+        public SwitchParameter DisableLocalAccount { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "The HTTP proxy server endpoint to use.")]
+        public string HttpProxy { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "The HTTPS proxy server endpoint to use")]
+        public string HttpsProxy { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "The endpoints that should not go through proxy.")]
+        public string[] HttpProxyConfigNoProxyEndpoint { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Alternative CA cert to use for connecting to proxy servers.")]
+        public string HttpProxyConfigTrustedCa { get; set; }
 
         protected void BeforeBuildNewCluster()
         {
@@ -225,7 +285,7 @@ namespace Microsoft.Azure.Commands.Aks
                 if (clientSecret == null)
                 {
                     clientSecret = RandomBase64String(16);
-                }
+                }              
 
                 acsServicePrincipal = BuildServicePrincipal(Name, clientSecret);
                 WriteVerbose(Resources.CreatedANewServicePrincipalAndAssignedTheContributorRole);
@@ -236,26 +296,32 @@ namespace Microsoft.Azure.Commands.Aks
 
         private AcsServicePrincipal BuildServicePrincipal(string name, string clientSecret)
         {
-            var pwCreds = new PasswordCredential(
-                value: clientSecret,
-                startDate: DateTime.UtcNow,
-                endDate: DateTime.UtcNow.AddYears(2));
+            var keyCredentials = new List<MicrosoftGraphKeyCredential> {
+                    new MicrosoftGraphKeyCredential {
+                        EndDateTime = DateTime.UtcNow.AddYears(2),
+                        StartDateTime = DateTime.UtcNow,
+                        Key = clientSecret,
+                        Type = "Symmetric",
+                        Usage = "Verify"
+                    }
+            };
+            var appCreateParameters = new MicrosoftGraphApplication
+            {
+                DisplayName = name,
+                KeyCredentials = keyCredentials
+            };
+            var app = GraphClient.Applications.CreateApplication(appCreateParameters);
 
-            var app = GraphClient.Applications.Create(new ApplicationCreateParameters(
-                false,
-                name,
-                new List<string> { },
-                null,
-                passwordCredentials: new List<PasswordCredential> { pwCreds }));
-
-            ServicePrincipal sp = null;
+            MicrosoftGraphServicePrincipal sp = null;
             var success = RetryAction(() =>
             {
-                var spCreateParams = new ServicePrincipalCreateParameters(
-                                app.AppId,
-                                true,
-                                passwordCredentials: new List<PasswordCredential> { pwCreds });
-                sp = GraphClient.ServicePrincipals.Create(spCreateParams);
+                var servicePrincipalCreateParams = new MicrosoftGraphServicePrincipal
+                {
+                    AppId = app.AppId,
+                    AccountEnabled = true,
+                    KeyCredentials = keyCredentials
+                };
+                sp = GraphClient.ServicePrincipals.CreateServicePrincipal(servicePrincipalCreateParams);
             }, Resources.ServicePrincipalCreate);
 
             if (!success)
@@ -265,8 +331,8 @@ namespace Microsoft.Azure.Commands.Aks
                     desensitizedMessage: Resources.CouldNotCreateAServicePrincipalWithTheRightPermissionsAreYouAnOwner);
             }
 
-            AddSubscriptionRoleAssignment("Contributor", sp.ObjectId);
-            return new AcsServicePrincipal { SpId = app.AppId, ClientSecret = clientSecret, ObjectId = app.ObjectId };
+            AddSubscriptionRoleAssignment("Contributor", sp.Id);
+            return new AcsServicePrincipal { SpId = app.AppId, ClientSecret = clientSecret, ObjectId = sp.Id };
         }
 
         protected RoleAssignment GetRoleAssignmentWithRoleDefinitionId(string roleDefinitionId)
@@ -315,10 +381,9 @@ namespace Microsoft.Azure.Commands.Aks
             {
                 try
                 {
-                    //Please note string.Equals doesn't work here, while == works.
-                    var odataQuery = new ODataQuery<ServicePrincipal>(sp => sp.AppId == acsServicePrincipal.SpId);
-                    var servicePrincipal = GraphClient.ServicePrincipals.List(odataQuery).First();
-                    spObjectId = servicePrincipal.ObjectId;
+                    ODataQuery<MicrosoftGraphServicePrincipal> oDataQuery = new ODataQuery<MicrosoftGraphServicePrincipal>(sp => sp.AppId == acsServicePrincipal.SpId);
+                    var servicePrincipal = GraphClient.FilterServicePrincipals(oDataQuery).First();
+                    spObjectId = servicePrincipal.Id;
                 }
                 catch(Exception ex)
                 {
@@ -448,6 +513,154 @@ namespace Microsoft.Azure.Commands.Aks
 
             var subPart = string.Join("", DefaultContext.Subscription.Id.Take(4));
             return $"{namePart}{subPart}";
+        }
+    
+        protected ManagedClusterLoadBalancerProfile CreateOrUpdateLoadBalancerProfile(ManagedClusterLoadBalancerProfile loadBalancerProfile)
+        {
+            if ((this.IsParameterBound(c => c.LoadBalancerManagedOutboundIpCount) ||
+                this.IsParameterBound(c => c.LoadBalancerOutboundIp) ||
+                this.IsParameterBound(c => c.LoadBalancerOutboundIpPrefix) ||
+                this.IsParameterBound(c => c.LoadBalancerAllocatedOutboundPort) ||
+                this.IsParameterBound(c => c.LoadBalancerIdleTimeoutInMinute)) &&
+                loadBalancerProfile == null)
+            {
+                loadBalancerProfile = new ManagedClusterLoadBalancerProfile();
+            }
+            if (this.IsParameterBound(c => c.LoadBalancerManagedOutboundIpCount))
+            {
+                loadBalancerProfile.ManagedOutboundIPs = new ManagedClusterLoadBalancerProfileManagedOutboundIPs(LoadBalancerManagedOutboundIpCount);
+            }
+            if (this.IsParameterBound(c => c.LoadBalancerOutboundIp))
+            {
+                loadBalancerProfile.OutboundIPs = new ManagedClusterLoadBalancerProfileOutboundIPs(LoadBalancerOutboundIp.ToList().Select(x => { return new ResourceReference(x); }).ToList());
+            }
+            if (this.IsParameterBound(c => c.LoadBalancerOutboundIpPrefix))
+            {
+                loadBalancerProfile.OutboundIPPrefixes = new ManagedClusterLoadBalancerProfileOutboundIPPrefixes(LoadBalancerOutboundIpPrefix.ToList().Select(x => { return new ResourceReference(x); }).ToList());
+            }
+            if (this.IsParameterBound(c => c.LoadBalancerAllocatedOutboundPort))
+            {
+                loadBalancerProfile.AllocatedOutboundPorts = LoadBalancerAllocatedOutboundPort;
+            }
+            if (this.IsParameterBound(c => c.LoadBalancerIdleTimeoutInMinute))
+            {
+                loadBalancerProfile.IdleTimeoutInMinutes = LoadBalancerIdleTimeoutInMinute;
+            }
+
+            return loadBalancerProfile;
+        }
+
+        protected ManagedClusterAutoUpgradeProfile CreateOrUpdateAutoUpgradeProfile(ManagedClusterAutoUpgradeProfile autoUpgradeProfile)
+        {
+            if (this.IsParameterBound(c => c.AutoUpgradeChannel) && autoUpgradeProfile == null)
+            {
+                autoUpgradeProfile = new ManagedClusterAutoUpgradeProfile();
+            }
+            if (this.IsParameterBound(c => c.AutoUpgradeChannel))
+            {
+                autoUpgradeProfile.UpgradeChannel = AutoUpgradeChannel;
+            }
+            return autoUpgradeProfile;
+        }
+
+        protected ManagedClusterHTTPProxyConfig CreateOrUpdateHttpProxyConfig(ManagedClusterHTTPProxyConfig httpProxyConfig)
+        {
+            if ((this.IsParameterBound(c => c.HttpProxy) ||
+                this.IsParameterBound(c => c.HttpsProxy) ||
+                this.IsParameterBound(c => c.HttpProxyConfigNoProxyEndpoint) ||
+                this.IsParameterBound(c => c.HttpProxyConfigTrustedCa)) &&
+                httpProxyConfig == null)
+            {
+                httpProxyConfig = new ManagedClusterHTTPProxyConfig();
+            }
+            if (this.IsParameterBound(c => c.HttpProxy))
+            {
+                httpProxyConfig.HttpProxy = HttpProxy;
+            }
+            if (this.IsParameterBound(c => c.HttpsProxy))
+            {
+                httpProxyConfig.HttpsProxy = HttpsProxy;
+            }
+            if (this.IsParameterBound(c => c.HttpProxyConfigNoProxyEndpoint))
+            {
+                httpProxyConfig.NoProxy = HttpProxyConfigNoProxyEndpoint;
+            }
+            if (this.IsParameterBound(c => c.HttpProxyConfigTrustedCa))
+            {
+                httpProxyConfig.TrustedCa = HttpProxyConfigTrustedCa;
+            }
+
+            return httpProxyConfig;
+        }
+
+        protected ManagedClusterAPIServerAccessProfile CreateOrUpdateApiServerAccessProfile(ManagedClusterAPIServerAccessProfile apiServerAccessProfile)
+        {
+            if ((this.IsParameterBound(c => c.ApiServerAccessAuthorizedIpRange) ||
+                this.IsParameterBound(c => c.EnableApiServerAccessPrivateCluster) ||
+                this.IsParameterBound(c => c.ApiServerAccessPrivateDnsZone) ||
+                this.IsParameterBound(c => c.EnableApiServerAccessPrivateClusterPublicFQDN)) &&
+                apiServerAccessProfile == null)
+            {
+                apiServerAccessProfile = new ManagedClusterAPIServerAccessProfile();
+            }
+            if (this.IsParameterBound(c => c.ApiServerAccessAuthorizedIpRange))
+            {
+                apiServerAccessProfile.AuthorizedIPRanges = ApiServerAccessAuthorizedIpRange;
+            }
+            if (this.IsParameterBound(c => c.EnableApiServerAccessPrivateCluster))
+            {
+                apiServerAccessProfile.EnablePrivateCluster = EnableApiServerAccessPrivateCluster;
+            }
+            if (this.IsParameterBound(c => c.ApiServerAccessPrivateDnsZone))
+            {
+                apiServerAccessProfile.PrivateDNSZone = ApiServerAccessPrivateDnsZone;
+            }
+            if (this.IsParameterBound(c => c.EnableApiServerAccessPrivateClusterPublicFQDN))
+            {
+                apiServerAccessProfile.EnablePrivateClusterPublicFQDN = EnableApiServerAccessPrivateClusterPublicFQDN;
+            }
+
+            return apiServerAccessProfile;
+        }
+
+        protected ManagedCluster SetIdentity(ManagedCluster cluster)
+        {
+            if (this.IsParameterBound(c => c.EnableManagedIdentity))
+            {
+                if (!EnableManagedIdentity)
+                {
+                    cluster.Identity = null;
+                }
+                else
+                {
+                    if (cluster.Identity == null)
+                    {
+                        cluster.Identity = new ManagedClusterIdentity();
+                    }
+                }
+            }
+            if (this.IsParameterBound(c => c.AssignIdentity))
+            {
+                if (cluster.Identity == null)
+                {
+                    throw new AzPSArgumentException(Resources.NeedEnableManagedIdentity, nameof(AssignIdentity));
+                }
+                cluster.Identity.Type = ResourceIdentityType.UserAssigned;
+                cluster.Identity.UserAssignedIdentities = new Dictionary<string, ManagedClusterIdentityUserAssignedIdentitiesValue>
+                {
+                    { AssignIdentity, new ManagedClusterIdentityUserAssignedIdentitiesValue() }
+                };
+
+            }
+            else
+            {
+                if (cluster.Identity != null && cluster.Identity.Type == null)
+                {
+                    cluster.Identity.Type = ResourceIdentityType.SystemAssigned;
+                }
+            }
+
+            return cluster;
         }
     }
 }

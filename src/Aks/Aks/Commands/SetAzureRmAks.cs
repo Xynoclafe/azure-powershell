@@ -22,8 +22,6 @@ using Microsoft.Azure.Commands.Aks.Properties;
 using Microsoft.Azure.Commands.Common.Exceptions;
 using Microsoft.Azure.Commands.ResourceManager.Common.ArgumentCompleters;
 using Microsoft.Azure.Commands.ResourceManager.Common.Tags;
-using Microsoft.Azure.Graph.RBAC.Version1_6;
-using Microsoft.Azure.Graph.RBAC.Version1_6.Models;
 using Microsoft.Azure.Management.Authorization.Version2015_07_01;
 using Microsoft.Azure.Management.Authorization.Version2015_07_01.Models;
 using Microsoft.Azure.Management.ContainerService;
@@ -36,11 +34,11 @@ using Microsoft.WindowsAzure.Commands.Common;
 using Microsoft.WindowsAzure.Commands.Common.CustomAttributes;
 using Microsoft.WindowsAzure.Commands.Utilities.Common;
 
+using ResourceIdentityType = Microsoft.Azure.Management.ContainerService.Models.ResourceIdentityType;
+
 namespace Microsoft.Azure.Commands.Aks
 {
-    [CmdletDeprecation(ReplacementCmdletName = "Set-AzAksCluster")]
     [Cmdlet("Set", ResourceManager.Common.AzureRMConstants.AzureRMPrefix + "AksCluster", DefaultParameterSetName = DefaultParamSet, SupportsShouldProcess = true)]
-    [Alias("Set-" + ResourceManager.Common.AzureRMConstants.AzureRMPrefix + "Aks")]
     [OutputType(typeof(PSKubernetesCluster))]
     public class SetAzureRmAks : CreateOrUpdateKubeBase
     {
@@ -62,7 +60,7 @@ namespace Microsoft.Azure.Commands.Aks
         public string AcrNameToDetach { get; set; }
 
 
-        [Parameter(Mandatory = false, HelpMessage = "Will only upgrade node pool version to align control plane.")]
+        [Parameter(Mandatory = false, HelpMessage = "Will only upgrade the node image of agent pools.")]
         public SwitchParameter NodeImageOnly { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = "Will only upgrade control plane to target version.")]
@@ -127,6 +125,13 @@ namespace Microsoft.Azure.Commands.Aks
                 linuxProfile: linuxProfile,
                 servicePrincipalProfile: spProfile);
             return managedCluster;
+        }
+
+        private ContainerServiceNetworkProfile SetNetworkProfile(ContainerServiceNetworkProfile networkProfile)
+        {
+            networkProfile.LoadBalancerProfile = CreateOrUpdateLoadBalancerProfile(networkProfile.LoadBalancerProfile);
+
+            return networkProfile;
         }
 
         public override void ExecuteCmdlet()
@@ -286,17 +291,7 @@ namespace Microsoft.Azure.Commands.Aks
                                     throw new AzPSApplicationException(Resources.NotUsingVirtualMachineScaleSets);
                                 }
                                 var agentPoolClient = Client.AgentPools.Get(ResourceGroupName, Name, agentPoolProfile.Name);
-                                AgentPool parameter = new AgentPool
-                                {
-                                    Count = agentPoolClient.Count,
-                                    VmSize = agentPoolClient.VmSize,
-                                    OsDiskSizeGB = agentPoolClient.OsDiskSizeGB,
-                                    MaxPods = agentPoolClient.MaxPods,
-                                    Mode = agentPoolClient.Mode,
-                                    OsType = agentPoolClient.OsType,
-                                    OrchestratorVersion = cluster.KubernetesVersion,
-                                };
-                                Client.AgentPools.CreateOrUpdate(ResourceGroupName, Name, agentPoolProfile.Name, parameter);
+                                Client.AgentPools.UpgradeNodeImageVersion(ResourceGroupName, Name, agentPoolProfile.Name);
                             }
                             cluster = Client.ManagedClusters.Get(ResourceGroupName, Name);
                             WriteObject(PSMapper.Instance.Map<PSKubernetesCluster>(cluster));
@@ -379,13 +374,32 @@ namespace Microsoft.Azure.Commands.Aks
                             RemoveAcrRoleAssignment(AcrNameToDetach, nameof(AcrNameToDetach), acsServicePrincipal);
                         }
                     }
+                    cluster.NetworkProfile = SetNetworkProfile(cluster.NetworkProfile);
+                    cluster.ApiServerAccessProfile = CreateOrUpdateApiServerAccessProfile(cluster.ApiServerAccessProfile);
+                    cluster.HttpProxyConfig = CreateOrUpdateHttpProxyConfig(cluster.HttpProxyConfig);
+                    cluster.AutoUpgradeProfile = CreateOrUpdateAutoUpgradeProfile(cluster.AutoUpgradeProfile);
+                    if (this.IsParameterBound(c => c.FqdnSubdomain))
+                    {
+                        cluster.FqdnSubdomain = FqdnSubdomain;
+                    }
+                    SetIdentity(cluster);
 
                     var kubeCluster = Client.ManagedClusters.CreateOrUpdate(ResourceGroupName, Name, cluster);
+
+                    if (this.IsParameterBound(c => c.DiskEncryptionSetID))
+                    {
+                        cluster.DiskEncryptionSetID = DiskEncryptionSetID;
+                    }
+                    if (DisableLocalAccount.IsPresent)
+                    {
+                        cluster.DisableLocalAccounts = DisableLocalAccount;
+                    }
 
                     WriteObject(PSMapper.Instance.Map<PSKubernetesCluster>(kubeCluster));
                 });
             }
         }
+
         private void RemoveAcrRoleAssignment(string acrName, string acrParameterName, AcsServicePrincipal acsServicePrincipal)
         {
             string acrResourceId = null;

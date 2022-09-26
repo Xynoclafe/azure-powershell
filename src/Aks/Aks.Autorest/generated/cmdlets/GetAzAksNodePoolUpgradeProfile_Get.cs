@@ -6,6 +6,7 @@
 namespace Microsoft.Azure.PowerShell.Cmdlets.Aks.Cmdlets
 {
     using static Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.Extensions;
+    using System;
 
     /// <summary>
     /// Gets the details of the upgrade profile for an agent pool with a specified resource group and managed cluster name.
@@ -33,20 +34,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Aks.Cmdlets
         /// The <see cref="global::System.Threading.CancellationTokenSource" /> for this operation.
         /// </summary>
         private global::System.Threading.CancellationTokenSource _cancellationTokenSource = new global::System.Threading.CancellationTokenSource();
-
-        /// <summary>Backing field for <see cref="AgentPoolName" /> property.</summary>
-        private string _agentPoolName;
-
-        /// <summary>The name of the agent pool.</summary>
-        [global::System.Management.Automation.Parameter(Mandatory = true, HelpMessage = "The name of the agent pool.")]
-        [Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.Info(
-        Required = true,
-        ReadOnly = false,
-        Description = @"The name of the agent pool.",
-        SerializedName = @"agentPoolName",
-        PossibleTypes = new [] { typeof(string) })]
-        [global::Microsoft.Azure.PowerShell.Cmdlets.Aks.Category(global::Microsoft.Azure.PowerShell.Cmdlets.Aks.ParameterCategory.Path)]
-        public string AgentPoolName { get => this._agentPoolName; set => this._agentPoolName = value; }
 
         /// <summary>Wait for .NET debugger to attach</summary>
         [global::System.Management.Automation.Parameter(Mandatory = false, DontShow = true, HelpMessage = "Wait for .NET debugger to attach")]
@@ -95,12 +82,27 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Aks.Cmdlets
         public global::System.Management.Automation.InvocationInfo InvocationInformation { get => __invocationInfo = __invocationInfo ?? this.MyInvocation ; set { __invocationInfo = value; } }
 
         /// <summary>
-        /// <see cref="IEventListener" /> cancellation delegate. Stops the cmdlet when called.
+        /// <see cref="Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.IEventListener" /> cancellation delegate. Stops the cmdlet when called.
         /// </summary>
         global::System.Action Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.IEventListener.Cancel => _cancellationTokenSource.Cancel;
 
-        /// <summary><see cref="IEventListener" /> cancellation token.</summary>
+        /// <summary><see cref="Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.IEventListener" /> cancellation token.</summary>
         global::System.Threading.CancellationToken Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.IEventListener.Token => _cancellationTokenSource.Token;
+
+        /// <summary>Backing field for <see cref="NodePoolName" /> property.</summary>
+        private string _nodePoolName;
+
+        /// <summary>The name of the agent pool.</summary>
+        [global::System.Management.Automation.Parameter(Mandatory = true, HelpMessage = "The name of the agent pool.")]
+        [Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.Info(
+        Required = true,
+        ReadOnly = false,
+        Description = @"The name of the agent pool.",
+        SerializedName = @"agentPoolName",
+        PossibleTypes = new [] { typeof(string) })]
+        [global::System.Management.Automation.Alias("AgentPoolName")]
+        [global::Microsoft.Azure.PowerShell.Cmdlets.Aks.Category(global::Microsoft.Azure.PowerShell.Cmdlets.Aks.ParameterCategory.Path)]
+        public string NodePoolName { get => this._nodePoolName; set => this._nodePoolName = value; }
 
         /// <summary>
         /// The instance of the <see cref="Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.HttpPipeline" /> that the remote call will use.
@@ -163,8 +165,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Aks.Cmdlets
         /// happens on that response. Implement this method in a partial class to enable this behavior
         /// </summary>
         /// <param name="responseMessage">the raw response message as an global::System.Net.Http.HttpResponseMessage.</param>
-        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.Aks.Models.Api20200901.ICloudError"
-        /// /> from the remote call</param>
+        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.Aks.Models.Api20200901.ICloudError">Microsoft.Azure.PowerShell.Cmdlets.Aks.Models.Api20200901.ICloudError</see>
+        /// from the remote call</param>
         /// <param name="returnNow">/// Determines if the rest of the onDefault method should be processed, or if the method should
         /// return immediately (set to true to skip further processing )</param>
 
@@ -175,8 +177,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Aks.Cmdlets
         /// on that response. Implement this method in a partial class to enable this behavior
         /// </summary>
         /// <param name="responseMessage">the raw response message as an global::System.Net.Http.HttpResponseMessage.</param>
-        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.Aks.Models.Api20200901.IAgentPoolUpgradeProfile"
-        /// /> from the remote call</param>
+        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.Aks.Models.Api20200901.IAgentPoolUpgradeProfile">Microsoft.Azure.PowerShell.Cmdlets.Aks.Models.Api20200901.IAgentPoolUpgradeProfile</see>
+        /// from the remote call</param>
         /// <param name="returnNow">/// Determines if the rest of the onOk method should be processed, or if the method should return
         /// immediately (set to true to skip further processing )</param>
 
@@ -187,6 +189,11 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Aks.Cmdlets
         /// </summary>
         protected override void BeginProcessing()
         {
+            var telemetryId = Microsoft.Azure.PowerShell.Cmdlets.Aks.Module.Instance.GetTelemetryId.Invoke();
+            if (telemetryId != "" && telemetryId != "internal")
+            {
+                __correlationId = telemetryId;
+            }
             Module.Instance.SetProxyConfiguration(Proxy, ProxyCredential, ProxyUseDefaultCredentials);
             if (Break)
             {
@@ -198,7 +205,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Aks.Cmdlets
         /// <summary>Performs clean-up after the command execution</summary>
         protected override void EndProcessing()
         {
-            ((Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.Events.CmdletEndProcessing).Wait(); if( ((Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
+
         }
 
         /// <summary>
@@ -240,7 +247,7 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Aks.Cmdlets
                     case Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.Events.Information:
                     {
                         var data = messageData();
-                        WriteInformation(data, new[] { data.Message });
+                        WriteInformation(data.Message, new string[]{});
                         return ;
                     }
                     case Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.Events.Debug:
@@ -306,7 +313,6 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Aks.Cmdlets
         {
             using( NoSynchronizationContext )
             {
-                await ((Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.Events.CmdletProcessRecordAsyncStart); if( ((Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 await ((Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.Events.CmdletGetPipeline); if( ((Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                 Pipeline = Microsoft.Azure.PowerShell.Cmdlets.Aks.Module.Instance.CreatePipeline(InvocationInformation, __correlationId, __processRecordId, this.ParameterSetName);
                 if (null != HttpPipelinePrepend)
@@ -323,13 +329,13 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Aks.Cmdlets
                     foreach( var SubscriptionId in this.SubscriptionId )
                     {
                         await ((Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.Events.CmdletBeforeAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
-                        await this.Client.AgentPoolsGetUpgradeProfile(SubscriptionId, ResourceGroupName, ClusterName, AgentPoolName, onOk, onDefault, this, Pipeline);
+                        await this.Client.AgentPoolsGetUpgradeProfile(SubscriptionId, ResourceGroupName, ClusterName, NodePoolName, onOk, onDefault, this, Pipeline);
                         await ((Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.IEventListener)this).Signal(Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.Events.CmdletAfterAPICall); if( ((Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.IEventListener)this).Token.IsCancellationRequested ) { return; }
                     }
                 }
                 catch (Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.UndeclaredResponseException urexception)
                 {
-                    WriteError(new global::System.Management.Automation.ErrorRecord(urexception, urexception.StatusCode.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new {  SubscriptionId=SubscriptionId,ResourceGroupName=ResourceGroupName,ClusterName=ClusterName,AgentPoolName=AgentPoolName})
+                    WriteError(new global::System.Management.Automation.ErrorRecord(urexception, urexception.StatusCode.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new {  SubscriptionId=SubscriptionId,ResourceGroupName=ResourceGroupName,ClusterName=ClusterName,NodePoolName=NodePoolName})
                     {
                       ErrorDetails = new global::System.Management.Automation.ErrorDetails(urexception.Message) { RecommendedAction = urexception.Action }
                     });
@@ -352,8 +358,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Aks.Cmdlets
         /// a delegate that is called when the remote service returns default (any response code not handled elsewhere).
         /// </summary>
         /// <param name="responseMessage">the raw response message as an global::System.Net.Http.HttpResponseMessage.</param>
-        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.Aks.Models.Api20200901.ICloudError"
-        /// /> from the remote call</param>
+        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.Aks.Models.Api20200901.ICloudError">Microsoft.Azure.PowerShell.Cmdlets.Aks.Models.Api20200901.ICloudError</see>
+        /// from the remote call</param>
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the method is completed.
         /// </returns>
@@ -375,14 +381,14 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Aks.Cmdlets
                 {
                     // Unrecognized Response. Create an error record based on what we have.
                     var ex = new Microsoft.Azure.PowerShell.Cmdlets.Aks.Runtime.RestException<Microsoft.Azure.PowerShell.Cmdlets.Aks.Models.Api20200901.ICloudError>(responseMessage, await response);
-                    WriteError( new global::System.Management.Automation.ErrorRecord(ex, ex.Code, global::System.Management.Automation.ErrorCategory.InvalidOperation, new { SubscriptionId=SubscriptionId, ResourceGroupName=ResourceGroupName, ClusterName=ClusterName, AgentPoolName=AgentPoolName })
+                    WriteError( new global::System.Management.Automation.ErrorRecord(ex, ex.Code, global::System.Management.Automation.ErrorCategory.InvalidOperation, new { SubscriptionId=SubscriptionId, ResourceGroupName=ResourceGroupName, ClusterName=ClusterName, NodePoolName=NodePoolName })
                     {
                       ErrorDetails = new global::System.Management.Automation.ErrorDetails(ex.Message) { RecommendedAction = ex.Action }
                     });
                 }
                 else
                 {
-                    WriteError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"[{code}] : {message}"), code?.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new { SubscriptionId=SubscriptionId, ResourceGroupName=ResourceGroupName, ClusterName=ClusterName, AgentPoolName=AgentPoolName })
+                    WriteError( new global::System.Management.Automation.ErrorRecord(new global::System.Exception($"[{code}] : {message}"), code?.ToString(), global::System.Management.Automation.ErrorCategory.InvalidOperation, new { SubscriptionId=SubscriptionId, ResourceGroupName=ResourceGroupName, ClusterName=ClusterName, NodePoolName=NodePoolName })
                     {
                       ErrorDetails = new global::System.Management.Automation.ErrorDetails(message) { RecommendedAction = global::System.String.Empty }
                     });
@@ -392,8 +398,8 @@ namespace Microsoft.Azure.PowerShell.Cmdlets.Aks.Cmdlets
 
         /// <summary>a delegate that is called when the remote service returns 200 (OK).</summary>
         /// <param name="responseMessage">the raw response message as an global::System.Net.Http.HttpResponseMessage.</param>
-        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.Aks.Models.Api20200901.IAgentPoolUpgradeProfile"
-        /// /> from the remote call</param>
+        /// <param name="response">the body result as a <see cref="Microsoft.Azure.PowerShell.Cmdlets.Aks.Models.Api20200901.IAgentPoolUpgradeProfile">Microsoft.Azure.PowerShell.Cmdlets.Aks.Models.Api20200901.IAgentPoolUpgradeProfile</see>
+        /// from the remote call</param>
         /// <returns>
         /// A <see cref="global::System.Threading.Tasks.Task" /> that will be complete when handling of the method is completed.
         /// </returns>

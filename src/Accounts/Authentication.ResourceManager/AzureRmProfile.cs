@@ -237,6 +237,7 @@ namespace Microsoft.Azure.Commands.Common.Authentication.Models
         /// Initializes a new instance of AzureRMProfile and loads its content from specified path.
         /// </summary>
         /// <param name="path">The location of profile file on disk.</param>
+        /// <param name="shouldRefreshContextsFromCache"></param>
         public AzureRmProfile(string path, bool shouldRefreshContextsFromCache = true) : this()
         {
             this.ShouldRefreshContextsFromCache = shouldRefreshContextsFromCache;
@@ -267,6 +268,7 @@ namespace Microsoft.Azure.Commands.Common.Authentication.Models
         /// Writes profile to a specified path.
         /// </summary>
         /// <param name="path">File path on disk to save profile to</param>
+        /// <param name="serializeCache">true if the TokenCache should be serialized, false otherwise</param>
         public void Save(string path, bool serializeCache = true)
         {
             if (string.IsNullOrEmpty(path))
@@ -284,6 +286,7 @@ namespace Microsoft.Azure.Commands.Common.Authentication.Models
         /// Writes the profile using the specified file provider
         /// </summary>
         /// <param name="provider">The file provider used to save the profile</param>
+        /// <param name="serializeCache">true if the TokenCache should be serialized, false otherwise</param>
         public void Save(IFileProvider provider, bool serializeCache = true)
         {
             foreach (string env in AzureEnvironment.PublicEnvironments.Keys)
@@ -488,11 +491,24 @@ namespace Microsoft.Azure.Commands.Common.Authentication.Models
             return result;
         }
 
+        /// <summary>
+        /// Add the input context with the specified name.
+        /// If the context with the same tenant, subscription, accountId does not exist, add the input into context list.
+        /// If the context with the same tenant, subscription, accountId already exist, merge 2 contexes and add the merged context to the context list.
+        /// </summary>
+        /// <param name="name">The specified new name of the context.</param>
+        /// <param name="context">The new context to set as default.</param>
         public bool TrySetContext(string name, IAzureContext context)
         {
             bool result = false;
             if (Contexts != null)
             {
+                if (TryFindContext(context, out string oldName))
+                {
+                    var oldContext = Contexts[oldName].DeepCopy();
+                    oldContext.Update(context);
+                    context = oldContext;
+                }
                 Contexts[name] = context;
                 result = true;
             }
@@ -527,6 +543,13 @@ namespace Microsoft.Azure.Commands.Common.Authentication.Models
 
             return result;
         }
+
+        /// <summary>
+        /// Set the default context with the input context.
+        /// If the context with the same name does not exist, add the input into context list and set as default.
+        /// If the context with the same name already exist, update the attributes with the same names and add the missing attributes.
+        /// </summary>
+        /// <param name="context">The new context to set as default.</param>
 
         public bool TrySetDefaultContext(IAzureContext context)
         {

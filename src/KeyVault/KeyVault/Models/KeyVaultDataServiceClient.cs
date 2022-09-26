@@ -211,7 +211,7 @@ namespace Microsoft.Azure.Commands.KeyVault.Models
 
                 options.NextLink = result.NextPageLink;
                 return (result == null) ? new List<PSKeyVaultKeyIdentityItem>() :
-                    result.Select((keyItem) => new PSKeyVaultKeyIdentityItem(keyItem, this.vaultUriHelper));
+                    result.Select((keyItem) => new PSKeyVaultKeyIdentityItem(keyItem, this.vaultUriHelper, false));
             }
             catch (Exception ex)
             {
@@ -242,7 +242,7 @@ namespace Microsoft.Azure.Commands.KeyVault.Models
                     result = this.keyVaultClient.GetKeyVersionsNextAsync(options.NextLink).GetAwaiter().GetResult();
 
                 options.NextLink = result.NextPageLink;
-                return result.Select((keyItem) => new PSKeyVaultKeyIdentityItem(keyItem, this.vaultUriHelper));
+                return result.Select((keyItem) => new PSKeyVaultKeyIdentityItem(keyItem, this.vaultUriHelper, false));
             }
             catch (Exception ex)
             {
@@ -420,6 +420,25 @@ namespace Microsoft.Azure.Commands.KeyVault.Models
 
             return new PSKeyVaultKey(keyBundle, this.vaultUriHelper);
         }
+
+        #region Key Rotation
+        public PSKeyVaultKey RotateKey(string vaultName, string keyName)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public PSKeyRotationPolicy GetKeyRotationPolicy(string vaultName, string keyName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public PSKeyRotationPolicy SetKeyRotationPolicy(PSKeyRotationPolicy keyRotationPolicy)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
 
         #endregion
 
@@ -767,6 +786,11 @@ namespace Microsoft.Azure.Commands.KeyVault.Models
             return outputBlobPath;
         }
 
+        public PSKeyVaultCertificate MergeCertificate(string vaultName, string name, byte[] certBytes, Dictionary<string, string> tags)
+        {
+            throw new NotImplementedException();
+        }
+
         public PSKeyVaultCertificate MergeCertificate(string vaultName, string certName, X509Certificate2Collection certs, IDictionary<string, string> tags)
         {
             if (string.IsNullOrEmpty(vaultName))
@@ -793,7 +817,12 @@ namespace Microsoft.Azure.Commands.KeyVault.Models
 
         }
 
-        public PSKeyVaultCertificate ImportCertificate(string vaultName, string certName, string base64CertColl, SecureString certPassword, IDictionary<string, string> tags)
+        public PSKeyVaultCertificate ImportCertificate(string vaultName, string certName, byte[] certificate, SecureString certPassword, IDictionary<string, string> tags, string contentType = Constants.Pkcs12ContentType)
+        {
+            return ImportCertificate(vaultName, certName, Convert.ToBase64String(certificate), certPassword, tags, contentType);
+        }
+
+        public PSKeyVaultCertificate ImportCertificate(string vaultName, string certName, string base64CertColl, SecureString certPassword, IDictionary<string, string> tags, string contentType = Constants.Pkcs12ContentType)
         {
             if (string.IsNullOrEmpty(vaultName))
                 throw new ArgumentNullException(nameof(vaultName));
@@ -808,14 +837,13 @@ namespace Microsoft.Azure.Commands.KeyVault.Models
 
             var password = (certPassword == null) ? string.Empty : certPassword.ConvertToString();
 
-
             try
             {
                 certBundle = this.keyVaultClient.ImportCertificateAsync(vaultAddress, certName, base64CertColl, password, new CertificatePolicy
                 {
                     SecretProperties = new SecretProperties
                     {
-                        ContentType = "application/x-pkcs12"
+                        ContentType = contentType
                     }
                 }, null, tags).GetAwaiter().GetResult();
             }
@@ -827,7 +855,7 @@ namespace Microsoft.Azure.Commands.KeyVault.Models
             return new PSKeyVaultCertificate(certBundle);
         }
 
-        public PSKeyVaultCertificate ImportCertificate(string vaultName, string certName, X509Certificate2Collection certificateCollection, IDictionary<string, string> tags)
+        public PSKeyVaultCertificate ImportCertificate(string vaultName, string certName, X509Certificate2Collection certificateCollection, IDictionary<string, string> tags, string contentType = Constants.Pkcs12ContentType)
         {
             if (string.IsNullOrEmpty(vaultName))
                 throw new ArgumentNullException(nameof(vaultName));
@@ -845,7 +873,7 @@ namespace Microsoft.Azure.Commands.KeyVault.Models
                 {
                     SecretProperties = new SecretProperties
                     {
-                        ContentType = "application/x-pkcs12"
+                        ContentType = contentType
                     }
                 }, null, tags).GetAwaiter().GetResult();
             }
@@ -856,6 +884,7 @@ namespace Microsoft.Azure.Commands.KeyVault.Models
 
             return new PSKeyVaultCertificate(certBundle);
         }
+       
         public IEnumerable<PSKeyVaultCertificateContact> GetCertificateContacts(string vaultName)
         {
             if (string.IsNullOrEmpty(vaultName))
@@ -2165,25 +2194,49 @@ namespace Microsoft.Azure.Commands.KeyVault.Models
             throw new NotImplementedException("Purging deleted keys on managed HSM is only possible in track 2 SDK.");
 
         }
-        public PSKeyOperationResult ManagedHsmKeyDecrypt(string vaultName, string keyName, string version, byte[] value, string encryptAlgorithm)
+        public PSKeyOperationResult ManagedHsmKeyDecrypt(string managedHsmName, string keyName, string version, byte[] value, string encryptAlgorithm)
         {
             throw new NotImplementedException("Decrypting with keys on managed HSM is only possible in track 2 SDK.");
         }
 
-        public PSKeyOperationResult ManagedHsmKeyEncrypt(string vaultName, string keyName, string version, byte[] value, string encryptAlgorithm)
+        public PSKeyOperationResult ManagedHsmKeyEncrypt(string managedHsmName, string keyName, string version, byte[] value, string encryptAlgorithm)
         {
             throw new NotImplementedException("Encrypting with keys on managed HSM is only possible in track 2 SDK.");
         }
 
-        public PSKeyOperationResult ManagedHsmUnwrapKey(string vaultName, string keyName, string keyVersion, byte[] wrapKey, string wrapAlgorithm)
+        public PSKeyOperationResult ManagedHsmUnwrapKey(string managedHsmName, string keyName, string keyVersion, byte[] wrapKey, string wrapAlgorithm)
         {
             throw new NotImplementedException("Unwrapping keys on managed HSM is only possible in track 2 SDK.");
         }
 
-        public PSKeyOperationResult ManagedHsmWrapKey(string vaultName, string keyName, string keyVersion, byte[] wrapKey, string wrapAlgorithm)
+        public PSKeyOperationResult ManagedHsmWrapKey(string managedHsmName, string keyName, string keyVersion, byte[] wrapKey, string wrapAlgorithm)
         {
             throw new NotImplementedException("Wrapping keys on managed HSM is only possible in track 2 SDK.");
         }
+
+        public byte[] GetManagedHsmRandomNumber(string managedHsmName, int count)
+        {
+            throw new NotImplementedException("Getting random number on managed HSM is only possible in track 2 SDK.");
+        }
+
+        #region Key rotation
+        public PSKeyVaultKey RotateManagedHsmKey(string managedHsmName, string keyName)
+        {
+            throw new NotImplementedException("Rotating keys on managed HSM is only possible in track 2 SDK.");
+
+        }
+
+        public PSKeyRotationPolicy GetManagedHsmKeyRotationPolicy(string managedHsmName, string keyName)
+        {
+            throw new NotImplementedException("Getting key rotation policies on managed HSM is only possible in track 2 SDK.");
+        }
+
+        public PSKeyRotationPolicy SetManagedHsmKeyRotationPolicy(PSKeyRotationPolicy keyRotationPolicy)
+        {
+            throw new NotImplementedException("Updating key rotation policies on managed HSM is only possible in track 2 SDK.");
+        }
+        #endregion
+
         #endregion
     }
 }

@@ -115,7 +115,7 @@ namespace Microsoft.Azure.Commands.KeyVault.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Please make sure you have sufficient permissions in AD Graph to get and list graph objects for validation to work. Otherwise skip with `-BypassObjectIdValidation`..
+        ///   Looks up a localized string similar to Please make sure you have sufficient permissions in Microsoft Graph to get and list directory objects for validation to work. Otherwise skip with `-BypassObjectIdValidation`..
         /// </summary>
         internal static string ADGraphPermissionWarning {
             get {
@@ -135,7 +135,7 @@ namespace Microsoft.Azure.Commands.KeyVault.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Retrieving object ID from Azure Active Directory failed. {0}
         ///
-        ///Please provide object ID for the user or service principle to set a vault access policy.
+        ///Please provide object ID for the user or service principal to set a vault access policy.
         ///You can find the object ID using Azure Active Directory Module for Windows PowerShell..
         /// </summary>
         internal static string ADObjectIDRetrievalFailed {
@@ -361,6 +361,15 @@ namespace Microsoft.Azure.Commands.KeyVault.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot find deleted managed HSM &apos;{0}&apos; in location &apos;{1}&apos;.
+        /// </summary>
+        internal static string DeletedManagedHsmNotFound {
+            get {
+                return ResourceManager.GetString("DeletedManagedHsmNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot find deleted vault &apos;{0}&apos; in location &apos;{1}&apos;.
         /// </summary>
         internal static string DeletedVaultNotFound {
@@ -420,6 +429,24 @@ namespace Microsoft.Azure.Commands.KeyVault.Properties {
         internal static string EcButNoCurveName {
             get {
                 return ResourceManager.GetString("EcButNoCurveName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fetch default CVM Policy failed, {0}.
+        /// </summary>
+        internal static string FetchDefaultCVMPolicyFailed {
+            get {
+                return ResourceManager.GetString("FetchDefaultCVMPolicyFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Can not find file &apos;{0}&apos;..
+        /// </summary>
+        internal static string FileNotFound {
+            get {
+                return ResourceManager.GetString("FileNotFound", resourceCulture);
             }
         }
         
@@ -784,15 +811,6 @@ namespace Microsoft.Azure.Commands.KeyVault.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Can not find key file &apos;{0}&apos;..
-        /// </summary>
-        internal static string KeyFileNotFound {
-            get {
-                return ResourceManager.GetString("KeyFileNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The &quot;import&quot; operation is exclusive, it cannot be combined with any other value(s)..
         /// </summary>
         internal static string KeyOpsImportIsExclusive {
@@ -852,6 +870,24 @@ namespace Microsoft.Azure.Commands.KeyVault.Properties {
         internal static string PublicKeySavedAt {
             get {
                 return ResourceManager.GetString("PublicKeySavedAt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to remove managed HSM &apos;{0}&apos; forever..
+        /// </summary>
+        internal static string PurgeManagedHsmWarning {
+            get {
+                return ResourceManager.GetString("PurgeManagedHsmWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Purge managed HSM.
+        /// </summary>
+        internal static string PurgeManagedHsmWarningWhatIf {
+            get {
+                return ResourceManager.GetString("PurgeManagedHsmWarningWhatIf", resourceCulture);
             }
         }
         
@@ -1279,6 +1315,15 @@ namespace Microsoft.Azure.Commands.KeyVault.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rotate Key.
+        /// </summary>
+        internal static string RotateKey {
+            get {
+                return ResourceManager.GetString("RotateKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to selective restore key {0} of managed HSM {1}..
         /// </summary>
         internal static string SelectiveRestoreFailed {
@@ -1320,6 +1365,15 @@ namespace Microsoft.Azure.Commands.KeyVault.Properties {
         internal static string SetKeyAttribute {
             get {
                 return ResourceManager.GetString("SetKeyAttribute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set key rotation policy.
+        /// </summary>
+        internal static string SetKeyRotationPolicy {
+            get {
+                return ResourceManager.GetString("SetKeyRotationPolicy", resourceCulture);
             }
         }
         

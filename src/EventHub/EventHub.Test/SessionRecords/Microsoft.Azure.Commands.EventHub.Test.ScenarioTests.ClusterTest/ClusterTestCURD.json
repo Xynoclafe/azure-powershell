@@ -1,22 +1,22 @@
 {
   "Entries": [
     {
-      "RequestUri": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourcegroups/RSG-Cluster2041?api-version=2016-09-01",
-      "EncodedRequestUri": "L3N1YnNjcmlwdGlvbnMvMzI2MTAwZTItZjY5ZC00MjY4LTg1MDMtMDc1Mzc0ZjYyYjZlL3Jlc291cmNlZ3JvdXBzL1JTRy1DbHVzdGVyMjA0MT9hcGktdmVyc2lvbj0yMDE2LTA5LTAx",
+      "RequestUri": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourcegroups/RSG-Cluster3358?api-version=2016-09-01",
+      "EncodedRequestUri": "L3N1YnNjcmlwdGlvbnMvMzI2MTAwZTItZjY5ZC00MjY4LTg1MDMtMDc1Mzc0ZjYyYjZlL3Jlc291cmNlZ3JvdXBzL1JTRy1DbHVzdGVyMzM1OD9hcGktdmVyc2lvbj0yMDE2LTA5LTAx",
       "RequestMethod": "PUT",
       "RequestBody": "{\r\n  \"location\": \"southcentralus\"\r\n}",
       "RequestHeaders": {
         "x-ms-client-request-id": [
-          "2a0baa8b-faad-4a19-b9e1-d6f1e2c4dc6e"
+          "a2a207ab-46b8-4180-91a6-249ad59bf20d"
         ],
         "Accept-Language": [
           "en-US"
         ],
         "User-Agent": [
-          "FxVersion/4.6.29130.01",
+          "FxVersion/4.700.22.30802",
           "OSName/Windows",
-          "OSVersion/Microsoft.Windows.10.0.19041.",
-          "Microsoft.Azure.Management.Internal.Resources.ResourceManagementClient/1.3.23"
+          "OSVersion/Microsoft.Windows.10.0.22000",
+          "Microsoft.Azure.Management.Internal.Resources.ResourceManagementClient/1.3.59"
         ],
         "Content-Type": [
           "application/json; charset=utf-8"
@@ -33,16 +33,16 @@
           "no-cache"
         ],
         "x-ms-ratelimit-remaining-subscription-writes": [
-          "1199"
+          "1198"
         ],
         "x-ms-request-id": [
-          "f60c15d7-7110-4ca4-8080-3fffdd67a4ec"
+          "93fa8b60-3a4e-48be-b726-2e4755a935e2"
         ],
         "x-ms-correlation-request-id": [
-          "f60c15d7-7110-4ca4-8080-3fffdd67a4ec"
+          "93fa8b60-3a4e-48be-b726-2e4755a935e2"
         ],
         "x-ms-routing-request-id": [
-          "WESTUS:20200911T075025Z:f60c15d7-7110-4ca4-8080-3fffdd67a4ec"
+          "SOUTHINDIA:20220723T180831Z:93fa8b60-3a4e-48be-b726-2e4755a935e2"
         ],
         "Strict-Transport-Security": [
           "max-age=31536000; includeSubDomains"
@@ -51,7 +51,7 @@
           "nosniff"
         ],
         "Date": [
-          "Fri, 11 Sep 2020 07:50:25 GMT"
+          "Sat, 23 Jul 2022 18:08:30 GMT"
         ],
         "Content-Length": [
           "191"
@@ -63,26 +63,32 @@
           "-1"
         ]
       },
-      "ResponseBody": "{\r\n  \"id\": \"/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/RSG-Cluster2041\",\r\n  \"name\": \"RSG-Cluster2041\",\r\n  \"location\": \"southcentralus\",\r\n  \"properties\": {\r\n    \"provisioningState\": \"Succeeded\"\r\n  }\r\n}",
+      "ResponseBody": "{\r\n  \"id\": \"/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/RSG-Cluster3358\",\r\n  \"name\": \"RSG-Cluster3358\",\r\n  \"location\": \"southcentralus\",\r\n  \"properties\": {\r\n    \"provisioningState\": \"Succeeded\"\r\n  }\r\n}",
       "StatusCode": 201
     },
     {
-      "RequestUri": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/providers/Microsoft.EventHub/availableClusterRegions?api-version=2021-06-01-preview",
-      "EncodedRequestUri": "L3N1YnNjcmlwdGlvbnMvMzI2MTAwZTItZjY5ZC00MjY4LTg1MDMtMDc1Mzc0ZjYyYjZlL3Byb3ZpZGVycy9NaWNyb3NvZnQuRXZlbnRIdWIvYXZhaWxhYmxlQ2x1c3RlclJlZ2lvbnM/YXBpLXZlcnNpb249MjAxOC0wMS0wMS1wcmV2aWV3",
-      "RequestMethod": "GET",
-      "RequestBody": "",
+      "RequestUri": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/RSG-Cluster3358/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-6365?api-version=2022-01-01-preview",
+      "EncodedRequestUri": "L3N1YnNjcmlwdGlvbnMvMzI2MTAwZTItZjY5ZC00MjY4LTg1MDMtMDc1Mzc0ZjYyYjZlL3Jlc291cmNlR3JvdXBzL1JTRy1DbHVzdGVyMzM1OC9wcm92aWRlcnMvTWljcm9zb2Z0LkV2ZW50SHViL2NsdXN0ZXJzL0V2ZW50aHViLUNsdXN0ZXItNjM2NT9hcGktdmVyc2lvbj0yMDIyLTAxLTAxLXByZXZpZXc=",
+      "RequestMethod": "PUT",
+      "RequestBody": "{\r\n  \"sku\": {\r\n    \"capacity\": 1,\r\n    \"name\": \"Dedicated\"\r\n  },\r\n  \"location\": \"southcentralus\"\r\n}",
       "RequestHeaders": {
         "x-ms-client-request-id": [
-          "ce4491b2-dd1c-4c8c-8b7f-11bbfdfa0f22"
+          "f8aaaaf8-0a9d-4557-a57e-30c1ab539b3b"
         ],
         "Accept-Language": [
           "en-US"
         ],
         "User-Agent": [
-          "FxVersion/4.6.29130.01",
+          "FxVersion/4.700.22.30802",
           "OSName/Windows",
-          "OSVersion/Microsoft.Windows.10.0.19041.",
-          "Microsoft.Azure.Management.EventHub.EventHubManagementClient/2.7.2.0"
+          "OSVersion/Microsoft.Windows.10.0.22000",
+          "Microsoft.Azure.Management.EventHub.EventHubManagementClient/5.0.0.0"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Content-Length": [
+          "99"
         ]
       },
       "ResponseHeaders": {
@@ -92,97 +98,221 @@
         "Pragma": [
           "no-cache"
         ],
-        "x-ms-request-id": [
-          "10d34f82-0fc9-46e9-9c3a-03f99f9cda7c_M6SN1_M6SN1"
+        "Location": [
+          "https://management.azure.com/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/providers/microsoft.eventhub/locations/southcentralus/clusterOperationResults/05892ea2-a382-4a88-b511-83a77a2b099d?isAsyncHeader=false&resourceName=Eventhub-Cluster-6365&resourceGroupName=RSG-Cluster3358&resourceType=cluster&api-version=2022-01-01-preview"
         ],
-        "Server-SB": [
-          "Service-Bus-Resource-Provider/SN1"
+        "Azure-AsyncOperation": [
+          "https://management.azure.com:443/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/providers/microsoft.eventhub/locations/southcentralus/clusterOperationResults/05892ea2-a382-4a88-b511-83a77a2b099d?isAsyncHeader=true&resourceName=Eventhub-Cluster-6365&resourceGroupName=RSG-Cluster3358&resourceType=cluster&api-version=2022-01-01-preview"
         ],
         "Server": [
-          "Service-Bus-Resource-Provider/SN1",
+          "Microsoft-HTTPAPI/2.0"
+        ],
+        "x-ms-ratelimit-remaining-subscription-writes": [
+          "1198"
+        ],
+        "x-ms-request-id": [
+          "2df83f1c-559c-4974-b0bc-7d3b995d26db"
+        ],
+        "x-ms-correlation-request-id": [
+          "2df83f1c-559c-4974-b0bc-7d3b995d26db"
+        ],
+        "x-ms-routing-request-id": [
+          "SOUTHINDIA:20220723T180840Z:2df83f1c-559c-4974-b0bc-7d3b995d26db"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "X-Content-Type-Options": [
+          "nosniff"
+        ],
+        "Date": [
+          "Sat, 23 Jul 2022 18:08:40 GMT"
+        ],
+        "Content-Length": [
+          "345"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"id\": \"/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/RSG-Cluster3358/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-6365\",\r\n  \"name\": \"Eventhub-Cluster-6365\",\r\n  \"type\": \"Microsoft.EventHub/Clusters\",\r\n  \"location\": \"southcentralus\",\r\n  \"properties\": {\r\n    \"status\": \"Unknown\",\r\n    \"supportsScaling\": false\r\n  },\r\n  \"sku\": {\r\n    \"name\": \"Dedicated\",\r\n    \"capacity\": 1\r\n  }\r\n}",
+      "StatusCode": 202
+    },
+    {
+      "RequestUri": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/RSG-Cluster3358/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-6365?api-version=2022-01-01-preview",
+      "EncodedRequestUri": "L3N1YnNjcmlwdGlvbnMvMzI2MTAwZTItZjY5ZC00MjY4LTg1MDMtMDc1Mzc0ZjYyYjZlL3Jlc291cmNlR3JvdXBzL1JTRy1DbHVzdGVyMzM1OC9wcm92aWRlcnMvTWljcm9zb2Z0LkV2ZW50SHViL2NsdXN0ZXJzL0V2ZW50aHViLUNsdXN0ZXItNjM2NT9hcGktdmVyc2lvbj0yMDIyLTAxLTAxLXByZXZpZXc=",
+      "RequestMethod": "PUT",
+      "RequestBody": "{\r\n  \"sku\": {\r\n    \"capacity\": 1,\r\n    \"name\": \"Dedicated\"\r\n  },\r\n  \"properties\": {\r\n    \"supportsScaling\": false\r\n  },\r\n  \"location\": \"southcentralus\",\r\n  \"tags\": {\r\n    \"ClusterTag1\": \"Tag3\",\r\n    \"ClusterTag2\": \"Tag4\"\r\n  }\r\n}",
+      "RequestHeaders": {
+        "x-ms-client-request-id": [
+          "6510d280-b530-4eb6-b668-764d967c1ac7"
+        ],
+        "Accept-Language": [
+          "en-US"
+        ],
+        "User-Agent": [
+          "FxVersion/4.700.22.30802",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.22000",
+          "Microsoft.Azure.Management.EventHub.EventHubManagementClient/5.0.0.0"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Content-Length": [
+          "228"
+        ]
+      },
+      "ResponseHeaders": {
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Location": [
+          "https://management.azure.com/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/providers/microsoft.eventhub/locations/southcentralus/clusterOperationResults/05892ea2-a382-4a88-b511-83a77a2b099d?isAsyncHeader=false&resourceName=Eventhub-Cluster-6365&resourceGroupName=RSG-Cluster3358&resourceType=cluster&api-version=2022-01-01-preview"
+        ],
+        "Azure-AsyncOperation": [
+          "https://management.azure.com:443/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/providers/microsoft.eventhub/locations/southcentralus/clusterOperationResults/05892ea2-a382-4a88-b511-83a77a2b099d?isAsyncHeader=true&resourceName=Eventhub-Cluster-6365&resourceGroupName=RSG-Cluster3358&resourceType=cluster&api-version=2022-01-01-preview"
+        ],
+        "Server": [
+          "Microsoft-HTTPAPI/2.0"
+        ],
+        "x-ms-ratelimit-remaining-subscription-writes": [
+          "1198"
+        ],
+        "x-ms-request-id": [
+          "7474239c-641d-4b51-a53e-3b79adb4c1ae"
+        ],
+        "x-ms-correlation-request-id": [
+          "7474239c-641d-4b51-a53e-3b79adb4c1ae"
+        ],
+        "x-ms-routing-request-id": [
+          "SOUTHINDIA:20220723T180918Z:7474239c-641d-4b51-a53e-3b79adb4c1ae"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "X-Content-Type-Options": [
+          "nosniff"
+        ],
+        "Date": [
+          "Sat, 23 Jul 2022 18:09:18 GMT"
+        ],
+        "Content-Length": [
+          "396"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"id\": \"/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/RSG-Cluster3358/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-6365\",\r\n  \"name\": \"Eventhub-Cluster-6365\",\r\n  \"type\": \"Microsoft.EventHub/Clusters\",\r\n  \"location\": \"southcentralus\",\r\n  \"tags\": {\r\n    \"ClusterTag1\": \"Tag3\",\r\n    \"ClusterTag2\": \"Tag4\"\r\n  },\r\n  \"properties\": {\r\n    \"status\": \"Unknown\",\r\n    \"supportsScaling\": false\r\n  },\r\n  \"sku\": {\r\n    \"name\": \"Dedicated\",\r\n    \"capacity\": 1\r\n  }\r\n}",
+      "StatusCode": 202
+    },
+    {
+      "RequestUri": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/providers/microsoft.eventhub/locations/southcentralus/clusterOperationResults/05892ea2-a382-4a88-b511-83a77a2b099d?isAsyncHeader=true&resourceName=Eventhub-Cluster-6365&resourceGroupName=RSG-Cluster3358&resourceType=cluster&api-version=2022-01-01-preview",
+      "EncodedRequestUri": "L3N1YnNjcmlwdGlvbnMvMzI2MTAwZTItZjY5ZC00MjY4LTg1MDMtMDc1Mzc0ZjYyYjZlL3Byb3ZpZGVycy9taWNyb3NvZnQuZXZlbnRodWIvbG9jYXRpb25zL3NvdXRoY2VudHJhbHVzL2NsdXN0ZXJPcGVyYXRpb25SZXN1bHRzLzA1ODkyZWEyLWEzODItNGE4OC1iNTExLTgzYTc3YTJiMDk5ZD9pc0FzeW5jSGVhZGVyPXRydWUmcmVzb3VyY2VOYW1lPUV2ZW50aHViLUNsdXN0ZXItNjM2NSZyZXNvdXJjZUdyb3VwTmFtZT1SU0ctQ2x1c3RlcjMzNTgmcmVzb3VyY2VUeXBlPWNsdXN0ZXImYXBpLXZlcnNpb249MjAyMi0wMS0wMS1wcmV2aWV3",
+      "RequestMethod": "GET",
+      "RequestBody": "",
+      "RequestHeaders": {
+        "x-ms-client-request-id": [
+          "f8aaaaf8-0a9d-4557-a57e-30c1ab539b3b"
+        ],
+        "User-Agent": [
+          "FxVersion/4.700.22.30802",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.22000",
+          "Microsoft.Azure.Management.EventHub.EventHubManagementClient/5.0.0.0"
+        ]
+      },
+      "ResponseHeaders": {
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-HTTPAPI/2.0"
+        ],
+        "x-ms-ratelimit-remaining-subscription-reads": [
+          "11964"
+        ],
+        "x-ms-request-id": [
+          "efa0e4c8-dbb8-4fc6-a796-b6264bec4fa1"
+        ],
+        "x-ms-correlation-request-id": [
+          "efa0e4c8-dbb8-4fc6-a796-b6264bec4fa1"
+        ],
+        "x-ms-routing-request-id": [
+          "SOUTHINDIA:20220723T180911Z:efa0e4c8-dbb8-4fc6-a796-b6264bec4fa1"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "X-Content-Type-Options": [
+          "nosniff"
+        ],
+        "Date": [
+          "Sat, 23 Jul 2022 18:09:11 GMT"
+        ],
+        "Content-Length": [
+          "22"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"status\": \"Succeeded\"\r\n}",
+      "StatusCode": 200
+    },
+    {
+      "RequestUri": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/providers/microsoft.eventhub/locations/southcentralus/clusterOperationResults/05892ea2-a382-4a88-b511-83a77a2b099d?isAsyncHeader=true&resourceName=Eventhub-Cluster-6365&resourceGroupName=RSG-Cluster3358&resourceType=cluster&api-version=2022-01-01-preview",
+      "EncodedRequestUri": "L3N1YnNjcmlwdGlvbnMvMzI2MTAwZTItZjY5ZC00MjY4LTg1MDMtMDc1Mzc0ZjYyYjZlL3Byb3ZpZGVycy9taWNyb3NvZnQuZXZlbnRodWIvbG9jYXRpb25zL3NvdXRoY2VudHJhbHVzL2NsdXN0ZXJPcGVyYXRpb25SZXN1bHRzLzA1ODkyZWEyLWEzODItNGE4OC1iNTExLTgzYTc3YTJiMDk5ZD9pc0FzeW5jSGVhZGVyPXRydWUmcmVzb3VyY2VOYW1lPUV2ZW50aHViLUNsdXN0ZXItNjM2NSZyZXNvdXJjZUdyb3VwTmFtZT1SU0ctQ2x1c3RlcjMzNTgmcmVzb3VyY2VUeXBlPWNsdXN0ZXImYXBpLXZlcnNpb249MjAyMi0wMS0wMS1wcmV2aWV3",
+      "RequestMethod": "GET",
+      "RequestBody": "",
+      "RequestHeaders": {
+        "x-ms-client-request-id": [
+          "6510d280-b530-4eb6-b668-764d967c1ac7"
+        ],
+        "User-Agent": [
+          "FxVersion/4.700.22.30802",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.22000",
+          "Microsoft.Azure.Management.EventHub.EventHubManagementClient/5.0.0.0"
+        ]
+      },
+      "ResponseHeaders": {
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
           "Microsoft-HTTPAPI/2.0"
         ],
         "x-ms-ratelimit-remaining-subscription-reads": [
           "11998"
         ],
-        "x-ms-correlation-request-id": [
-          "290acd79-99ea-4709-bb32-70d4f49408e2"
-        ],
-        "x-ms-routing-request-id": [
-          "WESTUS:20200911T075026Z:290acd79-99ea-4709-bb32-70d4f49408e2"
-        ],
-        "Strict-Transport-Security": [
-          "max-age=31536000; includeSubDomains"
-        ],
-        "X-Content-Type-Options": [
-          "nosniff"
-        ],
-        "Date": [
-          "Fri, 11 Sep 2020 07:50:26 GMT"
-        ],
-        "Content-Length": [
-          "481"
-        ],
-        "Content-Type": [
-          "application/json; charset=utf-8"
-        ],
-        "Expires": [
-          "-1"
-        ]
-      },
-      "ResponseBody": "{\r\n  \"value\": [\r\n    {\r\n      \"location\": \"northcentralus\"\r\n    },\r\n    {\r\n      \"location\": \"westeurope\"\r\n    },\r\n    {\r\n      \"location\": \"uksouth\"\r\n    },\r\n    {\r\n      \"location\": \"westcentralus\"\r\n    },\r\n    {\r\n      \"location\": \"australiasoutheast\"\r\n    },\r\n    {\r\n      \"location\": \"ukwest\"\r\n    },\r\n    {\r\n      \"location\": \"brazilsouth\"\r\n    },\r\n    {\r\n      \"location\": \"centralus\"\r\n    },\r\n    {\r\n      \"location\": \"australiaeast\"\r\n    },\r\n    {\r\n      \"location\": \"eastus\"\r\n    },\r\n    {\r\n      \"location\": \"southcentralus\"\r\n    },\r\n    {\r\n      \"location\": \"japaneast\"\r\n    },\r\n    {\r\n      \"location\": \"northeurope\"\r\n    },\r\n    {\r\n      \"location\": \"eastus2\"\r\n    },\r\n    {\r\n      \"location\": \"southeastasia\"\r\n    },\r\n    {\r\n      \"location\": \"eastasia\"\r\n    },\r\n    {\r\n      \"location\": \"westus\"\r\n    },\r\n    {\r\n      \"location\": \"westus2\"\r\n    }\r\n  ]\r\n}",
-      "StatusCode": 200
-    },
-    {
-      "RequestUri": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/RSG-Cluster2041/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-2820?api-version=2021-06-01-preview",
-      "EncodedRequestUri": "L3N1YnNjcmlwdGlvbnMvMzI2MTAwZTItZjY5ZC00MjY4LTg1MDMtMDc1Mzc0ZjYyYjZlL3Jlc291cmNlR3JvdXBzL1JTRy1DbHVzdGVyMjA0MS9wcm92aWRlcnMvTWljcm9zb2Z0LkV2ZW50SHViL2NsdXN0ZXJzL0V2ZW50aHViLUNsdXN0ZXItMjgyMD9hcGktdmVyc2lvbj0yMDE4LTAxLTAxLXByZXZpZXc=",
-      "RequestMethod": "PUT",
-      "RequestBody": "{\r\n  \"sku\": {\r\n    \"capacity\": 1,\r\n    \"name\": \"Dedicated\"\r\n  },\r\n  \"location\": \"southcentralus\",\r\n  \"tags\": {}\r\n}",
-      "RequestHeaders": {
-        "x-ms-client-request-id": [
-          "5129e2c8-eb1d-4f5d-a36b-15388bad929d"
-        ],
-        "Accept-Language": [
-          "en-US"
-        ],
-        "User-Agent": [
-          "FxVersion/4.6.29130.01",
-          "OSName/Windows",
-          "OSVersion/Microsoft.Windows.10.0.19041.",
-          "Microsoft.Azure.Management.EventHub.EventHubManagementClient/2.7.2.0"
-        ],
-        "Content-Type": [
-          "application/json; charset=utf-8"
-        ],
-        "Content-Length": [
-          "114"
-        ]
-      },
-      "ResponseHeaders": {
-        "Cache-Control": [
-          "no-cache"
-        ],
-        "Pragma": [
-          "no-cache"
-        ],
         "x-ms-request-id": [
-          "f1507842-96e2-4729-9a97-15a9f0b81ec8_M2SN1_M2SN1"
-        ],
-        "Server-SB": [
-          "Service-Bus-Resource-Provider/SN1"
-        ],
-        "Server": [
-          "Service-Bus-Resource-Provider/SN1",
-          "Microsoft-HTTPAPI/2.0"
-        ],
-        "x-ms-ratelimit-remaining-subscription-writes": [
-          "1199"
+          "fe45dd5d-8dec-4023-9e3e-d254a1f18e31"
         ],
         "x-ms-correlation-request-id": [
-          "fb2cdfb7-c88a-4cae-80ba-e89a1d37640a"
+          "fe45dd5d-8dec-4023-9e3e-d254a1f18e31"
         ],
         "x-ms-routing-request-id": [
-          "WESTUS:20200911T075029Z:fb2cdfb7-c88a-4cae-80ba-e89a1d37640a"
+          "SOUTHINDIA:20220723T180949Z:fe45dd5d-8dec-4023-9e3e-d254a1f18e31"
         ],
         "Strict-Transport-Security": [
           "max-age=31536000; includeSubDomains"
@@ -191,10 +321,10 @@
           "nosniff"
         ],
         "Date": [
-          "Fri, 11 Sep 2020 07:50:28 GMT"
+          "Sat, 23 Jul 2022 18:09:48 GMT"
         ],
         "Content-Length": [
-          "416"
+          "22"
         ],
         "Content-Type": [
           "application/json; charset=utf-8"
@@ -203,26 +333,23 @@
           "-1"
         ]
       },
-      "ResponseBody": "{\r\n  \"sku\": {\r\n    \"name\": \"Dedicated\",\r\n    \"capacity\": 1\r\n  },\r\n  \"id\": \"/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/RSG-Cluster2041/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-2820\",\r\n  \"name\": \"Eventhub-Cluster-2820\",\r\n  \"type\": \"Microsoft.EventHub/clusters\",\r\n  \"location\": \"southcentralus\",\r\n  \"tags\": {},\r\n  \"properties\": {\r\n    \"createdAt\": \"2020-09-11T07:50:28.237Z\",\r\n    \"updatedAt\": \"2020-09-11T07:50:28.237Z\",\r\n    \"metricId\": \"PROD-SN3-522\"\r\n  }\r\n}",
+      "ResponseBody": "{\r\n  \"status\": \"Succeeded\"\r\n}",
       "StatusCode": 200
     },
     {
-      "RequestUri": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/RSG-Cluster2041/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-2820?api-version=2021-06-01-preview",
-      "EncodedRequestUri": "L3N1YnNjcmlwdGlvbnMvMzI2MTAwZTItZjY5ZC00MjY4LTg1MDMtMDc1Mzc0ZjYyYjZlL3Jlc291cmNlR3JvdXBzL1JTRy1DbHVzdGVyMjA0MS9wcm92aWRlcnMvTWljcm9zb2Z0LkV2ZW50SHViL2NsdXN0ZXJzL0V2ZW50aHViLUNsdXN0ZXItMjgyMD9hcGktdmVyc2lvbj0yMDE4LTAxLTAxLXByZXZpZXc=",
+      "RequestUri": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/RSG-Cluster3358/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-6365?api-version=2022-01-01-preview",
+      "EncodedRequestUri": "L3N1YnNjcmlwdGlvbnMvMzI2MTAwZTItZjY5ZC00MjY4LTg1MDMtMDc1Mzc0ZjYyYjZlL3Jlc291cmNlR3JvdXBzL1JTRy1DbHVzdGVyMzM1OC9wcm92aWRlcnMvTWljcm9zb2Z0LkV2ZW50SHViL2NsdXN0ZXJzL0V2ZW50aHViLUNsdXN0ZXItNjM2NT9hcGktdmVyc2lvbj0yMDIyLTAxLTAxLXByZXZpZXc=",
       "RequestMethod": "GET",
       "RequestBody": "",
       "RequestHeaders": {
         "x-ms-client-request-id": [
-          "28bf492f-4779-437d-9704-aad32336b9dc"
-        ],
-        "Accept-Language": [
-          "en-US"
+          "f8aaaaf8-0a9d-4557-a57e-30c1ab539b3b"
         ],
         "User-Agent": [
-          "FxVersion/4.6.29130.01",
+          "FxVersion/4.700.22.30802",
           "OSName/Windows",
-          "OSVersion/Microsoft.Windows.10.0.19041.",
-          "Microsoft.Azure.Management.EventHub.EventHubManagementClient/2.7.2.0"
+          "OSVersion/Microsoft.Windows.10.0.22000",
+          "Microsoft.Azure.Management.EventHub.EventHubManagementClient/5.0.0.0"
         ]
       },
       "ResponseHeaders": {
@@ -232,24 +359,83 @@
         "Pragma": [
           "no-cache"
         ],
-        "x-ms-request-id": [
-          "cd5aaad1-2f8d-4ba7-b4b5-7fb395bc2e26_M1SN1_M1SN1"
+        "Server": [
+          "Microsoft-HTTPAPI/2.0"
         ],
-        "Server-SB": [
-          "Service-Bus-Resource-Provider/SN1"
+        "x-ms-ratelimit-remaining-subscription-reads": [
+          "11963"
+        ],
+        "x-ms-request-id": [
+          "ae2e0430-0075-440c-8e2e-8f122d2b0e6c"
+        ],
+        "x-ms-correlation-request-id": [
+          "ae2e0430-0075-440c-8e2e-8f122d2b0e6c"
+        ],
+        "x-ms-routing-request-id": [
+          "SOUTHINDIA:20220723T180911Z:ae2e0430-0075-440c-8e2e-8f122d2b0e6c"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "X-Content-Type-Options": [
+          "nosniff"
+        ],
+        "Date": [
+          "Sat, 23 Jul 2022 18:09:11 GMT"
+        ],
+        "Content-Length": [
+          "455"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"id\": \"/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourcegroups/RSG-Cluster3358/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-6365\",\r\n  \"name\": \"Eventhub-Cluster-6365\",\r\n  \"type\": \"Microsoft.EventHub/Clusters\",\r\n  \"location\": \"southcentralus\",\r\n  \"properties\": {\r\n    \"createdAt\": \"2022-06-02T17:36:41.050354Z\",\r\n    \"updatedAt\": \"2022-07-23T18:08:41.1744714Z\",\r\n    \"status\": \"Active\",\r\n    \"supportsScaling\": false,\r\n    \"metricId\": \"PROD-SN3-540\"\r\n  },\r\n  \"sku\": {\r\n    \"name\": \"Dedicated\",\r\n    \"capacity\": 1\r\n  }\r\n}",
+      "StatusCode": 200
+    },
+    {
+      "RequestUri": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/RSG-Cluster3358/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-6365?api-version=2022-01-01-preview",
+      "EncodedRequestUri": "L3N1YnNjcmlwdGlvbnMvMzI2MTAwZTItZjY5ZC00MjY4LTg1MDMtMDc1Mzc0ZjYyYjZlL3Jlc291cmNlR3JvdXBzL1JTRy1DbHVzdGVyMzM1OC9wcm92aWRlcnMvTWljcm9zb2Z0LkV2ZW50SHViL2NsdXN0ZXJzL0V2ZW50aHViLUNsdXN0ZXItNjM2NT9hcGktdmVyc2lvbj0yMDIyLTAxLTAxLXByZXZpZXc=",
+      "RequestMethod": "GET",
+      "RequestBody": "",
+      "RequestHeaders": {
+        "x-ms-client-request-id": [
+          "e75689a8-718b-473c-aea8-1303563cc940"
+        ],
+        "Accept-Language": [
+          "en-US"
+        ],
+        "User-Agent": [
+          "FxVersion/4.700.22.30802",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.22000",
+          "Microsoft.Azure.Management.EventHub.EventHubManagementClient/5.0.0.0"
+        ]
+      },
+      "ResponseHeaders": {
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Pragma": [
+          "no-cache"
         ],
         "Server": [
-          "Service-Bus-Resource-Provider/SN1",
           "Microsoft-HTTPAPI/2.0"
         ],
         "x-ms-ratelimit-remaining-subscription-reads": [
           "11999"
         ],
+        "x-ms-request-id": [
+          "48be5f6d-5254-4284-9365-58fa8d52d397"
+        ],
         "x-ms-correlation-request-id": [
-          "5af9d60b-cc1b-4ad1-9c0f-136ef22f4397"
+          "48be5f6d-5254-4284-9365-58fa8d52d397"
         ],
         "x-ms-routing-request-id": [
-          "WESTUS:20200911T075029Z:5af9d60b-cc1b-4ad1-9c0f-136ef22f4397"
+          "SOUTHINDIA:20220723T180914Z:48be5f6d-5254-4284-9365-58fa8d52d397"
         ],
         "Strict-Transport-Security": [
           "max-age=31536000; includeSubDomains"
@@ -258,10 +444,10 @@
           "nosniff"
         ],
         "Date": [
-          "Fri, 11 Sep 2020 07:50:28 GMT"
+          "Sat, 23 Jul 2022 18:09:14 GMT"
         ],
         "Content-Length": [
-          "416"
+          "455"
         ],
         "Content-Type": [
           "application/json; charset=utf-8"
@@ -270,32 +456,26 @@
           "-1"
         ]
       },
-      "ResponseBody": "{\r\n  \"sku\": {\r\n    \"name\": \"Dedicated\",\r\n    \"capacity\": 1\r\n  },\r\n  \"id\": \"/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/RSG-Cluster2041/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-2820\",\r\n  \"name\": \"Eventhub-Cluster-2820\",\r\n  \"type\": \"Microsoft.EventHub/clusters\",\r\n  \"location\": \"southcentralus\",\r\n  \"tags\": {},\r\n  \"properties\": {\r\n    \"createdAt\": \"2020-09-11T07:50:28.237Z\",\r\n    \"updatedAt\": \"2020-09-11T07:50:28.237Z\",\r\n    \"metricId\": \"PROD-SN3-522\"\r\n  }\r\n}",
+      "ResponseBody": "{\r\n  \"id\": \"/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourcegroups/RSG-Cluster3358/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-6365\",\r\n  \"name\": \"Eventhub-Cluster-6365\",\r\n  \"type\": \"Microsoft.EventHub/Clusters\",\r\n  \"location\": \"southcentralus\",\r\n  \"properties\": {\r\n    \"createdAt\": \"2022-06-02T17:36:41.050354Z\",\r\n    \"updatedAt\": \"2022-07-23T18:08:41.1744714Z\",\r\n    \"status\": \"Active\",\r\n    \"supportsScaling\": false,\r\n    \"metricId\": \"PROD-SN3-540\"\r\n  },\r\n  \"sku\": {\r\n    \"name\": \"Dedicated\",\r\n    \"capacity\": 1\r\n  }\r\n}",
       "StatusCode": 200
     },
     {
-      "RequestUri": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/RSG-Cluster2041/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-2820?api-version=2021-06-01-preview",
-      "EncodedRequestUri": "L3N1YnNjcmlwdGlvbnMvMzI2MTAwZTItZjY5ZC00MjY4LTg1MDMtMDc1Mzc0ZjYyYjZlL3Jlc291cmNlR3JvdXBzL1JTRy1DbHVzdGVyMjA0MS9wcm92aWRlcnMvTWljcm9zb2Z0LkV2ZW50SHViL2NsdXN0ZXJzL0V2ZW50aHViLUNsdXN0ZXItMjgyMD9hcGktdmVyc2lvbj0yMDE4LTAxLTAxLXByZXZpZXc=",
-      "RequestMethod": "PATCH",
-      "RequestBody": "{\r\n  \"sku\": {\r\n    \"capacity\": 1,\r\n    \"name\": \"Dedicated\"\r\n  },\r\n  \"location\": \"southcentralus\",\r\n  \"tags\": {\r\n    \"ClusterTag2\": \"Tag4\",\r\n    \"ClusterTag1\": \"Tag3\"\r\n  }\r\n}",
+      "RequestUri": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/RSG-Cluster3358/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-6365?api-version=2022-01-01-preview",
+      "EncodedRequestUri": "L3N1YnNjcmlwdGlvbnMvMzI2MTAwZTItZjY5ZC00MjY4LTg1MDMtMDc1Mzc0ZjYyYjZlL3Jlc291cmNlR3JvdXBzL1JTRy1DbHVzdGVyMzM1OC9wcm92aWRlcnMvTWljcm9zb2Z0LkV2ZW50SHViL2NsdXN0ZXJzL0V2ZW50aHViLUNsdXN0ZXItNjM2NT9hcGktdmVyc2lvbj0yMDIyLTAxLTAxLXByZXZpZXc=",
+      "RequestMethod": "GET",
+      "RequestBody": "",
       "RequestHeaders": {
         "x-ms-client-request-id": [
-          "73bf39b3-4c39-44ec-a05f-55ae9e3aaa90"
+          "6510d280-b530-4eb6-b668-764d967c1ac7"
         ],
         "Accept-Language": [
           "en-US"
         ],
         "User-Agent": [
-          "FxVersion/4.6.29130.01",
+          "FxVersion/4.700.22.30802",
           "OSName/Windows",
-          "OSVersion/Microsoft.Windows.10.0.19041.",
-          "Microsoft.Azure.Management.EventHub.EventHubManagementClient/2.7.2.0"
-        ],
-        "Content-Type": [
-          "application/json; charset=utf-8"
-        ],
-        "Content-Length": [
-          "173"
+          "OSVersion/Microsoft.Windows.10.0.22000",
+          "Microsoft.Azure.Management.EventHub.EventHubManagementClient/5.0.0.0"
         ]
       },
       "ResponseHeaders": {
@@ -305,24 +485,20 @@
         "Pragma": [
           "no-cache"
         ],
-        "x-ms-request-id": [
-          "e41838c8-7e1a-4953-b0f4-88f1897df07f_M1SN1_M1SN1"
-        ],
-        "Server-SB": [
-          "Service-Bus-Resource-Provider/SN1"
-        ],
         "Server": [
-          "Service-Bus-Resource-Provider/SN1",
           "Microsoft-HTTPAPI/2.0"
         ],
-        "x-ms-ratelimit-remaining-subscription-writes": [
-          "1199"
+        "x-ms-ratelimit-remaining-subscription-reads": [
+          "11999"
+        ],
+        "x-ms-request-id": [
+          "aff3cb93-3f47-437d-8d84-c9b77b090c12"
         ],
         "x-ms-correlation-request-id": [
-          "1cfa37d3-d17d-4f18-9d44-6bd717e617bb"
+          "aff3cb93-3f47-437d-8d84-c9b77b090c12"
         ],
         "x-ms-routing-request-id": [
-          "WESTUS:20200911T075030Z:1cfa37d3-d17d-4f18-9d44-6bd717e617bb"
+          "SOUTHINDIA:20220723T180916Z:aff3cb93-3f47-437d-8d84-c9b77b090c12"
         ],
         "Strict-Transport-Security": [
           "max-age=31536000; includeSubDomains"
@@ -331,10 +507,10 @@
           "nosniff"
         ],
         "Date": [
-          "Fri, 11 Sep 2020 07:50:30 GMT"
+          "Sat, 23 Jul 2022 18:09:15 GMT"
         ],
         "Content-Length": [
-          "457"
+          "455"
         ],
         "Content-Type": [
           "application/json; charset=utf-8"
@@ -343,14 +519,74 @@
           "-1"
         ]
       },
-      "ResponseBody": "{\r\n  \"sku\": {\r\n    \"name\": \"Dedicated\",\r\n    \"capacity\": 1\r\n  },\r\n  \"id\": \"/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/RSG-Cluster2041/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-2820\",\r\n  \"name\": \"Eventhub-Cluster-2820\",\r\n  \"type\": \"Microsoft.EventHub/clusters\",\r\n  \"location\": \"southcentralus\",\r\n  \"tags\": {\r\n    \"ClusterTag2\": \"Tag4\",\r\n    \"ClusterTag1\": \"Tag3\"\r\n  },\r\n  \"properties\": {\r\n    \"createdAt\": \"2020-09-11T07:50:28.237Z\",\r\n    \"updatedAt\": \"2020-09-11T07:50:29.963Z\",\r\n    \"metricId\": \"PROD-SN3-522\"\r\n  }\r\n}",
+      "ResponseBody": "{\r\n  \"id\": \"/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourcegroups/RSG-Cluster3358/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-6365\",\r\n  \"name\": \"Eventhub-Cluster-6365\",\r\n  \"type\": \"Microsoft.EventHub/Clusters\",\r\n  \"location\": \"southcentralus\",\r\n  \"properties\": {\r\n    \"createdAt\": \"2022-06-02T17:36:41.050354Z\",\r\n    \"updatedAt\": \"2022-07-23T18:08:41.1744714Z\",\r\n    \"status\": \"Active\",\r\n    \"supportsScaling\": false,\r\n    \"metricId\": \"PROD-SN3-540\"\r\n  },\r\n  \"sku\": {\r\n    \"name\": \"Dedicated\",\r\n    \"capacity\": 1\r\n  }\r\n}",
+      "StatusCode": 200
+    },
+    {
+      "RequestUri": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/RSG-Cluster3358/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-6365?api-version=2022-01-01-preview",
+      "EncodedRequestUri": "L3N1YnNjcmlwdGlvbnMvMzI2MTAwZTItZjY5ZC00MjY4LTg1MDMtMDc1Mzc0ZjYyYjZlL3Jlc291cmNlR3JvdXBzL1JTRy1DbHVzdGVyMzM1OC9wcm92aWRlcnMvTWljcm9zb2Z0LkV2ZW50SHViL2NsdXN0ZXJzL0V2ZW50aHViLUNsdXN0ZXItNjM2NT9hcGktdmVyc2lvbj0yMDIyLTAxLTAxLXByZXZpZXc=",
+      "RequestMethod": "GET",
+      "RequestBody": "",
+      "RequestHeaders": {
+        "x-ms-client-request-id": [
+          "6510d280-b530-4eb6-b668-764d967c1ac7"
+        ],
+        "User-Agent": [
+          "FxVersion/4.700.22.30802",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.22000",
+          "Microsoft.Azure.Management.EventHub.EventHubManagementClient/5.0.0.0"
+        ]
+      },
+      "ResponseHeaders": {
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "Server": [
+          "Microsoft-HTTPAPI/2.0"
+        ],
+        "x-ms-ratelimit-remaining-subscription-reads": [
+          "11997"
+        ],
+        "x-ms-request-id": [
+          "9758b42e-3db1-46b9-b372-441c2e1c7bb5"
+        ],
+        "x-ms-correlation-request-id": [
+          "9758b42e-3db1-46b9-b372-441c2e1c7bb5"
+        ],
+        "x-ms-routing-request-id": [
+          "SOUTHINDIA:20220723T180949Z:9758b42e-3db1-46b9-b372-441c2e1c7bb5"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "X-Content-Type-Options": [
+          "nosniff"
+        ],
+        "Date": [
+          "Sat, 23 Jul 2022 18:09:49 GMT"
+        ],
+        "Content-Length": [
+          "506"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"id\": \"/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourcegroups/RSG-Cluster3358/providers/Microsoft.EventHub/clusters/Eventhub-Cluster-6365\",\r\n  \"name\": \"Eventhub-Cluster-6365\",\r\n  \"type\": \"Microsoft.EventHub/Clusters\",\r\n  \"location\": \"southcentralus\",\r\n  \"tags\": {\r\n    \"ClusterTag1\": \"Tag3\",\r\n    \"ClusterTag2\": \"Tag4\"\r\n  },\r\n  \"properties\": {\r\n    \"createdAt\": \"2022-06-02T17:36:41.050354Z\",\r\n    \"updatedAt\": \"2022-07-23T18:09:19.1609363Z\",\r\n    \"status\": \"Active\",\r\n    \"supportsScaling\": false,\r\n    \"metricId\": \"PROD-SN3-540\"\r\n  },\r\n  \"sku\": {\r\n    \"name\": \"Dedicated\",\r\n    \"capacity\": 1\r\n  }\r\n}",
       "StatusCode": 200
     }
   ],
   "Names": {
     "": [
-      "Eventhub-Cluster-2820",
-      "RSG-Cluster2041"
+      "Eventhub-Cluster-6365",
+      "RSG-Cluster3358"
     ]
   },
   "Variables": {

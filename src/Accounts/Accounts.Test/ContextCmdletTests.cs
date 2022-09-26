@@ -14,8 +14,6 @@
 
 using Microsoft.Azure.Commands.Common.Authentication;
 using Microsoft.Azure.Commands.Common.Authentication.Models;
-using Microsoft.Azure.Commands.Profile;
-using Microsoft.Azure.Commands.Profile.Models;
 // TODO: Remove IfDef
 #if NETSTANDARD
 using Microsoft.Azure.Commands.Profile.Models.Core;
@@ -29,12 +27,13 @@ using Xunit;
 using Xunit.Abstractions;
 using Microsoft.Azure.Commands.Common.Authentication.Abstractions;
 using System;
-using Microsoft.Azure.Commands.ScenarioTest.Extensions;
 using Microsoft.Azure.Commands.Profile.Context;
 using System.Linq;
 using Microsoft.Azure.Commands.Common.Authentication.ResourceManager;
 using Microsoft.Azure.Commands.Profile.Common;
 using Microsoft.Azure.Commands.ScenarioTest.Mocks;
+using Microsoft.Azure.Commands.TestFx.Mocks;
+using Microsoft.Azure.Commands.TestFx;
 
 namespace Microsoft.Azure.Commands.Profile.Test
 {
@@ -790,6 +789,43 @@ namespace Microsoft.Azure.Commands.Profile.Test
             {
                 AzureSession.Instance.DataStore = oldDataStore;
             }
+        }
+
+        [Fact]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void CheckHidenServicePrincipalSecret()
+        {
+            var cmdlet = new GetAzureRMContextCommand();
+
+            // Setup
+            cmdlet.CommandRuntime = commandRuntimeMock;
+            var profile = new AzureRmProfile();
+            string subscriptionName = "Contoso Subscription 1";
+            string accountId = "7a5db92d-499a-46be-8d6e-6666eeee0000";
+            string contextName;
+            var contextTemp = (new AzureContext { Environment = AzureEnvironment.PublicEnvironments[EnvironmentName.AzureCloud] })
+                .WithAccount(new AzureAccount { Id = accountId, Type = "ServicePrincipal" })
+                .WithTenant(new AzureTenant { Id = Guid.NewGuid().ToString(), Directory = "contoso.com" })
+                .WithSubscription(new AzureSubscription { Id = Guid.NewGuid().ToString(), Name = subscriptionName });
+            contextTemp.Account.SetProperty(AzureAccount.Property.ServicePrincipalSecret, "5P6******************");
+            contextTemp.Account.SetProperty(AzureAccount.Property.Subscriptions, contextTemp.Subscription.Id);
+            contextTemp.Account.SetProperty(AzureAccount.Property.Tenants, contextTemp.Tenant.Id);
+            profile.TryAddContext(contextTemp, out contextName);
+            cmdlet.DefaultProfile = profile;
+
+            // Act
+            cmdlet.InvokeBeginProcessing();
+            cmdlet.ExecuteCmdlet();
+            cmdlet.InvokeEndProcessing();
+
+            // Verify
+            Assert.True(commandRuntimeMock.OutputPipeline.Count == 1);
+            var context = (PSAzureContext)commandRuntimeMock.OutputPipeline[0];
+            Assert.Equal(subscriptionName, context.Subscription.Name);
+            Assert.Equal(accountId, context.Account.Id);
+            var accountExtendedProperties = context.Account.ExtendedProperties;
+            Assert.Equal(2, accountExtendedProperties.Count());
+            Assert.False(accountExtendedProperties.ContainsKey(AzureAccount.Property.ServicePrincipalSecret));
         }
 
         AzureRmProfile CreateMultipleContextProfile()

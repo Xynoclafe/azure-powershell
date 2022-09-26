@@ -22,6 +22,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Blob
     using System.Threading.Tasks;
     using OpContext = Microsoft.Azure.Storage.OperationContext;
     using System.Collections.Generic;
+    using System.Security.Cryptography;
 
     public class StorageDataMovementCmdletBase : StorageCloudBlobCmdletBase, IDisposable
     {
@@ -70,7 +71,8 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Blob
         /// <summary>
         /// Confirm the overwrite operation
         /// </summary>
-        /// <param name="msg">Confirmation message</param>
+        /// <param name="source">Indicating the source.</param>
+        /// <param name="destination">Indicating the destination.</param>
         /// <returns>True if the opeation is confirmed, otherwise return false</returns>
         protected bool ConfirmOverwrite(object source, object destination)
         {
@@ -81,7 +83,8 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Blob
         /// <summary>
         /// Confirm the overwrite operation
         /// </summary>
-        /// <param name="msg">Confirmation message</param>
+        /// <param name="source">Indicating the source.</param>
+        /// <param name="destination">Indicating the destination.</param>
         /// <returns>True if the opeation is confirmed, otherwise return false</returns>
         protected async Task<bool> ConfirmOverwriteAsync(object source, object destination)
         {
@@ -207,6 +210,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Blob
                 blockCount++;
             }
             List<string> blockIDs = new List<string>();
+            string blockIdPrefix = Convert.ToBase64String(MD5.Create().ComputeHash(System.Text.Encoding.UTF8.GetBytes(blobname)));
             for (int i = 0; i < (int)blockCount; i++)
             {
                 string idNo = i.ToString();
@@ -214,7 +218,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Blob
                 {
                     idNo = "0" + idNo;
                 }
-                string blockID = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(blobname + idNo));
+                string blockID = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(blockIdPrefix + idNo));
                 blockIDs.Add(blockID);
             }
             return blockIDs.ToArray();
