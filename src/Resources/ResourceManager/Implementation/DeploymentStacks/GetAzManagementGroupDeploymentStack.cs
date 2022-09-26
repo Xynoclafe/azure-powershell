@@ -22,26 +22,32 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Text;
 
     [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "ManagementGroupDeploymentStack",
-        DefaultParameterSetName = GetAzManagementGroupDeploymentStack.ListParameterSetname), OutputType(typeof(PSDeploymentStack))]
+        DefaultParameterSetName = GetAzManagementGroupDeploymentStack.ListDeploymentStacksByManagementGroupId), OutputType(typeof(PSDeploymentStack))]
     public class GetAzManagementGroupDeploymentStack : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
 
-        internal const string GetByStackNameParameterSetname = "GetIndividualDeploymentStack";
-        internal const string GetByResourceIdParameterSetName = "GetDeploymentStackByResourceId";
-        internal const string ListParameterSetname = "ListDeploymentStacks";
+        internal const string GetDeploymentStackByResourceId = "GetDeploymentStackByResourceId";
+        internal const string GetDeploymentStackByManagementGroupIdAndStackName = " GetDeploymentStackByManagementGroupIdAndStackName";
+        internal const string ListDeploymentStacksByManagementGroupId = "ListDeploymentStacksByManagmentGroupId";
 
         [Alias("StackName")]
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByStackNameParameterSetname,
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetDeploymentStackByManagementGroupIdAndStackName, 
             HelpMessage = "The name of the deploymentStack to get")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
         [Alias("Id")]
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByResourceIdParameterSetName,
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetDeploymentStackByResourceId,
             HelpMessage = "ResourceId of the stack to get")]
         [ValidateNotNullOrEmpty]
         public string ResourceId { get; set; }
+
+        [Alias("Id")]
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ListDeploymentStacksByManagementGroupId)]
+        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetDeploymentStackByManagementGroupIdAndStackName)]
+        [ValidateNotNullOrEmpty]
+        public string ManagementGroupId { get; set; }
 
         #endregion
 
@@ -54,14 +60,15 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 this.GetResourcesClient();
                 switch (ParameterSetName)
                 {
-                    case GetByStackNameParameterSetname:
-                        WriteObject(DeploymentStacksSdkClient.GetManagementGroupDeploymentStack(Name), true);
+                    case GetDeploymentStackByResourceId:
+                        WriteObject(DeploymentStacksSdkClient.GetManagementGroupDeploymentStack(ResourceIdUtility.GetManagementGroupId(ResourceId), 
+                            ResourceIdUtility.GetResourceName(ResourceId)), true);
                         break;
-                    case GetByResourceIdParameterSetName:
-                        WriteObject(DeploymentStacksSdkClient.GetManagementGroupDeploymentStack(ResourceIdUtility.GetResourceName(ResourceId)), true);
+                    case GetDeploymentStackByManagementGroupIdAndStackName:
+                        WriteObject(DeploymentStacksSdkClient.GetManagementGroupDeploymentStack(ManagementGroupId, Name, true));
                         break;
-                    case ListParameterSetname:
-                        WriteObject(DeploymentStacksSdkClient.ListManagementGroupDeploymentStack(), true);
+                    case ListDeploymentStacksByManagementGroupId:
+                        WriteObject(DeploymentStacksSdkClient.ListManagementGroupDeploymentStack(ManagementGroupId), true);
                         break;
                     default:
                         throw new PSInvalidOperationException();

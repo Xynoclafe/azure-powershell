@@ -17,6 +17,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Utilities;
     using Microsoft.WindowsAzure.Commands.Utilities.Common;
+    using Newtonsoft.Json.Linq;
     using System;
     using System.Management.Automation;
 
@@ -44,9 +45,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         public string Name { get; set; }
 
 
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "The path to the folder where the deployment stack template will be output to.")]
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "The path to the file where the deployment stack template will be output to.")]
         [ValidateNotNullOrEmpty]
-        public string OutputFolder { get; set; }
+        public string OutputFile { get; set; }
 
         #endregion
 
@@ -56,14 +57,14 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         {
             try
             {
-                SdkModels.PSDeploymentStack stack;
+                JObject template;
                 switch (ParameterSetName)
                 {
                     case ExportByResourceIdParameterSetName:
-                        stack = DeploymentStacksSdkClient.GetResourceGroupDeploymentStack(ResourceIdUtility.GetResourceGroupName(ResourceId), ResourceIdUtility.GetDeploymentName(ResourceId));
+                        template = DeploymentStacksSdkClient.ExportResourceGroupDeploymentStack(ResourceIdUtility.GetResourceGroupName(ResourceId), ResourceIdUtility.GetDeploymentName(ResourceId));
                         break;
                     case ExportByDeploymentStackName:
-                        stack = DeploymentStacksSdkClient.GetResourceGroupDeploymentStack(ResourceGroupName, Name);
+                        template = DeploymentStacksSdkClient.ExportResourceGroupDeploymentStack(ResourceGroupName, Name);
                         break;
                     default:
                         throw new PSInvalidOperationException();
@@ -72,22 +73,23 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
                 // Ensure our output path is resolved based on the current powershell working
                 // directory instead of the current process directory:
-                OutputFolder = ResolveUserPath(OutputFolder);
+                OutputFile = ResolveUserPath(OutputFile);
 
                 string path = FileUtility.SaveTemplateFile(
                     templateName: this.Name,
-                    contents: stack.template.ToString(),
-                    outputPath: fullRootTemplateFilePath,
+                    contents: template.ToString(),
+                    outputPath: OutputFile,
                     overwrite: true,
                     shouldContinue: ShouldContinue);
 
-                WriteObject(PowerShellUtilities.ConstructPSObject(null, "Path", fullRootTemplateFilePath));
+                WriteObject(PowerShellUtilities.ConstructPSObject(null, "Path", OutputFile));
             }
             catch (Exception ex)
             {
                 WriteExceptionError(ex);
             }
         }
+
         #endregion
     }
 }

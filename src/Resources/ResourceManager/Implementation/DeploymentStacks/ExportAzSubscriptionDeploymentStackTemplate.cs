@@ -19,6 +19,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Utilities;
     using Microsoft.WindowsAzure.Commands.Utilities.Common;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using System;
     using System.Management.Automation;
 
@@ -42,7 +44,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         public string Name { get; set; }
 
 
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "The path to the folder where the deployment stack template will be output to.")]
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "The path to the file where the deployment stack template will be output to.")]
         [ValidateNotNullOrEmpty]
         public string OutputFile { get; set; }
 
@@ -53,14 +55,14 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         {
             try
             {
-                SdkModels.PSDeploymentStack stack;
+                JObject template;
                 switch (ParameterSetName)
                 {
                     case ExportByResourceIdParameterSetName:
-                        stack = DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(ResourceIdUtility.GetResourceGroupName(ResourceId));
+                        template = DeploymentStacksSdkClient.ExportSubscriptionDeploymentStack(ResourceIdUtility.GetResourceGroupName(ResourceId));
                         break;
                     case ExportByDeploymentStackName:
-                        stack = DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(Name);
+                        template = DeploymentStacksSdkClient.ExportSubscriptionDeploymentStack(Name);
                         break;
                     default:
                         throw new PSInvalidOperationException();
@@ -70,11 +72,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 // directory instead of the current process directory:
                 OutputFile = ResolveUserPath(OutputFile);
 
-                var contents = stack.ToString();
-
                 string path = FileUtility.SaveTemplateFile(
                     templateName: this.Name,
-                    contents: contents,
+                    contents: template.ToString(),
                     outputPath: this.OutputFile,
                     overwrite: true,
                     shouldContinue: ShouldContinue);
@@ -86,7 +86,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 WriteExceptionError(ex);
             }
         }
-
 
         #endregion
     }

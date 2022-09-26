@@ -65,6 +65,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             try
             {
                 var deploymentStack = DeploymentStacksClient.DeploymentStacks.GetAtResourceGroup(resourceGroupName, deploymentStackName);
+
                 return new PSDeploymentStack(deploymentStack);
             }
             catch (Exception ex)
@@ -79,6 +80,117 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                         else
                             throw new PSArgumentException(
                             $"DeploymentStack '{deploymentStackName}' in Resource Group '{resourceGroupName}' not found."
+                        );
+                    }
+                    else
+                    {
+                        throw new PSArgumentException(dex.Body.Error.Message);
+                    }
+                }
+
+                throw;
+            }
+        }
+
+        public JObject ExportResourceGroupDeploymentStack(
+            string resourceGroupName,
+           string deploymentStackName,
+           bool throwIfNotExists = true)
+        {
+            try
+            {
+                var deploymentStack = DeploymentStacksClient.DeploymentStacks.ExportTemplateAtResourceGroup(resourceGroupName, deploymentStackName);
+
+                // TODO: If a template link is set, we have to do something else.
+                return (JObject) deploymentStack.Template;
+            }
+            catch (Exception ex)
+            {
+                if (ex is DeploymentStacksErrorException dex)
+                {
+                    if (dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        // Deployment Stack does not exist
+                        if (!throwIfNotExists)
+                            return null;
+                        else
+                            throw new PSArgumentException(
+                            $"DeploymentStack '{deploymentStackName}' in Resource Group '{resourceGroupName}' not found."
+                        );
+                    }
+                    else
+                    {
+                        throw new PSArgumentException(dex.Body.Error.Message);
+                    }
+                }
+
+                throw;
+            }
+        }
+
+        public JObject ExportSubscriptionDeploymentStack(
+            string deploymentStackName,
+            bool throwIfNotExists = true)
+        {
+            try
+            {
+                var deploymentStack = DeploymentStacksClient.DeploymentStacks.ExportTemplateAtSubscription(deploymentStackName);
+
+                deploymentStack.TemplateLink.ToJson();
+
+                // TODO: If a template link is set, we have to do something else.
+                return (JObject)deploymentStack.Template.ToJson();
+            }
+            catch (Exception ex)
+            {
+                if (ex is DeploymentStacksErrorException dex)
+                {
+                    if (dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        // Deployment Stack does not exist
+                        if (!throwIfNotExists)
+                            return null;
+                        else
+                            throw new PSArgumentException(
+                            $"DeploymentStack '{deploymentStackName}' in active subscription not found."
+                        );
+                    }
+                    else
+                    {
+                        throw new PSArgumentException(dex.Body.Error.Message);
+                    }
+                }
+
+                throw;
+            }
+        }
+
+        public JObject ExportManagementGroupDeploymentStack(
+            string managementGroupId,
+            string deploymentStackName,
+            bool throwIfNotExists = true)
+        {
+            try
+            {
+                var deploymentStack = DeploymentStacksClient.DeploymentStacks.ExportTemplateAtSubscription(deploymentStackName);
+
+                deploymentStack.TemplateLink.ToJson();
+
+                // TODO: If a template link is set, we have to do something else.
+                return (JObject)deploymentStack.Template.ToJson();
+            }
+            catch (Exception ex)
+            {
+                if (ex is DeploymentStacksErrorException dex)
+                {
+                    if (dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        // Deployment Stack does not exist
+                        if (!throwIfNotExists)
+                            return null;
+                        else
+                            throw new PSArgumentException(
+                            $"DeploymentStack '{deploymentStackName}' in Management Group '{managementGroupId}' not found."
                         );
                     }
                     else
@@ -184,11 +296,12 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             }
         }
 
-        public PSDeploymentStack GetManagementGroupDeploymentStack(string deploymentStackName, bool throwIfNotExists = true)
+        public PSDeploymentStack GetManagementGroupDeploymentStack(string managementGroupId, string deploymentStackName, bool throwIfNotExists = true)
         {
             try
             {
-                var deploymentStack = DeploymentStacksClient.DeploymentStacks.GetAtManagementGroup(deploymentStackName);
+                var deploymentStack = DeploymentStacksClient.DeploymentStacks.GetAtManagementGroup(managementGroupId, deploymentStackName);
+
                 return new PSDeploymentStack(deploymentStack);
             }
             catch (Exception ex)
@@ -215,13 +328,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             }
         }
 
-        public IList<PSDeploymentStack> ListManagementGroupDeploymentStack(bool throwIfNotExists = true)
+        public IList<PSDeploymentStack> ListManagementGroupDeploymentStack(string managementGroupId, bool throwIfNotExists = true)
         {
             try
             {
                 var list = new List<PSDeploymentStack>();
 
-                var deploymentStacks = DeploymentStacksClient.DeploymentStacks.ListAtManagementGroup();
+                var deploymentStacks = DeploymentStacksClient.DeploymentStacks.ListAtManagementGroup(managementGroupId);
 
                 list.AddRange(deploymentStacks.Select(stack => PSDeploymentStack.FromAzureSDKDeploymentStack(stack)));
 
@@ -308,7 +421,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
 
             var deploymentStack = DeploymentStacksClient.DeploymentStacks.BeginCreateOrUpdateAtResourceGroup(resourceGroupName, deploymentStackName, deploymentStackModel);
-            var getStackFunc = this.GetStackAction(deploymentStackName, "resourceGroup", resourceGroupName);
+            var getStackFunc = this.GetStackAction(deploymentStackName, "resourceGroup", rgName: resourceGroupName);
 
             var finalStack = this.waitStackCompletion(
                 getStackFunc,
@@ -437,14 +550,14 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             return new PSDeploymentStack(finalStack);
         }
 
-        internal void DeleteManagementGroupDeploymentStack(string name, string resourcesCleanupAction, string resourceGroupsCleanupAction)
+        internal void DeleteManagementGroupDeploymentStack(string name, string managementGroupId, string resourcesCleanupAction, string resourceGroupsCleanupAction)
         {
 
             WriteWarning(resourcesCleanupAction);
             WriteWarning(resourceGroupsCleanupAction);
 
             var deleteResponse = DeploymentStacksClient.DeploymentStacks
-                    .DeleteAtManagementGroupWithHttpMessagesAsync(name, resourcesCleanupAction, resourceGroupsCleanupAction)
+                    .DeleteAtManagementGroupWithHttpMessagesAsync(managementGroupId, name, resourcesCleanupAction, resourceGroupsCleanupAction)
                     .GetAwaiter()
                     .GetResult();
 
@@ -460,6 +573,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
         public PSDeploymentStack ManagementGroupCreateOrUpdateDeploymentStack(
             string deploymentStackName,
+            string managementGroupId,
             string location,
             string templateUri,
             string templateSpec,
@@ -521,8 +635,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                     : null;
             }
 
-            var deploymentStack = DeploymentStacksClient.DeploymentStacks.BeginCreateOrUpdateAtManagementGroup(deploymentStackName, deploymentStackModel);
-            var getStackFunc = this.GetStackAction(deploymentStackName, "managementGroup");
+            var deploymentStack = DeploymentStacksClient.DeploymentStacks.BeginCreateOrUpdateAtManagementGroup(managementGroupId, 
+                deploymentStackName, deploymentStackModel);
+
+            // TODO: This should not be a defaulted parameter
+            var getStackFunc = this.GetStackAction(deploymentStackName, "managementGroup", mgId: managementGroupId);
 
             var finalStack = this.waitStackCompletion(
                 getStackFunc,
@@ -595,7 +712,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             return stack;
         }
 
-        Func<Task<AzureOperationResponse<DeploymentStack>>> GetStackAction(string stackName, string scope, string rgName = null)
+        Func<Task<AzureOperationResponse<DeploymentStack>>> GetStackAction(string stackName, string scope, string rgName = null, string mgId = null)
         {
             switch (scope)
             {
@@ -603,7 +720,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                     return () => DeploymentStacksClient.DeploymentStacks.GetAtSubscriptionWithHttpMessagesAsync(stackName);
 
                 case "managementGroup":
-                    return () => DeploymentStacksClient.DeploymentStacks.GetAtManagementGroupWithHttpMessagesAsync(stackName);
+                    return () => DeploymentStacksClient.DeploymentStacks.GetAtManagementGroupWithHttpMessagesAsync(mgId, stackName);
 
                 case "resourceGroup":
                     return () => DeploymentStacksClient.DeploymentStacks.GetAtResourceGroupWithHttpMessagesAsync(rgName, stackName);

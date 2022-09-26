@@ -103,6 +103,49 @@ function Test-GetSubscriptionDeploymentStack
 
 <#
 .SYNOPSIS
+Tests GET operation on deploymentStacks at the Management Group scope.
+#>
+function Test-GetManagementGroupDeploymentStack
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$location = "West US 2"
+
+	try
+	{
+		# Prepare 
+		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -Location $location -TemplateFile subscription_level_template.json -TemplateParameterFile subscription_level_parameters.json
+		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
+
+		# Test - GetByName
+		$getByName = Get-AzSubscriptionDeploymentStack -Name $rname 
+
+		# Assert
+		Assert-NotNull $getByName
+
+		# Test - GetByResourceId
+		$getByResourceId = Get-AzSubscriptionDeploymentStack -ResourceId $resourceId
+
+		#Assert
+		Assert-NotNull $getByResourceId
+
+		#Test - ListByResourceGroupName
+		$list = Get-AzSubscriptionDeploymentStack
+
+		# Assert
+		Assert-AreNotEqual 0 $list.Count
+		Assert-True { $list.name.contains($rname) }
+	}
+	finally
+    {
+        # Cleanup
+        Clean-DeploymentAtSubscription $rname
+    }
+}
+
+<#
+.SYNOPSIS
 Tests NEW operation on deploymentStacks at the RG scope.
 #>
 function Test-NewResourceGroupDeploymentStack
@@ -215,10 +258,10 @@ function Test-NewAndNewResourceGroupDeploymentStackDeleteStackResources
 
 <#
 .SYNOPSIS
-Tests NEW and SET operation on deploymentStacks at the RG scope with deletion of resources and resource groups.
+Tests NEW and SET operation on deploymentStacks at the RG scope with deletion of resources.
 #>
 
-function Test-NewAndSetResourceGroupDeploymentStackDeleteStackResourcesAndResourceGroups
+function Test-NewAndSetResourceGroupDeploymentStackDeleteStackResources
 {
 	# Setup
 	$rgname = Get-ResourceGroupName
@@ -231,14 +274,14 @@ function Test-NewAndSetResourceGroupDeploymentStackDeleteStackResourcesAndResour
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 
 		# Test - New-AzResourceGroupDeploymentStacks using templateSpecs
-		$deployment = New-AzResourceGroupDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "sampleTemplateWithRG.json" -TemplateParameterFile "sampleTemplateWithRGParams.json"
+		$deployment = New-AzResourceGroupDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "sampleTemplate.json" -TemplateParameterFile "sampleTemplateParams.json"
 		$id = $deployment.id
 
 		# Assert
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		# Test - Set-AzResourceGroupDeploymentStacks using templateSpecs
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "blankTemplate.json" -DeleteResources -DeleteResourceGroups -Force
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "blankTemplate.json" -DeleteResources
 		$id = $deployment.id
 
 		# Assert
@@ -364,6 +407,86 @@ function Test-NewAndNewResourceGroupDeploymentStackDeleteStackResources
     }
 }
 
+
+<#
+.SYNOPSIS
+Tests NEW and NEW operation on deploymentStacks at the RG scope with deletion of resources.
+#>
+
+function Test-NewAndSetResourceGroupDeploymentStackDeleteStackResources
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$stackname = Get-ResourceName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+
+	try {
+		# Prepare
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+
+		# Test - New-AzResourceGroupDeploymentStacks using templateSpecs
+		$deployment = New-AzSubscriptionDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "sampleTemplate.json" -TemplateParameterFile "sampleTemplateParams.json"
+		$id = $deployment.id
+
+		# Assert
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		# Test - New-AzResourceGroupDeploymentStacks using templateSpecs
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "blankTemplate.json" -DeleteResources
+		$id = $deployment.id
+
+		# Assert
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+	}
+
+	finally
+    {
+        # Cleanup
+        Clean-ResourceGroup $rgname
+    }
+}
+
+<#
+.SYNOPSIS
+Tests NEW and SET operation on deploymentStacks at the RG scope with deletion of resources and resource groups.
+#>
+
+function Test-NewAndNewResourceGroupDeploymentStackDeleteStackResourcesAndResourceGroups
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$stackname = Get-ResourceName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+
+	try {
+		# Prepare
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+
+		# Test - New-AzResourceGroupDeploymentStacks using templateSpecs
+		$deployment = New-AzSubscriptionDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "sampleTemplateWithRG.json" -TemplateParameterFile "sampleTemplateWithRGParams.json"
+		$id = $deployment.id
+
+		# Assert
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		# Test - Set-AzResourceGroupDeploymentStacks using templateSpecs
+		$deployment = New-AzSubscriptionDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "blankTemplate.json" -DeleteResources -DeleteResourceGroups -Force
+		$id = $deployment.id
+
+		# Assert
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+	}
+
+	finally
+    {
+        # Cleanup
+        Clean-ResourceGroup $rgname
+    }
+}
+
+
 <#
 .SYNOPSIS
 Tests NEW and SET operation on deploymentStacks at the RG scope with deletion of resources and resource groups.
@@ -389,7 +512,7 @@ function Test-NewAndSetResourceGroupDeploymentStackDeleteStackResourcesAndResour
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		# Test - Set-AzResourceGroupDeploymentStacks using templateSpecs
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "blankTemplate.json" -DeleteResources -DeleteResourceGroups -Force
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateFile "blankTemplate.json" -DeleteResources -DeleteResourceGroups
 		$id = $deployment.id
 
 		# Assert
@@ -446,6 +569,51 @@ function Test-RemoveResourceGroupDeploymentStack
         # Cleanup
         Clean-ResourceGroup $rgname
     }
+}
+
+<#
+.SYNOPSIS
+Tests REMOVE operation on deploymentStacks 
+#>
+function Test-RemoveResourceGroupDeploymentStackDeleteResources
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+	$subId = (Get-AzContext).Subscription.SubscriptionId
+
+	$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname"
+
+	try
+	{
+		# Prepare 
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -TemplateParameterFile sampleTemplateParams.json
+
+
+		# Test - removeByResourceId
+		$removeByResourceId = Remove-AzResourceGroupDeploymentStack -ResourceId $resourceId -force
+
+		# Assert
+		Assert-NotNull $removeByResourceId
+
+		#Prepare
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -TemplateParameterFile sampleTemplateParams.json -force
+
+
+		# Test - removeByResourceNameAndResourceGroupName
+		$removeByResourceNameAndResourceGroupName = Remove-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -Name $rname -force
+
+		#Assert
+		Assert-NotNull $removeByResourceNameAndResourceGroupName
+
+	}
+	finally
+    {
+        # Cleanup
+        Clean-ResourceGroup $rgname
+    }
 } 
 
 <#
@@ -453,6 +621,87 @@ function Test-RemoveResourceGroupDeploymentStack
 Tests REMOVE operation on deploymentStacks at the subscription scope
 #>
 function Test-RemoveSubscriptionDeploymentStack
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+
+	try
+	{
+		# Prepare 
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -TemplateParameterFile subscription_level_parameters.json -location $rglocation
+		$resourceid = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
+
+		# Test - RemoveByName
+		$removeByName = Remove-AzSubscriptionDeploymentStack -Name $rname -force
+
+		# Assert
+		Assert-NotNull $removeByName 
+
+		# Prepare
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -TemplateParameterFile subscription_level_parameters.json -location $rglocation -force
+
+		# Test - RemoveByResourceId
+		$removeByResourceId = Remove-AzSubscriptionDeploymentStack -ResourceId $resourceid -force
+
+		#Assert
+		Assert-NotNull $removeByResourceId
+	}
+
+	finally
+	{
+		Clean-DeploymentAtSubscription $rname
+	}
+
+}
+
+<#
+.SYNOPSIS
+Tests REMOVE operation on deploymentStacks at the subscription scope
+#>
+function Test-RemoveSubscriptionDeploymentStackDeleteResources
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+
+	try
+	{
+		# Prepare 
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -TemplateParameterFile subscription_level_parameters.json -location $rglocation
+		$resourceid = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
+
+		# Test - RemoveByName
+		$removeByName = Remove-AzSubscriptionDeploymentStack -Name $rname -force
+
+		# Assert
+		Assert-NotNull $removeByName 
+
+		# Prepare
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile subscription_level_template.json -TemplateParameterFile subscription_level_parameters.json -location $rglocation -force
+
+		# Test - RemoveByResourceId
+		$removeByResourceId = Remove-AzSubscriptionDeploymentStack -ResourceId $resourceid -force
+
+		#Assert
+		Assert-NotNull $removeByResourceId
+	}
+
+	finally
+	{
+		Clean-DeploymentAtSubscription $rname
+	}
+
+}
+
+
+<#
+.SYNOPSIS
+Tests REMOVE operation on deploymentStacks at the subscription scope
+#>
+function Test-RemoveSubscriptionDeploymentStackDeleteResourcesAndResourceGroups
 {
 	# Setup
 	$rgname = Get-ResourceGroupName

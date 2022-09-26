@@ -31,16 +31,22 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         internal const string RemoveByResourceNameParameterSetname = "RemoveByResourceName";
 
         [Alias("StackName")]
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceNameParameterSetname,
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceNameParameterSetname,
             HelpMessage = "The name of the deploymentStack to delete")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
         [Alias("Id")]
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceIdParameterSetName,
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceIdParameterSetName,
             HelpMessage = "ResourceId of the stack to delete")]
         [ValidateNotNullOrEmpty]
         public string ResourceId { get; set; }
+
+        [Alias("ManagementGroupId")]
+        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, 
+            HelpMessage = "The id of the management group where the stack is being deleted")]
+        [ValidateNotNullOrEmpty]
+        public string ManagementGroupId { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = "Signal to delete both resources and resource groups after updating stack.")]
         public SwitchParameter DeleteAll { get; set; }
@@ -80,6 +86,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                     Name,
                     () => DeploymentStacksSdkClient.DeleteManagementGroupDeploymentStack(
                         Name,
+                        ManagementGroupId,
                         resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
                         resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach"
                     )
