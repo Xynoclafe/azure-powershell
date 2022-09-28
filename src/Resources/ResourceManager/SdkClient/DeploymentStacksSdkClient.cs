@@ -169,7 +169,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
         {
             try
             {
-                var deploymentStack = DeploymentStacksClient.DeploymentStacks.ExportTemplateAtSubscription(deploymentStackName);
+                var deploymentStack = DeploymentStacksClient.DeploymentStacks.ExportTemplateAtManagementGroup(managementGroupId, deploymentStackName);
 
                 return new PSDeploymentStackTemplateDefinition(deploymentStack);
             }
@@ -447,10 +447,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
         internal void DeleteSubscriptionDeploymentStack(string name, string resourcesCleanupAction, string resourceGroupsCleanupAction)
         {
-
-            WriteWarning(resourcesCleanupAction);
-            WriteWarning(resourceGroupsCleanupAction);
-
             var deleteResponse = DeploymentStacksClient.DeploymentStacks
                     .DeleteAtSubscriptionWithHttpMessagesAsync(name, resourcesCleanupAction, resourceGroupsCleanupAction)
                     .GetAwaiter()
@@ -546,10 +542,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
         internal void DeleteManagementGroupDeploymentStack(string name, string managementGroupId, string resourcesCleanupAction, string resourceGroupsCleanupAction)
         {
-
-            WriteWarning(resourcesCleanupAction);
-            WriteWarning(resourceGroupsCleanupAction);
-
             var deleteResponse = DeploymentStacksClient.DeploymentStacks
                     .DeleteAtManagementGroupWithHttpMessagesAsync(managementGroupId, name, resourcesCleanupAction, resourceGroupsCleanupAction)
                     .GetAwaiter()

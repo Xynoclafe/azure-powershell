@@ -22,29 +22,31 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Text;
 
     [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "ManagementGroupDeploymentStack",
-        DefaultParameterSetName = GetAzManagementGroupDeploymentStack.ListDeploymentStacksByManagementGroupId), OutputType(typeof(PSDeploymentStack))]
+        DefaultParameterSetName = GetAzManagementGroupDeploymentStack.ListByManagementGroupIdParameterSetName), OutputType(typeof(PSDeploymentStack))]
     public class GetAzManagementGroupDeploymentStack : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
 
-        internal const string GetDeploymentStackByResourceId = "GetDeploymentStackByResourceId";
-        internal const string GetDeploymentStackByManagementGroupIdAndStackName = " GetDeploymentStackByManagementGroupIdAndStackName";
-        internal const string ListDeploymentStacksByManagementGroupId = "ListDeploymentStacksByManagmentGroupId";
+        internal const string GetByResourceIdParameterSetName = "GetByResourceId";
+        internal const string GetByManagementGroupIdAndStackNameParameterSetName = "GetByManagementGroupIdAndStackName";
+        internal const string ListByManagementGroupIdParameterSetName = "ListByManagmentGroupId";
 
         [Alias("StackName")]
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetDeploymentStackByManagementGroupIdAndStackName, 
-            HelpMessage = "The name of the deploymentStack to get")]
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByManagementGroupIdAndStackNameParameterSetName, 
+            HelpMessage = "The name of the DeploymentStack to get")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
         [Alias("Id")]
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetDeploymentStackByResourceId,
-            HelpMessage = "ResourceId of the stack to get")]
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByResourceIdParameterSetName,
+            HelpMessage = "ResourceId of the DeploymentStack to get")]
         [ValidateNotNullOrEmpty]
         public string ResourceId { get; set; }
 
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ListDeploymentStacksByManagementGroupId)]
-        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetDeploymentStackByManagementGroupIdAndStackName)]
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ListByManagementGroupIdParameterSetName,
+             HelpMessage = "The id of the ManagementGroup where the DeploymentStack is deployed")]
+        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByManagementGroupIdAndStackNameParameterSetName,
+            HelpMessage = "The id of the ManagementGroup where the DeploymentStack is deployed")]
         [ValidateNotNullOrEmpty]
         public string ManagementGroupId { get; set; }
 
@@ -59,14 +61,19 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 this.GetResourcesClient();
                 switch (ParameterSetName)
                 {
-                    case GetDeploymentStackByResourceId:
-                        WriteObject(DeploymentStacksSdkClient.GetManagementGroupDeploymentStack(ResourceIdUtility.GetManagementGroupId(ResourceId), 
-                            ResourceIdUtility.GetResourceName(ResourceId)), true);
+                    case GetByResourceIdParameterSetName:
+                        ManagementGroupId = ResourceIdUtility.GetManagementGroupId(ResourceId);
+                        Name = ResourceIdUtility.GetDeploymentName(ResourceId);
+                        if (ManagementGroupId == null || Name == null)
+                        {
+                            throw new PSArgumentException($"Provided Id '{ResourceId}' is not in correct form.");
+                        }
+                        WriteObject(DeploymentStacksSdkClient.GetManagementGroupDeploymentStack(ManagementGroupId, Name), true);
                         break;
-                    case GetDeploymentStackByManagementGroupIdAndStackName:
+                    case GetByManagementGroupIdAndStackNameParameterSetName:
                         WriteObject(DeploymentStacksSdkClient.GetManagementGroupDeploymentStack(ManagementGroupId, Name, true));
                         break;
-                    case ListDeploymentStacksByManagementGroupId:
+                    case ListByManagementGroupIdParameterSetName:
                         WriteObject(DeploymentStacksSdkClient.ListManagementGroupDeploymentStack(ManagementGroupId), true);
                         break;
                     default:

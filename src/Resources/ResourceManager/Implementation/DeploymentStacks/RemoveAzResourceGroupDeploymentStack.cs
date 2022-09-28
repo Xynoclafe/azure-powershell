@@ -22,22 +22,21 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Text;
 
     [Cmdlet("Remove", Common.AzureRMConstants.AzureRMPrefix + "ResourceGroupDeploymentStack",
-        SupportsShouldProcess = true, DefaultParameterSetName = RemoveAzResourceGroupDeploymentStack.RemoveByResourceNameParameterSetname), OutputType(typeof(bool))]
+        SupportsShouldProcess = true, DefaultParameterSetName = RemoveAzResourceGroupDeploymentStack.RemoveByNameAndResourceGroupNameParameterSetName), OutputType(typeof(bool))]
     public class RemoveAzResourceGroupDeploymentStack : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
 
         internal const string RemoveByResourceIdParameterSetName = "RemoveByResourceId";
-        internal const string RemoveByResourceNameParameterSetname = "RemoveByResourceName";
-        internal const string RemoveByResourceBehaviorParameterDeleteBehavior = "RemoveByDeleteBehavior";
+        internal const string RemoveByNameAndResourceGroupNameParameterSetName = "RemoveByNameAndResourceGroupName";
 
         [Alias("StackName")]
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceNameParameterSetname,
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByNameAndResourceGroupNameParameterSetName,
             HelpMessage = "The name of the deploymentStack to delete")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceNameParameterSetname,
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByNameAndResourceGroupNameParameterSetName,
         HelpMessage = "The name of the Resource Group with the stack to delete")]
         [ValidateNotNullOrEmpty]
         public string ResourceGroupName { get; set; }
@@ -48,13 +47,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         [ValidateNotNullOrEmpty]
         public string ResourceId { get; set; }
 
-        [Parameter(Mandatory = false, HelpMessage = "Signal to delete both resources and resource groups after updating stack.")]
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete both unmanaged Resources and ResourceGroups after updating stack.")]
         public SwitchParameter DeleteAll { get; set; }
 
-        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack resources after updating stack.")]
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack Resources after updating stack.")]
         public SwitchParameter DeleteResources { get; set; }
 
-        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack resource groups after updating stack.")]
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack ResourceGroups after updating stack.")]
         public SwitchParameter DeleteResourceGroups { get; set; }
 
         // Not Yet Supported.
@@ -75,12 +74,14 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 var shouldDeleteResources = (DeleteAll.ToBool() || DeleteResources.ToBool()) ? true : false;
                 var shouldDeleteResourceGroups = (DeleteAll.ToBool() || DeleteResourceGroups.ToBool()) ? true : false;
 
-                ResourceIdentifier resourceIdentifier = (ResourceId != null)
-                    ? new ResourceIdentifier(ResourceId)
-                    : null;
+                ResourceGroupName = ResourceGroupName ?? ResourceIdUtility.GetResourceGroupName(ResourceId);
+                Name = Name ?? ResourceIdUtility.GetDeploymentName(ResourceId);
 
-                ResourceGroupName = ResourceGroupName ?? resourceIdentifier.ResourceGroupName;
-                Name = Name ?? ResourceIdUtility.GetResourceName(ResourceId);
+                // failed resolving the resource id
+                if(Name == null)
+                {
+                    throw new PSArgumentException($"Provided Id '{ResourceId}' is not in correct form.");
+                }
 
                 string confirmationMessage = $"Are you sure you want to remove DeploymentStack '{Name}'";
 

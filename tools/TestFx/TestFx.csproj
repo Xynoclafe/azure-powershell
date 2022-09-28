@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <IncludeCommonTestProject>false</IncludeCommonTestProject>
-    <Configurations>Debug;Release;Powershell</Configurations>
   </PropertyGroup>
   
   <Import Project="$(MSBuildThisFileDirectory)..\..\src\Az.Test.props" />

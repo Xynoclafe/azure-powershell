@@ -33,13 +33,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
         [Alias("StackName")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByStackNameParameterSetname,
-            HelpMessage = "The name of the deploymentStack to get")]
+            HelpMessage = "The name of the DeploymentStack to get")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
         [Alias("Id")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByResourceIdParameterSetName,
-            HelpMessage = "ResourceId of the stack to get")]
+            HelpMessage = "ResourceId of the DeploymentStack to get")]
         [ValidateNotNullOrEmpty]
         public string ResourceId { get; set; }
 
@@ -58,7 +58,12 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(Name), true);
                         break;
                     case GetByResourceIdParameterSetName:
-                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(ResourceIdUtility.GetResourceName(ResourceId)), true);
+                        Name = ResourceIdUtility.GetDeploymentName(ResourceId);
+                        if (Name == null)
+                        {
+                            throw new PSArgumentException($"Provided Id '{ResourceId}' is not in correct form.");
+                        }
+                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(ResourceIdUtility.GetResourceName(Name)), true);
                         break;
                     case ListParameterSetname:
                         WriteObject(DeploymentStacksSdkClient.ListSubscriptionDeploymentStack(), true);

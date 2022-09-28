@@ -1,1 +1,121 @@
-﻿
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.10.61.36676",
+      "templateHash": "11056049241108829469"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string"
+    },
+    "templateSpecModuleName": {
+      "type": "string",
+      "defaultValue": "[format('StacksSpecModule{0}', uniqueString(subscription().id))]"
+    },
+    "templateSpecName": {
+      "type": "string",
+      "defaultValue": "[format('StacksSpec{0}', uniqueString(subscription().id))]"
+    },
+    "specVersionName": {
+      "type": "string",
+      "defaultValue": "[format('StacksVersion{0}', uniqueString(subscription().id))]"
+    },
+    "rgName": {
+      "type": "string",
+      "defaultValue": "[format('StacksTestRG{0}', uniqueString(subscription().id))]"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-04-01",
+      "name": "[parameters('rgName')]",
+      "location": "[parameters('location')]"
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[parameters('templateSpecModuleName')]",
+      "resourceGroup": "[parameters('rgName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "specVersionName": {
+            "value": "[parameters('specVersionName')]"
+          },
+          "templateSpecName": {
+            "value": "[parameters('templateSpecName')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.10.61.36676",
+              "templateHash": "17153633978902658024"
+            }
+          },
+          "parameters": {
+            "templateSpecName": {
+              "type": "string",
+              "defaultValue": "[format('MyTemplateSpec{0}', uniqueString(resourceGroup().id))]"
+            },
+            "specVersionName": {
+              "type": "string",
+              "defaultValue": "[format('MySpecVersion{0}', uniqueString(resourceGroup().id))]"
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Resources/templateSpecs",
+              "apiVersion": "2022-02-01",
+              "name": "[parameters('templateSpecName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "displayName": "MyTemplateSpec",
+                "description": "Template Spec for testing RG stacks."
+              }
+            },
+            {
+              "type": "Microsoft.Resources/templateSpecs/versions",
+              "apiVersion": "2022-02-01",
+              "name": "[format('{0}/{1}', parameters('templateSpecName'), parameters('specVersionName'))]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "description": "generated version number for testing stacks",
+                "mainTemplate": {
+                  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                  "contentVersion": "1.0.0.0",
+                  "parameters": {},
+                  "functions": [],
+                  "variables": {},
+                  "resources": [],
+                  "outputs": {}
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/templateSpecs', parameters('templateSpecName'))]"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

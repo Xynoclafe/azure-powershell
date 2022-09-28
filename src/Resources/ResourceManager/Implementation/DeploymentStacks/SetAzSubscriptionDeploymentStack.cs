@@ -121,13 +121,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             HelpMessage = "The scope at which the initial deployment should be created. If a scope isn't specified, it will default to the scope of the deployment stack.")]
         public String DeploymentScope { get; set; }
 
-        [Parameter(Mandatory = false, HelpMessage = "Signal to delete both resources and resource groups after updating stack.")]
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete both unmanaged Resources and ResourceGroups after deleting stack.")]
         public SwitchParameter DeleteAll { get; set; }
 
-        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack resources after upating stack.")]
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack Resources after deleting stack.")]
         public SwitchParameter DeleteResources { get; set; }
 
-        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack resource groups after updating stack.")]
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack ResourceGroups after deleting stack.")]
         public SwitchParameter DeleteResourceGroups { get; set; }
 
         // Not Yet Supported.

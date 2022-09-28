@@ -55,7 +55,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
-        [Alias("ManagementGroupId")]
         [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true,
             HelpMessage = "The id of the management group that the deploymentStack will be deployed into")]
         [ValidateNotNullOrEmpty]
@@ -123,13 +122,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             HelpMessage = "Location of the stack")]
         public string Location { get; set; }
 
-        [Parameter(Mandatory = false, HelpMessage = "Signal to delete both resources and resource groups after updating stack.")]
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete both unmanaged Resources and ResourceGroups after updating stack.")]
         public SwitchParameter DeleteAll { get; set; }
 
-        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack resources after upating stack.")]
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack Resources after updating stack.")]
         public SwitchParameter DeleteResources { get; set; }
 
-        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack resource groups after updating stack.")]
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack ResourceGroups after updating stack.")]
         public SwitchParameter DeleteResourceGroups { get; set; }
 
         // Not Yet Supported.
