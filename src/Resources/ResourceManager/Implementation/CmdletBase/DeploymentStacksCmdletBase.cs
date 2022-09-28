@@ -43,6 +43,16 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             }
         }
 
+        protected string ResolveBicepFile(string TemplateFile)
+        {
+            string filePath = "";
+            if (BicepUtility.IsBicepFile(TemplateFile))
+            {
+                filePath = BicepUtility.BuildFile(this.ResolvePath(TemplateFile), this.WriteVerbose, this.WriteWarning);
+            }
+            return filePath;
+        }
+
         protected Hashtable GetParameterObject(string parameterFile)
         {
             var parameters = new Hashtable();

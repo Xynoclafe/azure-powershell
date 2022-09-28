@@ -40,7 +40,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             this.DeploymentStacksClient = deploymentStacksClient;
         }
 
-        // <summary>
+        /// <summary>
         /// Parameter-less constructor for mocking
         /// </summary>
         public DeploymentStacksSdkClient()
