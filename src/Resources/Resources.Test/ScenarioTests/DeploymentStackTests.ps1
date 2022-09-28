@@ -75,7 +75,7 @@ function Test-NewResourceGroupDeploymentStack
 		# Prepare
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 
-		#Test - NewByNameAndResourceGroupAndTemplateFile
+		#Test - NewByNameAndResourceGroupAndTemplateFile TODO: Add more combinations
 		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json
 
 		#Assert
@@ -138,25 +138,59 @@ function Test-SetResourceGroupDeploymentStack
 	$subId = (Get-AzContext).Subscription.SubscriptionId
 
 	try {
-		$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname"
-
-		#Test - SetByNameAndResourceGroupAndTemplateFile
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -TemplateParameterFile sampleTemplateParams.json -force
-
-		#Assert
-		Assert-NotNull $deployment
-
-		#Clean up
-		Clean-ResourceGroup $rgname
-
-		# Prepare
+		
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 
-		#Test - SetByNameAndResourceGroupAndTemplateFileAndTemplateParameterFile
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleTemplate.json -TemplateParameterFile sampleTemplateParams.json -force
+		#Test - SetByNameAndResourceGroupAndTemplateFile ----------
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
+		
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		#Assert
-		Assert-NotNull $deployment
+		#Test - Setting a stack with additional resources ---------
+		
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
+		
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+		
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithAdditionalResource.json -TemplateParameterFile StacksRGTemplateParams.json -Force
+		
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		#Test - Setting a blank stack with DeleteResources set ----------
+
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
+
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteResources -Force
+
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		#Test - Setting a blank stack with DeleteResources and ResourceGroups set ----------
+
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateParams.json -Force
+
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteResources -DeleteResourceGroups -Force
+
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		#Test - Setting a blank stack with DeleteAll set ----------
+
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
+
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteAll -Force
+
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		#Test - Setting a stack with only DeleteResourceGroups set which should error ----------
+
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteResourceGroups -Force
+
+		Assert-IsNull $deployment
 	}
 
 	finally
