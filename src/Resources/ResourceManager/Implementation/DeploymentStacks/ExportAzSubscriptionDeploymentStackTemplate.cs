@@ -17,6 +17,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
+    using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels.DeploymentStacks;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Utilities;
     using Microsoft.WindowsAzure.Commands.Utilities.Common;
     using Newtonsoft.Json;
@@ -25,28 +26,23 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Management.Automation;
 
     [Cmdlet("Export", Common.AzureRMConstants.AzureRMPrefix + "SubscriptionDeploymentStackTemplate",
-        DefaultParameterSetName = ExportAzSubscriptionDeploymentStackTemplate.ExportByDeploymentStackName)]
+        DefaultParameterSetName = ExportByName), OutputType(typeof(PSDeploymentStackTemplateDefinition))]
     public class ExportAzSubscriptionDeploymentStackTemplate : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
         
-        internal const string ExportByResourceIdParameterSetName = "ExportDeploymentStackTemplateByResourceId";
-        internal const string ExportByDeploymentStackName = "ExportDeploymentStackTemplateByStackName";
+        internal const string ExportByResourceId = "ExportByResourceId";
+        internal const string ExportByName = "ExportByName";
 
         [Alias("Id")]
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ExportByResourceIdParameterSetName)]
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ExportByResourceId)]
         [ValidateNotNullOrEmpty]
         public string ResourceId { get; set; }
 
         [Alias("StackName")]
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ExportByDeploymentStackName)]
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ExportByName)]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
-
-
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "The path to the file where the deployment stack template will be output to.")]
-        [ValidateNotNullOrEmpty]
-        public string OutputFile { get; set; }
 
         #endregion
 
@@ -55,31 +51,17 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         {
             try
             {
-                JObject template;
                 switch (ParameterSetName)
                 {
-                    case ExportByResourceIdParameterSetName:
-                        template = DeploymentStacksSdkClient.ExportSubscriptionDeploymentStack(ResourceIdUtility.GetResourceGroupName(ResourceId));
+                    case ExportByResourceId:
+                        WriteObject(DeploymentStacksSdkClient.ExportSubscriptionDeploymentStack(ResourceIdUtility.GetResourceGroupName(ResourceId)), true);
                         break;
-                    case ExportByDeploymentStackName:
-                        template = DeploymentStacksSdkClient.ExportSubscriptionDeploymentStack(Name);
+                    case ExportByName:
+                        WriteObject(DeploymentStacksSdkClient.ExportSubscriptionDeploymentStack(Name), true);
                         break;
                     default:
                         throw new PSInvalidOperationException();
                 }
-
-                // Ensure our output path is resolved based on the current powershell working
-                // directory instead of the current process directory:
-                OutputFile = ResolveUserPath(OutputFile);
-
-                string path = FileUtility.SaveTemplateFile(
-                    templateName: this.Name,
-                    contents: template.ToString(),
-                    outputPath: this.OutputFile,
-                    overwrite: true,
-                    shouldContinue: ShouldContinue);
-
-                WriteObject(PowerShellUtilities.ConstructPSObject(null, "Path", OutputFile));
             }
             catch (Exception ex)
             {

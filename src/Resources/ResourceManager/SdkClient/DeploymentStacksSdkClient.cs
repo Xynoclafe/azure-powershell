@@ -20,6 +20,7 @@ using System.Linq;
 using Microsoft.Rest.Azure;
 using System.Threading.Tasks;
 using ProjectResources = Microsoft.Azure.Commands.ResourceManager.Cmdlets.Properties.Resources;
+using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels.DeploymentStacks;
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 {
@@ -92,7 +93,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             }
         }
 
-        public JObject ExportResourceGroupDeploymentStack(
+        public PSDeploymentStackTemplateDefinition ExportResourceGroupDeploymentStack(
             string resourceGroupName,
            string deploymentStackName,
            bool throwIfNotExists = true)
@@ -101,8 +102,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             {
                 var deploymentStack = DeploymentStacksClient.DeploymentStacks.ExportTemplateAtResourceGroup(resourceGroupName, deploymentStackName);
 
-                // TODO: If a template link is set, we have to do something else.
-                return (JObject) deploymentStack.Template;
+                return new PSDeploymentStackTemplateDefinition(deploymentStack);
             }
             catch (Exception ex)
             {
@@ -128,7 +128,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             }
         }
 
-        public JObject ExportSubscriptionDeploymentStack(
+        public PSDeploymentStackTemplateDefinition ExportSubscriptionDeploymentStack(
             string deploymentStackName,
             bool throwIfNotExists = true)
         {
@@ -136,10 +136,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             {
                 var deploymentStack = DeploymentStacksClient.DeploymentStacks.ExportTemplateAtSubscription(deploymentStackName);
 
-                deploymentStack.TemplateLink.ToJson();
-
-                // TODO: If a template link is set, we have to do something else.
-                return (JObject)deploymentStack.Template.ToJson();
+                return new PSDeploymentStackTemplateDefinition(deploymentStack);
             }
             catch (Exception ex)
             {
@@ -165,7 +162,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             }
         }
 
-        public JObject ExportManagementGroupDeploymentStack(
+        public PSDeploymentStackTemplateDefinition ExportManagementGroupDeploymentStack(
             string managementGroupId,
             string deploymentStackName,
             bool throwIfNotExists = true)
@@ -174,10 +171,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             {
                 var deploymentStack = DeploymentStacksClient.DeploymentStacks.ExportTemplateAtSubscription(deploymentStackName);
 
-                deploymentStack.TemplateLink.ToJson();
-
-                // TODO: If a template link is set, we have to do something else.
-                return (JObject)deploymentStack.Template.ToJson();
+                return new PSDeploymentStackTemplateDefinition(deploymentStack);
             }
             catch (Exception ex)
             {

@@ -17,6 +17,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
+    using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels.DeploymentStacks;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Utilities;
     using Microsoft.WindowsAzure.Commands.Utilities.Common;
     using Newtonsoft.Json.Linq;
@@ -24,7 +25,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Management.Automation;
 
     [Cmdlet("Export", Common.AzureRMConstants.AzureRMPrefix + "ManagementGroupDeploymentStackTemplate",
-        DefaultParameterSetName = ExportAzManagementGroupDeploymentStackTemplate.ExportByName)]
+        DefaultParameterSetName = ExportByName), OutputType(typeof(PSDeploymentStackTemplateDefinition))]
     public class ExportAzManagementGroupDeploymentStackTemplate : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
@@ -42,14 +43,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
-        [Alias("ManagementGroupId")]
         [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ExportByName)]
         [ValidateNotNullOrEmpty]
         public string ManagementGroupId { get; set; }
-
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "The path to the file where the deployment stack template will be output to.")]
-        [ValidateNotNullOrEmpty]
-        public string OutputFile { get; set; }
 
         #endregion
 
@@ -58,31 +54,17 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         {
             try
             {
-                JObject template;
                 switch (ParameterSetName)
                 {
                     case ExportByResourceId:
-                        template = DeploymentStacksSdkClient.ExportManagementGroupDeploymentStack(ResourceIdUtility.GetManagementGroupId(ResourceId), ResourceIdUtility.GetDeploymentName(ResourceId));
+                        WriteObject(DeploymentStacksSdkClient.ExportManagementGroupDeploymentStack(ResourceIdUtility.GetManagementGroupId(ResourceId), ResourceIdUtility.GetDeploymentName(ResourceId)), true);
                         break;
                     case ExportByName:
-                        template = DeploymentStacksSdkClient.ExportManagementGroupDeploymentStack(ManagementGroupId, Name);
+                        WriteObject(DeploymentStacksSdkClient.ExportManagementGroupDeploymentStack(ManagementGroupId, Name), true);
                         break;
                     default:
                         throw new PSInvalidOperationException();
                 }
-
-                // Ensure our output path is resolved based on the current powershell working
-                // directory instead of the current process directory:
-                OutputFile = ResolveUserPath(OutputFile);
-
-                string path = FileUtility.SaveTemplateFile(
-                    templateName: this.Name,
-                    contents: template.ToString(),
-                    outputPath: this.OutputFile,
-                    overwrite: true,
-                    shouldContinue: ShouldContinue);
-
-                WriteObject(PowerShellUtilities.ConstructPSObject(null, "Path", OutputFile));
             }
             catch (Exception ex)
             {
