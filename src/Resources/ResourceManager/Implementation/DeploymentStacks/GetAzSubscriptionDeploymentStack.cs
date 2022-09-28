@@ -51,6 +51,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         {
             try
             {
+                this.GetResourcesClient();
                 switch (ParameterSetName)
                 {
                     case GetByStackNameParameterSetname:

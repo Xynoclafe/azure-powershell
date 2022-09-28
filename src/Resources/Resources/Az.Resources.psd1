@@ -12,7 +12,7 @@
 # RootModule = ''
 
 # Version number of this module.
-ModuleVersion = '4.4.1'
+ModuleVersion = '9.0.2'
 
 # Supported PSEditions
 CompatiblePSEditions = 'Core', 'Desktop'
@@ -191,13 +191,13 @@ CmdletsToExport = 'Get-AzProviderOperation', 'Remove-AzRoleAssignment',
                'Update-AzManagementGroupHierarchySetting', 
                'Get-AzManagementGroupHierarchySetting', 
                'Remove-AzManagementGroupHierarchySetting', 'Get-AzResourceGroupDeploymentStack',
-               'Get-AzResourceGroupDeploymentStackSnapshot',
                'New-AzResourceGroupDeploymentStack',
                'New-AzSubscriptionDeploymentStack', 'Remove-AzResourceGroupDeploymentStack',
-               'Remove-AzResourceGroupDeploymentStackSnapshot', 'Remove-AzSubscriptionDeploymentStack',
-               'Remove-AzSubscriptionDeploymentStackSnapshot', 'Set-AzResourceGroupDeploymentStack',
-               'Set-AzSubscriptionDeploymentStack', 'Get-AzSubscriptionDeploymentStack', 'Get-AzSubscriptionDeploymentStackSnapshot'
-
+               'Remove-AzSubscriptionDeploymentStack','Set-AzResourceGroupDeploymentStack',
+               'Set-AzSubscriptionDeploymentStack', 'Get-AzSubscriptionDeploymentStack',
+               'Export-AzResourceGroupDeploymentStackTemplate', 'Export-AzSubscriptionDeploymentStackTemplate',
+               'Export-AzManagementGroupDeploymentStackTemplate', 'Set-AzManagementGroupDeploymentStack',
+               'New-AzManagementGroupDeploymentStack', 'Remove-AzManagementGroupDeploymentStack', 'Get-AzManagementGroupDeploymentStack'
 # Variables to export from this module
 VariablesToExport = '*'
 

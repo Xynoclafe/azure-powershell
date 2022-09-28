@@ -25,6 +25,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         DefaultParameterSetName = GetAzResourceGroupDeploymentStack.ListByResourceGroupNameParameterSetName), OutputType(typeof(PSDeploymentStack))]
     public class GetAzResourceGroupDeploymentStack : DeploymentStacksCmdletBase
     {
+
+        #region Cmdlet Parameters and Parameter Set Definitions
+
         internal const string GetByResourceIdParameterSetName = "GetDeploymentStackByResourceId";
         internal const string ListByResourceGroupNameParameterSetName = "ListDeploymentStacksByResourceGroupName";
         internal const string GetByDeploymentStackName = "GetDeploymentStackByStackName";
@@ -44,6 +47,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
+        #endregion
+
+        #region Cmdlet Overrides
         protected override void OnProcessRecord()
         {
             try
@@ -69,9 +75,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             }
 
         }
-
-
-
-
+        #endregion
     }
 }

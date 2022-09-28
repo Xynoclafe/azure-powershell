@@ -515,9 +515,13 @@
 							  <PropertyName>provisioningState</PropertyName>
 						  </ListItem>
 						  <ListItem>
-							  <Label>UpdateBehavior</Label>
-							  <PropertyName>UpdateBehavior</PropertyName>
+							  <Label>ResourcesCleanupAction</Label>
+                <ScriptBlock>$_.ActionOnUnmanage.Resources</ScriptBlock>
 						  </ListItem>
+              <ListItem>
+                <Label>ResourceGroupsCleanupAction</Label>
+                <ScriptBlock>$_.ActionOnUnmanage.ResourceGroups</ScriptBlock>
+              </ListItem>
 						  <ListItem>
 							  <Label>Location</Label>
 							  <ItemSelectionCondition>
@@ -593,10 +597,14 @@
 							  <Label>ProvisioningState</Label>
 							  <PropertyName>provisioningState</PropertyName>
 						  </ListItem>
-						  <ListItem>
-							  <Label>UpdateBehavior</Label>
-							  <PropertyName>UpdateBehavior</PropertyName>
-						  </ListItem>
+              <ListItem>
+                <Label>ResourcesCleanupAction</Label>
+                <ScriptBlock>$_.ActionOnUnmanage.Resources</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>ResourceGroupsCleanupAction</Label>
+                <ScriptBlock>$_.ActionOnUnmanage.ResourceGroups</ScriptBlock>
+              </ListItem>
 						  <ListItem>
 							  <Label>Location</Label>
 							  <ItemSelectionCondition>

@@ -36,7 +36,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
 
         public string deploymentId { get; set; }
 
-        public LockSettings locks { get; set; }
+        //public LockSettings locks { get; set; }
 
         public ErrorResponse error { get; set; }
 
@@ -56,7 +56,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
             this.name = deploymentStackSnapshot.Name;
             this.type = deploymentStackSnapshot.Type;
             this.systemData = deploymentStackSnapshot.SystemData;
-            this.updateBehavior = deploymentStackSnapshot.UpdateBehavior;
+            //this.updateBehavior = deploymentStackSnapshot.UpdateBehavior;
             this.template = deploymentStackSnapshot.Template;
             this.templateLink = deploymentStackSnapshot.TemplateLink;
             this.parameters = deploymentStackSnapshot.Parameters;
@@ -66,9 +66,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
             this.deploymentScope = deploymentStackSnapshot.DeploymentScope;
             this.description = deploymentStackSnapshot.DeploymentScope;
             this.deploymentId = deploymentStackSnapshot.DeploymentId;
-            this.locks = deploymentStackSnapshot.Locks;
+            //this.locks = deploymentStackSnapshot.Locks;
             this.error = deploymentStackSnapshot.Error;
-            this.managedResources = deploymentStackSnapshot.ManagedResources;
+            //this.managedResources = deploymentStackSnapshot.ManagedResources;
             this.detachedResources = deploymentStackSnapshot.DetachedResources;
             this.deletedResources = deploymentStackSnapshot.DeletedResources;
             this.failedResources = deploymentStackSnapshot.FailedResources;

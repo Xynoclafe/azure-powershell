@@ -20,11 +20,14 @@ using System.Linq;
 using Microsoft.Rest.Azure;
 using System.Threading.Tasks;
 using ProjectResources = Microsoft.Azure.Commands.ResourceManager.Cmdlets.Properties.Resources;
+using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels.DeploymentStacks;
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 {
     public class DeploymentStacksSdkClient
     {
+        public const string ErrorFormat = "Error: Code={0}; Message={1}\r\n";
+
         public IDeploymentStacksClient DeploymentStacksClient { get; set; }
 
         public Action<string> VerboseLogger { get; set; }
@@ -63,6 +66,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             try
             {
                 var deploymentStack = DeploymentStacksClient.DeploymentStacks.GetAtResourceGroup(resourceGroupName, deploymentStackName);
+
                 return new PSDeploymentStack(deploymentStack);
             }
             catch (Exception ex)
@@ -77,6 +81,110 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                         else
                             throw new PSArgumentException(
                             $"DeploymentStack '{deploymentStackName}' in Resource Group '{resourceGroupName}' not found."
+                        );
+                    }
+                    else
+                    {
+                        throw new PSArgumentException(dex.Body.Error.Message);
+                    }
+                }
+
+                throw;
+            }
+        }
+
+        public PSDeploymentStackTemplateDefinition ExportResourceGroupDeploymentStack(
+            string resourceGroupName,
+           string deploymentStackName,
+           bool throwIfNotExists = true)
+        {
+            try
+            {
+                var deploymentStack = DeploymentStacksClient.DeploymentStacks.ExportTemplateAtResourceGroup(resourceGroupName, deploymentStackName);
+
+                return new PSDeploymentStackTemplateDefinition(deploymentStack);
+            }
+            catch (Exception ex)
+            {
+                if (ex is DeploymentStacksErrorException dex)
+                {
+                    if (dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        // Deployment Stack does not exist
+                        if (!throwIfNotExists)
+                            return null;
+                        else
+                            throw new PSArgumentException(
+                            $"DeploymentStack '{deploymentStackName}' in Resource Group '{resourceGroupName}' not found."
+                        );
+                    }
+                    else
+                    {
+                        throw new PSArgumentException(dex.Body.Error.Message);
+                    }
+                }
+
+                throw;
+            }
+        }
+
+        public PSDeploymentStackTemplateDefinition ExportSubscriptionDeploymentStack(
+            string deploymentStackName,
+            bool throwIfNotExists = true)
+        {
+            try
+            {
+                var deploymentStack = DeploymentStacksClient.DeploymentStacks.ExportTemplateAtSubscription(deploymentStackName);
+
+                return new PSDeploymentStackTemplateDefinition(deploymentStack);
+            }
+            catch (Exception ex)
+            {
+                if (ex is DeploymentStacksErrorException dex)
+                {
+                    if (dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        // Deployment Stack does not exist
+                        if (!throwIfNotExists)
+                            return null;
+                        else
+                            throw new PSArgumentException(
+                            $"DeploymentStack '{deploymentStackName}' in active subscription not found."
+                        );
+                    }
+                    else
+                    {
+                        throw new PSArgumentException(dex.Body.Error.Message);
+                    }
+                }
+
+                throw;
+            }
+        }
+
+        public PSDeploymentStackTemplateDefinition ExportManagementGroupDeploymentStack(
+            string managementGroupId,
+            string deploymentStackName,
+            bool throwIfNotExists = true)
+        {
+            try
+            {
+                var deploymentStack = DeploymentStacksClient.DeploymentStacks.ExportTemplateAtSubscription(deploymentStackName);
+
+                return new PSDeploymentStackTemplateDefinition(deploymentStack);
+            }
+            catch (Exception ex)
+            {
+                if (ex is DeploymentStacksErrorException dex)
+                {
+                    if (dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        // Deployment Stack does not exist
+                        if (!throwIfNotExists)
+                            return null;
+                        else
+                            throw new PSArgumentException(
+                            $"DeploymentStack '{deploymentStackName}' in Management Group '{managementGroupId}' not found."
                         );
                     }
                     else
@@ -104,66 +212,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                     deploymentStacks =
                         DeploymentStacksClient.DeploymentStacks.ListAtResourceGroupNext(deploymentStacks.NextPageLink);
                     list.AddRange(deploymentStacks.Select(stack => PSDeploymentStack.FromAzureSDKDeploymentStack(stack)));
-                }
-                return list;
-            }
-            catch (Exception ex)
-            {
-                if (!throwIfNotExists)
-                    return null;
-
-                if (ex is DeploymentStacksErrorException dex)
-                    throw new PSArgumentException(dex.Body.Error.Message);
-                
-                throw ex;
-            }
-        }
-
-        public IEnumerable<PSDeploymentStackSnapshot> ListResourceGroupDeploymentStackSnapshot(string resourceGroupName, string stackName, bool throwIfNotExists = true)
-        {
-            try
-            {
-                var list = new List<PSDeploymentStackSnapshot>();
-
-                var deploymentStackSnapshots = DeploymentStacksClient.DeploymentStackSnapshots.ListAtResourceGroup(resourceGroupName, stackName);
-
-                list.AddRange(deploymentStackSnapshots.Select(stack => PSDeploymentStackSnapshot.FromAzureSDKDeploymentStack(stack)));
-
-                while (deploymentStackSnapshots.NextPageLink != null)
-                {
-                    deploymentStackSnapshots =
-                        DeploymentStacksClient.DeploymentStackSnapshots.ListAtResourceGroupNext(deploymentStackSnapshots.NextPageLink);
-                    list.AddRange(deploymentStackSnapshots.Select(stack => PSDeploymentStackSnapshot.FromAzureSDKDeploymentStack(stack)));
-                }
-                return list;
-            }
-            catch (Exception ex)
-            {
-                if (!throwIfNotExists)
-                    return null;
-
-                if (ex is DeploymentStacksErrorException dex)
-                    throw new PSArgumentException(dex.Body.Error.Message);
-
-                throw ex;
-            }
-        }
-
-        internal object ListSubscriptionDeploymentStackSnapshot(string stackName, bool throwIfNotExists = true)
-        {
-            try
-            {
-                var list = new List<PSDeploymentStackSnapshot>();
-
-                var deploymentStackSnapshots = DeploymentStacksClient.DeploymentStackSnapshots.ListAtSubscription(stackName);
-
-                list.AddRange(deploymentStackSnapshots.Select(stack => PSDeploymentStackSnapshot.FromAzureSDKDeploymentStack(stack)));
-
-                while (deploymentStackSnapshots.NextPageLink != null)
-                {
-                    deploymentStackSnapshots =
-                        DeploymentStacksClient.DeploymentStackSnapshots.ListAtSubscriptionNext(deploymentStackSnapshots.NextPageLink);
-                    list.AddRange(deploymentStackSnapshots.Select(stack => PSDeploymentStackSnapshot.FromAzureSDKDeploymentStack(stack)));
                 }
                 return list;
             }
@@ -227,6 +275,602 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                     deploymentStacks =
                         DeploymentStacksClient.DeploymentStacks.ListAtSubscriptionNext(deploymentStacks.NextPageLink);
                     list.AddRange(deploymentStacks.Select(stack => PSDeploymentStack.FromAzureSDKDeploymentStack(stack)));
+                }
+                return list;
+            }
+            catch (Exception ex)
+            {
+                if (!throwIfNotExists)
+                    return null;
+
+                if (ex is DeploymentStacksErrorException dex)
+                    throw new PSArgumentException(dex.Body.Error.Message);
+
+                throw ex;
+            }
+        }
+
+        public PSDeploymentStack GetManagementGroupDeploymentStack(string managementGroupId, string deploymentStackName, bool throwIfNotExists = true)
+        {
+            try
+            {
+                var deploymentStack = DeploymentStacksClient.DeploymentStacks.GetAtManagementGroup(managementGroupId, deploymentStackName);
+
+                return new PSDeploymentStack(deploymentStack);
+            }
+            catch (Exception ex)
+            {
+                if (ex is DeploymentStacksErrorException dex)
+                {
+                    if (dex.Response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        // Deployment Stack does not exist
+                        if (!throwIfNotExists)
+                            return null;
+                        else
+                            throw new PSArgumentException(
+                            $"DeploymentStack '{deploymentStackName}' not found in current management group scope."
+                        );
+                    }
+                    else
+                    {
+                        throw new PSArgumentException(dex.Body.Error.Message);
+                    }
+                }
+
+                throw;
+            }
+        }
+
+        public IList<PSDeploymentStack> ListManagementGroupDeploymentStack(string managementGroupId, bool throwIfNotExists = true)
+        {
+            try
+            {
+                var list = new List<PSDeploymentStack>();
+
+                var deploymentStacks = DeploymentStacksClient.DeploymentStacks.ListAtManagementGroup(managementGroupId);
+
+                list.AddRange(deploymentStacks.Select(stack => PSDeploymentStack.FromAzureSDKDeploymentStack(stack)));
+
+                while (deploymentStacks.NextPageLink != null)
+                {
+                    deploymentStacks =
+                        DeploymentStacksClient.DeploymentStacks.ListAtManagementGroupNext(deploymentStacks.NextPageLink);
+                    list.AddRange(deploymentStacks.Select(stack => PSDeploymentStack.FromAzureSDKDeploymentStack(stack)));
+                }
+                return list;
+            }
+            catch (Exception ex)
+            {
+                if (!throwIfNotExists)
+                    return null;
+
+                if (ex is DeploymentStacksErrorException dex)
+                    throw new PSArgumentException(dex.Body.Error.Message);
+
+                throw ex;
+            }
+        }
+
+        public PSDeploymentStack ResourceGroupCreateOrUpdateDeploymentStack(
+            string deploymentStackName,
+            string resourceGroupName,
+            string templateUri,
+            string templateSpec,
+            string parameterUri,
+            Hashtable parameters,
+            string description,
+            string resourcesCleanupAction,
+            string resourceGroupsCleanupAction,
+            string managementGroupsCleanupAction
+            )
+        {
+            var actionOnUnmanage = new DeploymentStackPropertiesSharedActionOnUnmanage
+            {
+                Resources = resourcesCleanupAction,
+                ResourceGroups = resourceGroupsCleanupAction,
+                ManagementGroups = managementGroupsCleanupAction
+            };
+
+            var deploymentStackModel = new DeploymentStack
+            {
+                Description = description,
+                ActionOnUnmanage = actionOnUnmanage
+            };
+
+            DeploymentStacksTemplateLink templateLink = new DeploymentStacksTemplateLink();
+            if (templateSpec != null)
+            {
+                templateLink.Id = templateSpec;
+                deploymentStackModel.TemplateLink = templateLink;
+            }
+            else if (Uri.IsWellFormedUriString(templateUri, UriKind.Absolute))
+            {
+                templateLink.Uri = templateUri;
+                deploymentStackModel.TemplateLink = templateLink;
+            }
+            else
+            {
+                deploymentStackModel.Template = JObject.Parse(FileUtilities.DataStore.ReadFileAsText(templateUri));
+            }
+
+            if (Uri.IsWellFormedUriString(parameterUri, UriKind.Absolute))
+            {
+                DeploymentStacksParametersLink parametersLink = new DeploymentStacksParametersLink();
+                parametersLink.Uri = parameterUri;
+                deploymentStackModel.ParametersLink = parametersLink;
+            }
+
+            else if (parameters != null)
+            {
+                Dictionary<string, object> parametersDictionary = parameters?.ToDictionary(false);
+                string parametersContent = parametersDictionary != null
+                    ? PSJsonSerializer.Serialize(parametersDictionary)
+                    : null;
+                deploymentStackModel.Parameters = !string.IsNullOrEmpty(parametersContent)
+                    ? JObject.Parse(parametersContent)
+                    : null;
+            }
+
+
+
+            var deploymentStack = DeploymentStacksClient.DeploymentStacks.BeginCreateOrUpdateAtResourceGroup(resourceGroupName, deploymentStackName, deploymentStackModel);
+            var getStackFunc = this.GetStackAction(deploymentStackName, "resourceGroup", rgName: resourceGroupName);
+
+            var finalStack = this.waitStackCompletion(
+                getStackFunc,
+                "Succeeded",
+                "SucceededWithFailures",
+                "Failed",
+                "Canceled"
+                );
+            errorValidation(finalStack);
+            return new PSDeploymentStack(finalStack);
+        }
+
+        internal void DeleteResourceGroupDeploymentStack(string resourceGroupName, string name, string resourcesCleanupAction, string resourceGroupsCleanupAction)
+        {
+            var deleteResponse = DeploymentStacksClient.DeploymentStacks
+                .DeleteAtResourceGroupWithHttpMessagesAsync(resourceGroupName, name, resourcesCleanupAction, resourceGroupsCleanupAction)
+                .GetAwaiter()
+                .GetResult();
+
+            if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                throw new PSArgumentException(
+                        $"DeploymentStack '{name}' in ResourceGroup '{resourceGroupName}' not found."
+                    );
+            }
+
+            return;
+        }
+
+        internal void DeleteSubscriptionDeploymentStack(string name, string resourcesCleanupAction, string resourceGroupsCleanupAction)
+        {
+
+            WriteWarning(resourcesCleanupAction);
+            WriteWarning(resourceGroupsCleanupAction);
+
+            var deleteResponse = DeploymentStacksClient.DeploymentStacks
+                    .DeleteAtSubscriptionWithHttpMessagesAsync(name, resourcesCleanupAction, resourceGroupsCleanupAction)
+                    .GetAwaiter()
+                    .GetResult();
+
+            if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                throw new PSArgumentException(
+                        $"DeploymentStack '{name}' not found in the curent subscription scope."
+                    );
+            }
+
+            return;
+        }
+
+        public PSDeploymentStack SubscriptionCreateOrUpdateDeploymentStack(
+            string deploymentStackName,
+            string location,
+            string templateUri,
+            string templateSpec,
+            string parameterUri,
+            Hashtable parameters,
+            string description,
+            string resourcesCleanupAction,
+            string resourceGroupsCleanupAction,
+            string managementGroupsCleanupAction,
+            string deploymentScope
+        )
+        {
+            var actionOnUnmanage = new DeploymentStackPropertiesSharedActionOnUnmanage
+            {
+                Resources = resourcesCleanupAction,
+                ResourceGroups = resourceGroupsCleanupAction,
+                ManagementGroups = managementGroupsCleanupAction
+            };
+
+            var deploymentStackModel = new DeploymentStack
+            {
+                Description = description,
+                Location = location,
+                ActionOnUnmanage = actionOnUnmanage,
+                DeploymentScope = deploymentScope
+            };
+
+            DeploymentStacksTemplateLink templateLink = new DeploymentStacksTemplateLink();
+            if (templateSpec != null)
+            {
+                templateLink.Id = templateSpec;
+                deploymentStackModel.TemplateLink = templateLink;
+            }
+            else if (Uri.IsWellFormedUriString(templateUri, UriKind.Absolute))
+            {
+                templateLink.Uri = templateUri;
+                deploymentStackModel.TemplateLink = templateLink;
+            }
+            else
+            {
+                deploymentStackModel.Template = JObject.Parse(FileUtilities.DataStore.ReadFileAsText(templateUri));
+            }
+
+            if (Uri.IsWellFormedUriString(parameterUri, UriKind.Absolute))
+            {
+                DeploymentStacksParametersLink parametersLink = new DeploymentStacksParametersLink();
+                parametersLink.Uri = parameterUri;
+                deploymentStackModel.ParametersLink = parametersLink;
+            }
+
+            else if (parameters != null)
+            {
+                Dictionary<string, object> parametersDictionary = parameters?.ToDictionary(false);
+                string parametersContent = parametersDictionary != null
+                    ? PSJsonSerializer.Serialize(parametersDictionary)
+                    : null;
+                deploymentStackModel.Parameters = !string.IsNullOrEmpty(parametersContent)
+                    ? JObject.Parse(parametersContent)
+                    : null;
+            }
+
+            var deploymentStack = DeploymentStacksClient.DeploymentStacks.BeginCreateOrUpdateAtSubscription(deploymentStackName, deploymentStackModel);
+            var getStackFunc = this.GetStackAction(deploymentStackName, "subscription");
+
+            var finalStack = this.waitStackCompletion(
+                getStackFunc,
+                "Succeeded",
+                "SucceededWithFailures",
+                "Failed",
+                "Canceled"
+                );
+
+            errorValidation(finalStack);
+            return new PSDeploymentStack(finalStack);
+        }
+
+        internal void DeleteManagementGroupDeploymentStack(string name, string managementGroupId, string resourcesCleanupAction, string resourceGroupsCleanupAction)
+        {
+
+            WriteWarning(resourcesCleanupAction);
+            WriteWarning(resourceGroupsCleanupAction);
+
+            var deleteResponse = DeploymentStacksClient.DeploymentStacks
+                    .DeleteAtManagementGroupWithHttpMessagesAsync(managementGroupId, name, resourcesCleanupAction, resourceGroupsCleanupAction)
+                    .GetAwaiter()
+                    .GetResult();
+
+            if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                throw new PSArgumentException(
+                        $"DeploymentStack '{name}' not found in the curent management group scope."
+                    );
+            }
+
+            return;
+        }
+
+        public PSDeploymentStack ManagementGroupCreateOrUpdateDeploymentStack(
+            string deploymentStackName,
+            string managementGroupId,
+            string location,
+            string templateUri,
+            string templateSpec,
+            string parameterUri,
+            Hashtable parameters,
+            string description,
+            string resourcesCleanupAction,
+            string resourceGroupsCleanupAction,
+            string managementGroupsCleanupAction,
+            string deploymentScope
+        )
+        {
+            var actionOnUnmanage = new DeploymentStackPropertiesSharedActionOnUnmanage
+            {
+                Resources = resourcesCleanupAction,
+                ResourceGroups = resourceGroupsCleanupAction,
+                ManagementGroups = managementGroupsCleanupAction
+            };
+
+            var deploymentStackModel = new DeploymentStack
+            {
+                Description = description,
+                Location = location,
+                ActionOnUnmanage = actionOnUnmanage,
+                DeploymentScope = deploymentScope
+            };
+
+            DeploymentStacksTemplateLink templateLink = new DeploymentStacksTemplateLink();
+            if (templateSpec != null)
+            {
+                templateLink.Id = templateSpec;
+                deploymentStackModel.TemplateLink = templateLink;
+            }
+            else if (Uri.IsWellFormedUriString(templateUri, UriKind.Absolute))
+            {
+                templateLink.Uri = templateUri;
+                deploymentStackModel.TemplateLink = templateLink;
+            }
+            else
+            {
+                deploymentStackModel.Template = JObject.Parse(FileUtilities.DataStore.ReadFileAsText(templateUri));
+            }
+
+            if (Uri.IsWellFormedUriString(parameterUri, UriKind.Absolute))
+            {
+                DeploymentStacksParametersLink parametersLink = new DeploymentStacksParametersLink();
+                parametersLink.Uri = parameterUri;
+                deploymentStackModel.ParametersLink = parametersLink;
+            }
+
+            else if (parameters != null)
+            {
+                Dictionary<string, object> parametersDictionary = parameters?.ToDictionary(false);
+                string parametersContent = parametersDictionary != null
+                    ? PSJsonSerializer.Serialize(parametersDictionary)
+                    : null;
+                deploymentStackModel.Parameters = !string.IsNullOrEmpty(parametersContent)
+                    ? JObject.Parse(parametersContent)
+                    : null;
+            }
+
+            var deploymentStack = DeploymentStacksClient.DeploymentStacks.BeginCreateOrUpdateAtManagementGroup(managementGroupId, 
+                deploymentStackName, deploymentStackModel);
+
+            // TODO: This should not be a defaulted parameter
+            var getStackFunc = this.GetStackAction(deploymentStackName, "managementGroup", mgId: managementGroupId);
+
+            var finalStack = this.waitStackCompletion(
+                getStackFunc,
+                "Succeeded",
+                "SucceededWithFailures",
+                "Failed",
+                "Canceled"
+                );
+
+            errorValidation(finalStack);
+            return new PSDeploymentStack(finalStack);
+        }
+
+        private void errorValidation(DeploymentStack deploymentStack)
+        {
+            if (deploymentStack.Error != null)
+            {
+                var error = deploymentStack.Error;
+                var sb = new StringBuilder();
+                List<string> errorMessages = processErrorMessages(error);
+                sb.AppendFormat(ProjectResources.DeploymentStackOperationOuterError, deploymentStack.Name, errorMessages.Count, errorMessages.Count);
+                sb.AppendLine();
+
+                foreach (string message in errorMessages)
+                {
+                    sb.AppendLine(message);
+                }
+
+                WriteError(sb.ToString());
+            }
+        }
+
+        private DeploymentStack waitStackCompletion(Func<Task<AzureOperationResponse<DeploymentStack>>> getStack, params string[] status)
+        {
+            //Poll stack deployment based on RetryAfter. If no RetyrAfter is present, polling status in two phases.
+            //Phase one: poll every 5 seconds for 400 seconds. If not completed in this duration, move to phase two
+            //Phase two: poll every 60 seconds
+            DeploymentStack stack;
+
+            const int counterUnit = 1000;
+            int step = 5;
+            int phaseOne = 400;
+            do
+            {
+                WriteVerbose(string.Format("Checking stack deployment status", step));
+                TestMockSupport.Delay(step * counterUnit);
+
+                if (phaseOne > 0)
+                    phaseOne -= step;
+
+                var getStackTask = getStack();
+
+                using (var getResult = getStackTask.ConfigureAwait(false).GetAwaiter().GetResult())
+                {
+                    stack = getResult.Body;
+                    var response = getResult.Response;
+
+                    if (response != null && response.Headers.RetryAfter != null && response.Headers.RetryAfter.Delta.HasValue)
+                    {
+                        step = response.Headers.RetryAfter.Delta.Value.Seconds;
+                    }
+                    else
+                    {
+                        step = phaseOne > 0 ? 5 : 60;
+                    }
+                }
+
+            } while (!status.Any(s => s.Equals(stack.ProvisioningState, StringComparison.OrdinalIgnoreCase)));
+
+            return stack;
+        }
+
+        Func<Task<AzureOperationResponse<DeploymentStack>>> GetStackAction(string stackName, string scope, string rgName = null, string mgId = null)
+        {
+            switch (scope)
+            {
+                case "subscription":
+                    return () => DeploymentStacksClient.DeploymentStacks.GetAtSubscriptionWithHttpMessagesAsync(stackName);
+
+                case "managementGroup":
+                    return () => DeploymentStacksClient.DeploymentStacks.GetAtManagementGroupWithHttpMessagesAsync(mgId, stackName);
+
+                case "resourceGroup":
+                    return () => DeploymentStacksClient.DeploymentStacks.GetAtResourceGroupWithHttpMessagesAsync(rgName, stackName);
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public PSDeploymentStack UpdateResourceGroupDeploymentStack(
+            string deploymentStackName,
+            string resourceGroupName,
+            string templateUri,
+            string templateSpec,
+            string parameterUri,
+            Hashtable parameters,
+            string description
+            )
+        {
+            var deploymentStackModel = new DeploymentStack
+            {
+                Description = description
+            };
+
+            DeploymentStacksTemplateLink templateLink = new DeploymentStacksTemplateLink();
+            if (templateSpec != null)
+            {
+                templateLink.Id = templateSpec;
+                deploymentStackModel.TemplateLink = templateLink;
+            }
+            else if (Uri.IsWellFormedUriString(templateUri, UriKind.Absolute))
+            {
+                templateLink.Uri = templateUri;
+                deploymentStackModel.TemplateLink = templateLink;
+            }
+            else
+            {
+                deploymentStackModel.Template = JObject.Parse(FileUtilities.DataStore.ReadFileAsText(templateUri));
+            }
+
+            if (Uri.IsWellFormedUriString(parameterUri, UriKind.Absolute))
+            {
+                DeploymentStacksParametersLink parametersLink = new DeploymentStacksParametersLink();
+                parametersLink.Uri = parameterUri;
+                deploymentStackModel.ParametersLink = parametersLink;
+            }
+
+            else if (parameters != null)
+            {
+                Dictionary<string, object> parametersDictionary = parameters?.ToDictionary(false);
+                string parametersContent = parametersDictionary != null
+                    ? PSJsonSerializer.Serialize(parametersDictionary)
+                    : null;
+                deploymentStackModel.Parameters = !string.IsNullOrEmpty(parametersContent)
+                    ? JObject.Parse(parametersContent)
+                    : null;
+            }
+
+            var deploymentStack = DeploymentStacksClient.DeploymentStacks.BeginCreateOrUpdateAtResourceGroup(resourceGroupName, deploymentStackName, deploymentStackModel);
+            errorValidation(deploymentStack);
+            return new PSDeploymentStack(deploymentStack);
+        }
+
+        private void WriteVerbose(string progress)
+        {
+            if (VerboseLogger != null)
+            {
+                VerboseLogger(progress);
+            }
+        }
+
+        private void WriteWarning(string warning)
+        {
+            if (WarningLogger != null)
+            {
+                WarningLogger(warning);
+            }
+        }
+
+        private void WriteError(string error)
+        {
+            if (ErrorLogger != null)
+            {
+                ErrorLogger(error);
+            }
+        }
+
+        private List<string> processErrorMessages(ErrorResponse error)
+        {
+            List<string> errorMessages = new List<string>();
+
+            Stack<ErrorResponse> stack = new Stack<ErrorResponse>();
+            stack.Push(error);
+
+            while (stack.Count > 0)
+            {
+                var currentError = stack.Pop();
+                errorMessages.Add(string.Format(ErrorFormat, currentError.Code, currentError.Message));
+                if (currentError.Details != null)
+                {
+                    foreach (ErrorResponse detail in currentError.Details)
+                    {
+                        stack.Push(detail);
+                    }
+                }
+            }
+            return errorMessages;
+        }
+
+        #region deprecated snapshots
+
+/*        public IEnumerable<PSDeploymentStackSnapshot> ListResourceGroupDeploymentStackSnapshot(string resourceGroupName, string stackName, bool throwIfNotExists = true)
+        {
+            try
+            {
+                var list = new List<PSDeploymentStackSnapshot>();
+
+                var deploymentStackSnapshots = DeploymentStacksClient.DeploymentStackSnapshots.ListAtResourceGroup(resourceGroupName, stackName);
+
+                list.AddRange(deploymentStackSnapshots.Select(stack => PSDeploymentStackSnapshot.FromAzureSDKDeploymentStack(stack)));
+
+                while (deploymentStackSnapshots.NextPageLink != null)
+                {
+                    deploymentStackSnapshots =
+                        DeploymentStacksClient.DeploymentStackSnapshots.ListAtResourceGroupNext(deploymentStackSnapshots.NextPageLink);
+                    list.AddRange(deploymentStackSnapshots.Select(stack => PSDeploymentStackSnapshot.FromAzureSDKDeploymentStack(stack)));
+                }
+                return list;
+            }
+            catch (Exception ex)
+            {
+                if (!throwIfNotExists)
+                    return null;
+
+                if (ex is DeploymentStacksErrorException dex)
+                    throw new PSArgumentException(dex.Body.Error.Message);
+
+                throw ex;
+            }
+        }
+
+        internal object ListSubscriptionDeploymentStackSnapshot(string stackName, bool throwIfNotExists = true)
+        {
+            try
+            {
+                var list = new List<PSDeploymentStackSnapshot>();
+
+                var deploymentStackSnapshots = DeploymentStacksClient.DeploymentStackSnapshots.ListAtSubscription(stackName);
+
+                list.AddRange(deploymentStackSnapshots.Select(stack => PSDeploymentStackSnapshot.FromAzureSDKDeploymentStack(stack)));
+
+                while (deploymentStackSnapshots.NextPageLink != null)
+                {
+                    deploymentStackSnapshots =
+                        DeploymentStacksClient.DeploymentStackSnapshots.ListAtSubscriptionNext(deploymentStackSnapshots.NextPageLink);
+                    list.AddRange(deploymentStackSnapshots.Select(stack => PSDeploymentStackSnapshot.FromAzureSDKDeploymentStack(stack)));
                 }
                 return list;
             }
@@ -306,72 +950,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             }
         }
 
-        public PSDeploymentStack ResourceGroupCreateOrUpdateDeploymentStack(
-            string deploymentStackName,
-            string resourceGroupName,
-            string templateUri,
-            string templateSpec,
-            string parameterUri,
-            Hashtable parameters,
-            string description,
-            string updateBehavior
-            )
-        {
-            var deploymentStackModel = new DeploymentStack
-            {
-                Description = description,
-                UpdateBehavior = updateBehavior
-            };
-
-            DeploymentStacksTemplateLink templateLink = new DeploymentStacksTemplateLink();
-            if(templateSpec != null)
-            {
-                templateLink.Id = templateSpec;
-                deploymentStackModel.TemplateLink = templateLink;
-            }
-            else if(Uri.IsWellFormedUriString(templateUri, UriKind.Absolute))
-            {
-                templateLink.Uri = templateUri;
-                deploymentStackModel.TemplateLink = templateLink;
-            }
-            else
-            {
-                deploymentStackModel.Template = JObject.Parse(FileUtilities.DataStore.ReadFileAsText(templateUri));
-            }
-
-            if(Uri.IsWellFormedUriString(parameterUri, UriKind.Absolute))
-            {
-                DeploymentStacksParametersLink parametersLink = new DeploymentStacksParametersLink();
-                parametersLink.Uri = parameterUri;
-                deploymentStackModel.ParametersLink = parametersLink;
-            }
-
-            else if(parameters != null)
-            {
-                Dictionary<string, object> parametersDictionary = parameters?.ToDictionary(false);
-                string parametersContent = parametersDictionary != null
-                    ? PSJsonSerializer.Serialize(parametersDictionary)
-                    : null;
-                deploymentStackModel.Parameters = !string.IsNullOrEmpty(parametersContent)
-                    ? JObject.Parse(parametersContent)
-                    : null;
-            }
-
-
-
-            var deploymentStack = DeploymentStacksClient.DeploymentStacks.BeginCreateOrUpdateAtResourceGroup(resourceGroupName, deploymentStackName, deploymentStackModel);
-            var getStackFunc = this.GetStackAction(deploymentStackName, "resourceGroup", resourceGroupName);
-
-            var finalStack = this.waitStackCompletion(
-                getStackFunc,
-                "Succeeded",
-                "SucceededWithFailures",
-                "Failed",
-                "Canceled"
-                );
-            return new PSDeploymentStack(finalStack);
-        }
-
         internal void DeleteResourceGroupDeploymentStackSnapshot(string resourceGroupName, string name, string snapshotName)
         {
             var deleteResponse = DeploymentStacksClient.DeploymentStackSnapshots
@@ -404,240 +982,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             }
 
             return;
-        }
+        }*/
 
-        internal void DeleteResourceGroupDeploymentStack(string resourceGroupName, string name)
-        {
-            var deleteResponse = DeploymentStacksClient.DeploymentStacks
-                .DeleteAtResourceGroupWithHttpMessagesAsync(resourceGroupName, name)
-                .GetAwaiter()
-                .GetResult();
-
-            if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
-            {
-                throw new PSArgumentException(
-                        $"DeploymentStack '{name}' in ResourceGroup '{resourceGroupName}' not found."
-                    );
-            }
-
-            return;
-        }
-
-        internal void DeleteSubscriptionDeploymentStack(string name)
-        {
-            var deleteResponse = DeploymentStacksClient.DeploymentStacks
-                .DeleteAtSubscriptionWithHttpMessagesAsync(name)
-                .GetAwaiter()
-                .GetResult();
-
-            if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
-            {
-                throw new PSArgumentException(
-                        $"DeploymentStack '{name}' not found in the curent subscription scope."
-                    );
-            }
-
-            return;
-        }
-
-        public PSDeploymentStack SubscriptionCreateOrUpdateDeploymentStack(
-            string deploymentStackName,
-            string location,
-            string templateUri,
-            string templateSpec,
-            string parameterUri,
-            Hashtable parameters,
-            string description,
-            string updateBehavior,
-            string deploymentScope
-        )
-        {
-            var deploymentStackModel = new DeploymentStack
-            {
-                Description = description,
-                Location = location,
-                UpdateBehavior = updateBehavior,
-                DeploymentScope = deploymentScope
-            };
-
-            DeploymentStacksTemplateLink templateLink = new DeploymentStacksTemplateLink();
-            if (templateSpec != null)
-            {
-                templateLink.Id = templateSpec;
-                deploymentStackModel.TemplateLink = templateLink;
-            }
-            else if (Uri.IsWellFormedUriString(templateUri, UriKind.Absolute))
-            {
-                templateLink.Uri = templateUri;
-                deploymentStackModel.TemplateLink = templateLink;
-            }
-            else
-            {
-                deploymentStackModel.Template = JObject.Parse(FileUtilities.DataStore.ReadFileAsText(templateUri));
-            }
-
-            if (Uri.IsWellFormedUriString(parameterUri, UriKind.Absolute))
-            {
-                DeploymentStacksParametersLink parametersLink = new DeploymentStacksParametersLink();
-                parametersLink.Uri = parameterUri;
-                deploymentStackModel.ParametersLink = parametersLink;
-            }
-
-            else if (parameters != null)
-            {
-                Dictionary<string, object> parametersDictionary = parameters?.ToDictionary(false);
-                string parametersContent = parametersDictionary != null
-                    ? PSJsonSerializer.Serialize(parametersDictionary)
-                    : null;
-                deploymentStackModel.Parameters = !string.IsNullOrEmpty(parametersContent)
-                    ? JObject.Parse(parametersContent)
-                    : null;
-            }
-
-            var deploymentStack = DeploymentStacksClient.DeploymentStacks.BeginCreateOrUpdateAtSubscription(deploymentStackName, deploymentStackModel);
-            var getStackFunc = this.GetStackAction(deploymentStackName, "subscription");
-
-            var finalStack = this.waitStackCompletion(
-                getStackFunc,
-                "Succeeded",
-                "SucceededWithFailures",
-                "Failed",
-                "Canceled"
-                );
-
-            return new PSDeploymentStack(finalStack);
-        }
-
-        private DeploymentStack waitStackCompletion(Func<Task<AzureOperationResponse<DeploymentStack>>> getStack, params string[] status)
-        {
-            //Poll stack deployment based on RetryAfter. If no RetyrAfter is present, polling status in two phases.
-            //Phase one: poll every 5 seconds for 400 seconds. If not completed in this duration, move to phase two
-            //Phase two: poll every 60 seconds
-            DeploymentStack stack;
-
-            const int counterUnit = 1000;
-            int step = 5;
-            int phaseOne = 400;
-            do
-            {
-                WriteVerbose(string.Format("Checking stack deployment status", step));
-                TestMockSupport.Delay(step * counterUnit);
-
-                if (phaseOne > 0)
-                    phaseOne -= step;
-
-                var getStackTask = getStack();
-
-                using (var getResult = getStackTask.ConfigureAwait(false).GetAwaiter().GetResult())
-                {
-                    stack = getResult.Body;
-                    var response = getResult.Response;
-
-                    if (response != null && response.Headers.RetryAfter != null && response.Headers.RetryAfter.Delta.HasValue)
-                    {
-                        step = response.Headers.RetryAfter.Delta.Value.Seconds;
-                    }
-                    else
-                    {
-                        step = phaseOne > 0 ? 5 : 60;
-                    }
-                }
-
-            } while (!status.Any(s => s.Equals(stack.ProvisioningState, StringComparison.OrdinalIgnoreCase)));
-
-            return stack;
-        }
-
-        Func<Task<AzureOperationResponse<DeploymentStack>>> GetStackAction(string stackName, string scope, string rgName = null)
-        {
-            switch(scope)
-            {
-                case "subscription":
-                    return () => DeploymentStacksClient.DeploymentStacks.GetAtSubscriptionWithHttpMessagesAsync(stackName);
-
-                case "resourceGroup":
-                    return () => DeploymentStacksClient.DeploymentStacks.GetAtResourceGroupWithHttpMessagesAsync(rgName, stackName);
-
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        public PSDeploymentStack UpdateResourceGroupDeploymentStack(
-            string deploymentStackName,
-            string resourceGroupName,
-            string templateUri,
-            string templateSpec,
-            string parameterUri,
-            Hashtable parameters,
-            string description
-            )
-        {
-            var deploymentStackModel = new DeploymentStack
-            {
-                Description = description
-            };
-
-            DeploymentStacksTemplateLink templateLink = new DeploymentStacksTemplateLink();
-            if (templateSpec != null)
-            {
-                templateLink.Id = templateSpec;
-                deploymentStackModel.TemplateLink = templateLink;
-            }
-            else if (Uri.IsWellFormedUriString(templateUri, UriKind.Absolute))
-            {
-                templateLink.Uri = templateUri;
-                deploymentStackModel.TemplateLink = templateLink;
-            }
-            else
-            {
-                deploymentStackModel.Template = JObject.Parse(FileUtilities.DataStore.ReadFileAsText(templateUri));
-            }
-
-            if (Uri.IsWellFormedUriString(parameterUri, UriKind.Absolute))
-            {
-                DeploymentStacksParametersLink parametersLink = new DeploymentStacksParametersLink();
-                parametersLink.Uri = parameterUri;
-                deploymentStackModel.ParametersLink = parametersLink;
-            }
-
-            else if (parameters != null)
-            {
-                Dictionary<string, object> parametersDictionary = parameters?.ToDictionary(false);
-                string parametersContent = parametersDictionary != null
-                    ? PSJsonSerializer.Serialize(parametersDictionary)
-                    : null;
-                deploymentStackModel.Parameters = !string.IsNullOrEmpty(parametersContent)
-                    ? JObject.Parse(parametersContent)
-                    : null;
-            }
-
-            var deploymentStack = DeploymentStacksClient.DeploymentStacks.BeginCreateOrUpdateAtResourceGroup(resourceGroupName, deploymentStackName, deploymentStackModel);
-            return new PSDeploymentStack(deploymentStack);
-        }
-
-        private void WriteVerbose(string progress)
-        {
-            if (VerboseLogger != null)
-            {
-                VerboseLogger(progress);
-            }
-        }
-
-        private void WriteWarning(string warning)
-        {
-            if (WarningLogger != null)
-            {
-                WarningLogger(warning);
-            }
-        }
-
-        private void WriteError(string error)
-        {
-            if (ErrorLogger != null)
-            {
-                ErrorLogger(error);
-            }
-        }
+        #endregion
     }
 }
