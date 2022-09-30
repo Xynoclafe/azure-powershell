@@ -49,8 +49,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             if (BicepUtility.IsBicepFile(TemplateFile))
             {
                 filePath = BicepUtility.BuildFile(this.ResolvePath(TemplateFile), this.WriteVerbose, this.WriteWarning);
+                return filePath;
             }
-            return filePath;
+            else
+                return TemplateFile;
+            
         }
 
         protected Hashtable GetParameterObject(string parameterFile)

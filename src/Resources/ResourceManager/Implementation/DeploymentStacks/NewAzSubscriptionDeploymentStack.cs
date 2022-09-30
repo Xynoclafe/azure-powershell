@@ -160,7 +160,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                             throw new PSInvalidOperationException(
                                 string.Format(ProjectResources.InvalidFilePath, TemplateFile));
                         }
-                        filePath = ResolveBicepFile(TemplateFile);
+                        filePath = ResolveBicepFile(filePath);
                         TemplateUri = filePath;
                         break;
                     case ParameterFileTemplateSpecParameterSetName:
@@ -174,7 +174,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                             throw new PSInvalidOperationException(
                                 string.Format(ProjectResources.InvalidFilePath, TemplateFile));
                         }
-                        filePath = ResolveBicepFile(TemplateFile);
+                        filePath = ResolveBicepFile(filePath);
                         parameters = this.GetParameterObject(TemplateParameterFile);
                         TemplateUri = filePath;
                         break;
@@ -185,7 +185,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                             throw new PSInvalidOperationException(
                                 string.Format(ProjectResources.InvalidFilePath, TemplateFile));
                         }
-                        filePath = ResolveBicepFile(TemplateFile);
+                        filePath = ResolveBicepFile(filePath);
                         TemplateUri = filePath;
                         parameters = GetTemplateParameterObject(TemplateParameterObject);
                         break;

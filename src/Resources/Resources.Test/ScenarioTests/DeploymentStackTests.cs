@@ -68,9 +68,23 @@ namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
 
         [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestNewAndSetResourceGroupDeploymentStackWithBicep()
+        {
+            TestRunner.RunTestScript("Test-NewAndSetResourceGroupDeploymentStackWithBicep");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestNewAndSetResourceGroupDeploymentStackWithTemplateSpec()
         {
             TestRunner.RunTestScript("Test-NewAndSetResourceGroupDeploymentStackWithTemplateSpec");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestNewAndSetSubscriptionDeploymentStackWithBicep()
+        {
+            TestRunner.RunTestScript("Test-NewAndSetSubscriptionDeploymentStackWithBicep");
         }
 
         [Fact()]

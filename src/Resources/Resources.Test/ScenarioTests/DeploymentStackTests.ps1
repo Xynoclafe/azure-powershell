@@ -179,6 +179,41 @@ function Test-NewResourceGroupDeploymentStack
 
 <#
 .SYNOPSIS
+Tests NEW operation on deploymentStacks at the RG scope with bicep file
+#>
+function Test-NewAndSetResourceGroupDeploymentStackWithBicep
+{
+	# Setup
+	$rgname = Get-ResourceGroupName
+	$rname = Get-ResourceName
+	$rglocation = "West US 2"
+
+	try {
+		# Prepare
+		New-AzResourceGroup -Name $rgname -Location $rglocation
+
+		#Test - NewByNameAndResourceGroupAndBicepTemplateFile
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleDeploymentBicepFile.bicep
+
+		#Assert
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		# Test - Set-AzResourceGroupDeploymentStacks
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleDeploymentBicepFile2.bicep
+
+		# Assert
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+	}
+
+	finally
+    {
+        # Cleanup
+        Clean-ResourceGroup $rgname
+    }
+}
+
+<#
+.SYNOPSIS
 Tests NEW operation on deploymentStacks at the RG scope using template specs.
 #>
 function Test-NewResourceGroupDeploymentStackWithTemplateSpec
@@ -865,6 +900,40 @@ function Test-NewSubscriptionDeploymentStack
 
 		#Assert
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+	}
+
+	finally
+    {
+        # Cleanup
+        Clean-DeploymentAtSubscription $rname
+    }
+}
+
+<#
+.SYNOPSIS
+Tests NEW and SET operation on deploymentStacks at the subscription scope using a bicep template
+#>
+
+function Test-NewAndSetSubscriptionDeploymentStackWithBicep
+{
+	# Setup
+	$rname = Get-ResourceName
+	$rgname = Get-ResourceName
+	$rglocation = "West US"
+
+	try {
+		# Test - New-AzSubscriptionDeploymentStacks using templateSpecs
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile sampleSubscriptionDeploymentBicepFile.bicep -Location $rglocation
+
+		# Assert
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		# Test - Set-AzSubscriptionDeploymentStacks using templateSpecs
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile sampleSubscriptionDeploymentBicepFile.bicep -Location $rglocation
+
+		# Assert
+		assert-AreEqual "succeeded" $deployment.ProvisioningState
+
 	}
 
 	finally
