@@ -32,29 +32,28 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
         [Alias("StackName")]
         [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceNameParameterSetname,
-            HelpMessage = "The name of the deploymentStack to delete")]
+            HelpMessage = "The name of the DeploymentStack to delete")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
         [Alias("Id")]
         [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceIdParameterSetName,
-            HelpMessage = "ResourceId of the stack to delete")]
+            HelpMessage = "ResourceId of the DeploymentStack to delete")]
         [ValidateNotNullOrEmpty]
         public string ResourceId { get; set; }
 
-        [Alias("ManagementGroupId")]
         [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, 
-            HelpMessage = "The id of the management group where the stack is being deleted")]
+            HelpMessage = "The id of the ManagementGroup where the DeploymentStack is being deleted")]
         [ValidateNotNullOrEmpty]
         public string ManagementGroupId { get; set; }
 
-        [Parameter(Mandatory = false, HelpMessage = "Signal to delete both resources and resource groups after updating stack.")]
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete both unmanaged Resources and ResourceGroups after updating stack.")]
         public SwitchParameter DeleteAll { get; set; }
 
-        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack resources after updating stack.")]
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack Resources after updating stack.")]
         public SwitchParameter DeleteResources { get; set; }
 
-        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack resource groups after updating stack.")]
+        [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack ResourceGroups after updating stack.")]
         public SwitchParameter DeleteResourceGroups { get; set; }
 
         // Not Yet Supported.

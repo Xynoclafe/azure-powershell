@@ -4,9 +4,6 @@
   "parameters": {
     "templateSpecName": {
       "value": "StacksScenarioTestSpec"
-    },
-    "specVersionName": {
-      "value": "StacksScenarioTestVersion"
     }
   }
 }

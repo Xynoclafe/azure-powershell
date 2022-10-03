@@ -30,20 +30,24 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
         internal const string GetByResourceIdParameterSetName = "GetDeploymentStackByResourceId";
         internal const string ListByResourceGroupNameParameterSetName = "ListDeploymentStacksByResourceGroupName";
-        internal const string GetByDeploymentStackName = "GetDeploymentStackByStackName";
+        internal const string GetByDeploymentStackNameParameterSetName = "GetDeploymentStackByStackName";
 
         [Alias("Id")]
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByResourceIdParameterSetName)]
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByResourceIdParameterSetName,
+            HelpMessage = "ResourceId of the DeploymentStack to get")]
         [ValidateNotNullOrEmpty]
         public string ResourceId { get; set; }
 
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ListByResourceGroupNameParameterSetName)]
-        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackName)]
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ListByResourceGroupNameParameterSetName,
+             HelpMessage = "The id of the ResourceGroup where the DeploymentStack is deployed")]
+        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackNameParameterSetName,
+             HelpMessage = "The id of the ResourceGroup where the DeploymentStack is deployed")]
         [ValidateNotNullOrEmpty]
         public string ResourceGroupName { get; set; }
 
         [Alias("StackName")]
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackName)]
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackNameParameterSetName,
+             HelpMessage = "The name of the DeploymentStack to get")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
