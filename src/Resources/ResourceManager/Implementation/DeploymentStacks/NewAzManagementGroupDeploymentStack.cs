@@ -135,9 +135,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         /*[Parameter(Mandatory = false, HelpMessage = "Singal to delete unmanaged stack management groups after updating stack.")]
         public SwitchParameter DeleteManagementGroups { get; set; }*/
 
-        [Parameter(Mandatory = false,
-            HelpMessage = "The scope at which the initial deployment should be created. If a scope isn't specified, it will default to the scope of the deployment stack.")]
-        public string DeploymentScope { get; set; }
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true,
+            HelpMessage = "The subscription id at which the deployment should be created.")]
+        public string DeploymentSubscriptionId { get; set; }
 
         [Parameter(Mandatory = false,
         HelpMessage = "Do not ask for confirmation when overwriting an existing stack.")]
@@ -218,7 +218,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
                         resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach",
                         managementGroupsCleanupAction: "detach",
-                        DeploymentScope
+                        DeploymentSubscriptionId
                     );
 
                     WriteObject(deploymentStack);

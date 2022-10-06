@@ -124,9 +124,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             HelpMessage = "Location of the stack")]
         public string Location { get; set; }
 
-        [Parameter(Mandatory = false,
-            HelpMessage = "The scope at which the initial deployment should be created. If a scope isn't specified, it will default to the scope of the deployment stack.")]
-        public String DeploymentScope { get; set; }
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true,
+            HelpMessage = "The subscription Id at which the deployment should be created.")]
+        public string DeploymentSubscriptionId { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = "Signal to delete both unmanaged Resources and ResourceGroups after deleting stack.")]
         public SwitchParameter DeleteAll { get; set; }
@@ -220,7 +220,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                             resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
                             resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach",
                             managementGroupsCleanupAction: "detach",
-                            DeploymentScope
+                            DeploymentSubscriptionId
                         );
 
                     WriteObject(deploymentStack);
