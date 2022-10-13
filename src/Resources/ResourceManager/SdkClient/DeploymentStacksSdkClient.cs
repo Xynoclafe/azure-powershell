@@ -362,7 +362,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             string description,
             string resourcesCleanupAction,
             string resourceGroupsCleanupAction,
-            string managementGroupsCleanupAction
+            string managementGroupsCleanupAction,
+            string denySettingsMode,
+            string[] denySettingsExcludedPrincipales,
+            string[] denySettingsExcludedActions,
+            bool denySettingsApplyToChildScopes
             )
         {
             var actionOnUnmanage = new DeploymentStackPropertiesSharedActionOnUnmanage
@@ -372,10 +376,18 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                 ManagementGroups = managementGroupsCleanupAction
             };
 
+            var denySettings = new DenySettings
+            {
+                Mode = denySettingsMode,
+                ExcludedPrincipals = denySettingsExcludedPrincipales,
+                ExcludedActions = denySettingsExcludedActions
+            };
+
             var deploymentStackModel = new DeploymentStack
             {
                 Description = description,
-                ActionOnUnmanage = actionOnUnmanage
+                ActionOnUnmanage = actionOnUnmanage,
+                DenySettings = denySettings
             };
 
             DeploymentStacksTemplateLink templateLink = new DeploymentStacksTemplateLink();
@@ -473,7 +485,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             string resourcesCleanupAction,
             string resourceGroupsCleanupAction,
             string managementGroupsCleanupAction,
-            string deploymentScope
+            string deploymentScope,
+            string denySettingsMode,
+            string[] denySettingsExcludedPrincipales,
+            string[] denySettingsExcludedActions,
+            bool denySettingsApplyToChildScopes
         )
         {
             var actionOnUnmanage = new DeploymentStackPropertiesSharedActionOnUnmanage
@@ -483,12 +499,20 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                 ManagementGroups = managementGroupsCleanupAction
             };
 
+            var denySettings = new DenySettings
+            {
+                Mode = denySettingsMode,
+                ExcludedPrincipals = denySettingsExcludedPrincipales,
+                ExcludedActions = denySettingsExcludedActions
+            };
+
             var deploymentStackModel = new DeploymentStack
             {
                 Description = description,
                 Location = location,
                 ActionOnUnmanage = actionOnUnmanage,
-                DeploymentScope = deploymentScope
+                DeploymentScope = deploymentScope,
+                DenySettings = denySettings
             };
 
             DeploymentStacksTemplateLink templateLink = new DeploymentStacksTemplateLink();
@@ -569,7 +593,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             string resourcesCleanupAction,
             string resourceGroupsCleanupAction,
             string managementGroupsCleanupAction,
-            string deploymentScope
+            string deploymentScope,
+            string denySettingsMode,
+            string[] denySettingsExcludedPrincipales,
+            string[] denySettingsExcludedActions,
+            bool denySettingsApplyToChildScopes
         )
         {
             var actionOnUnmanage = new DeploymentStackPropertiesSharedActionOnUnmanage
@@ -578,13 +606,20 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                 ResourceGroups = resourceGroupsCleanupAction,
                 ManagementGroups = managementGroupsCleanupAction
             };
+            var denySettings = new DenySettings
+            {
+                Mode = denySettingsMode,
+                ExcludedPrincipals = denySettingsExcludedPrincipales,
+                ExcludedActions = denySettingsExcludedActions,
+            };
 
             var deploymentStackModel = new DeploymentStack
             {
                 Description = description,
                 Location = location,
                 ActionOnUnmanage = actionOnUnmanage,
-                DeploymentScope = deploymentScope
+                DeploymentScope = deploymentScope,
+                DenySettings = denySettings
             };
 
             DeploymentStacksTemplateLink templateLink = new DeploymentStacksTemplateLink();

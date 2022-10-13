@@ -31,6 +31,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components
 
         public string Subscription { get; set; }
 
+        public string ManagementGroupName { get; set; }
+
         public ResourceIdentifier() { }
 
         public ResourceIdentifier(string idFromServer)
@@ -78,6 +80,25 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components
             {
                 string[] tokens = resourceGroupId.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
                 if (tokens.Length != 4)
+                {
+                    throw new ArgumentException(ProjectResources.InvalidFormatOfResourceGroupId, "resourceGroupId");
+                }
+                return new ResourceIdentifier
+                {
+                    Subscription = tokens[1],
+                    ResourceGroupName = tokens[3],
+                };
+            }
+
+            return new ResourceIdentifier();
+        }
+
+        public static ResourceIdentifier FromManagementGroupResourceIdentifier(string managementGroupResourceId)
+        {
+            if (!string.IsNullOrEmpty(managementGroupResourceId))
+            {
+                string[] tokens = managementGroupResourceId.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                if (tokens.Length != 8)
                 {
                     throw new ArgumentException(ProjectResources.InvalidFormatOfResourceGroupId, "resourceGroupId");
                 }

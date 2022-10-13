@@ -18,6 +18,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using Microsoft.Azure.Management.ResourceManager.Models;
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Management.Automation;
     using System.Text;
 
@@ -69,6 +70,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 var shouldDeleteResources = (DeleteAll.ToBool() || DeleteResources.ToBool()) ? true : false;
                 var shouldDeleteResourceGroups = (DeleteAll.ToBool() || DeleteResourceGroups.ToBool()) ? true : false;
 
+                // resolve Name if ResourceId was provided
                 Name = Name ?? ResourceIdUtility.GetDeploymentName(ResourceId);
 
                 // failed resolving the resource id
@@ -84,20 +86,23 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                     confirmationMessage,
                     "Deleting Deployment Stack ...",
                     Name,
-                    () => DeploymentStacksSdkClient.DeleteSubscriptionDeploymentStack(
-                        Name,
-                        resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
-                        resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach"
-                    )
+                    () =>
+                    {
+                        DeploymentStacksSdkClient.DeleteSubscriptionDeploymentStack(
+                            Name,
+                            resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
+                            resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach"
+                        );
+                        WriteObject(true);
+                    }
                 );
-
-                WriteObject(true);
             }
             catch (Exception ex)
             {
                 if (ex is DeploymentStacksErrorException dex)
                     throw new PSArgumentException(dex.Message + " : " + dex.Body.Error.Code + " : " + dex.Body.Error.Message);
                 else
+                    WriteObject(false);
                     WriteExceptionError(ex);
             }
         }

@@ -15,6 +15,7 @@
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 {
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components;
+    using Microsoft.Azure.Commands.ResourceManager.Common.ArgumentCompleters;
     using Microsoft.Azure.Management.ResourceManager.Models;
     using System;
     using System.Collections.Generic;
@@ -38,6 +39,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByNameAndResourceGroupNameParameterSetName,
         HelpMessage = "The name of the Resource Group with the stack to delete")]
+        [ResourceGroupCompleter]
         [ValidateNotNullOrEmpty]
         public string ResourceGroupName { get; set; }
 
@@ -74,11 +76,12 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 var shouldDeleteResources = (DeleteAll.ToBool() || DeleteResources.ToBool()) ? true : false;
                 var shouldDeleteResourceGroups = (DeleteAll.ToBool() || DeleteResourceGroups.ToBool()) ? true : false;
 
+                // resolve Name and ResourceGroupName if ResourceId was provided
                 ResourceGroupName = ResourceGroupName ?? ResourceIdUtility.GetResourceGroupName(ResourceId);
                 Name = Name ?? ResourceIdUtility.GetDeploymentName(ResourceId);
 
                 // failed resolving the resource id
-                if(Name == null)
+                if(Name == null || ResourceGroupName == null)
                 {
                     throw new PSArgumentException($"Provided Id '{ResourceId}' is not in correct form.");
                 }
@@ -90,21 +93,24 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                     confirmationMessage,
                     "Deleting Deployment Stack ...",
                     Name,
-                    () => DeploymentStacksSdkClient.DeleteResourceGroupDeploymentStack(
-                        ResourceGroupName, 
-                        Name, 
-                        resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach", 
-                        resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach"
-                    )
+                    () =>
+                    {
+                        DeploymentStacksSdkClient.DeleteResourceGroupDeploymentStack(
+                            ResourceGroupName,
+                            Name,
+                            resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
+                            resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach"
+                        );
+                        WriteObject(true);
+                    }   
                 );
-
-                WriteObject(true);
             }
             catch (Exception ex)
             {
                 if (ex is DeploymentStacksErrorException dex)
                     throw new PSArgumentException(dex.Message + " : " + dex.Body.Error.Code + " : " + dex.Body.Error.Message);
                 else
+                    WriteObject(false);
                     WriteExceptionError(ex);
             }
         }

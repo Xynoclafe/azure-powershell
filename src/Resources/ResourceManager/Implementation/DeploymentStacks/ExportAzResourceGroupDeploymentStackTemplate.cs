@@ -17,6 +17,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels.DeploymentStacks;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Utilities;
+    using Microsoft.Azure.Commands.ResourceManager.Common.ArgumentCompleters;
     using Microsoft.WindowsAzure.Commands.Utilities.Common;
     using Newtonsoft.Json.Linq;
     using System;
@@ -39,6 +40,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
         [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ExportByNameAndResourceGroupNameParameterSetName,
              HelpMessage = "The name of the ResourceGroup where the DeploymentStack is deployed")]
+        [ResourceGroupCompleter]
         [ValidateNotNullOrEmpty]
         public string ResourceGroupName { get; set; }
 
@@ -59,7 +61,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 switch (ParameterSetName)
                 {
                     case ExportByResourceIdParameterSetName:
-                        ResourceGroupName = ResourceIdUtility.GetResourceGroupName(ResourceId);
+                        ResourceGroupName = ResourceIdUtility.GetManagementGroupId(ResourceId);
                         Name = ResourceIdUtility.GetDeploymentName(ResourceId);
                         if (ResourceGroupName == null || Name == null)
                         {

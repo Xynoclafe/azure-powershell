@@ -55,78 +55,79 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
-
         [Alias("ManagementGroupId")]
         [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true,
             HelpMessage = "The id of the management group that the deploymentStack will be deployed into")]
         [ValidateNotNullOrEmpty]
         public string ManagementGroupId { get; set; }
 
-        [Parameter(Position = 2, ParameterSetName = ParameterFileTemplateFileParameterSetName,
+        [Parameter(Position = 2, Mandatory = true, ValueFromPipelineByPropertyName = true,
+            HelpMessage = "The subscription Id at which the deployment should be created.")]
+        [ValidateNotNullOrEmpty]
+        public string DeploymentSubscriptionId { get; set; }
+
+        [Parameter(Position = 3, Mandatory = true, ValueFromPipelineByPropertyName = true,
+            HelpMessage = "Location of the stack")]
+        [ValidateNotNullOrEmpty]
+        public string Location { get; set; }
+
+        [Parameter(Position = 4, ParameterSetName = ParameterFileTemplateFileParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "TemplateFile to be used to create the stack")]
-        [Parameter(Position = 2, ParameterSetName = ParameterUriTemplateFileParameterSetName,
+        [Parameter(Position = 4, ParameterSetName = ParameterUriTemplateFileParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "TemplateFile to be used to create the stack")]
-        [Parameter(Position = 2, ParameterSetName = ParameterObjectTemplateFileParameterSetName,
+        [Parameter(Position = 4, ParameterSetName = ParameterObjectTemplateFileParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "TemplateFile to be used to create the stack")]
-        [Parameter(Position = 2, ParameterSetName = ParameterlessTemplateFileParameterSetName,
+        [Parameter(Position = 4, ParameterSetName = ParameterlessTemplateFileParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "TemplateFile to be used to create the stack")]
         public string TemplateFile { get; set; }
 
-        [Parameter(Position = 2, ParameterSetName = ParameterFileTemplateUriParameterSetName,
+        [Parameter(Position = 4, ParameterSetName = ParameterFileTemplateUriParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Template to be used to create the stack")]
-        [Parameter(Position = 2, ParameterSetName = ParameterUriTemplateUriParameterSetName,
+        [Parameter(Position = 4, ParameterSetName = ParameterUriTemplateUriParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Template to be used to create the stack")]
-        [Parameter(Position = 2, ParameterSetName = ParameterObjectTemplateUriParameterSetName,
+        [Parameter(Position = 4, ParameterSetName = ParameterObjectTemplateUriParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Template to be used to create the stack")]
-        [Parameter(Position = 2, ParameterSetName = ParameterlessTemplateUriParameterSetName,
+        [Parameter(Position = 4, ParameterSetName = ParameterlessTemplateUriParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Template to be used to create the stack")]
         public string TemplateUri { get; set; }
 
-        [Parameter(Position = 2, ParameterSetName = ParameterFileTemplateSpecParameterSetName,
+        [Parameter(Position = 4, ParameterSetName = ParameterFileTemplateSpecParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "ResourceId of the TemplateSpec to be used to create the stack")]
-        [Parameter(Position = 2, ParameterSetName = ParameterUriTemplateSpecParameterSetName,
+        [Parameter(Position = 4, ParameterSetName = ParameterUriTemplateSpecParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "ResourceId of the TemplateSpec to be used to create the stack")]
-        [Parameter(Position = 2, ParameterSetName = ParameterObjectTemplateSpecParameterSetName,
+        [Parameter(Position = 4, ParameterSetName = ParameterObjectTemplateSpecParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "ResourceId of the TemplateSpec to be used to create the stack")]
-        [Parameter(Position = 2, ParameterSetName = ParameterlessTemplateSpecParameterSetName,
+        [Parameter(Position = 4, ParameterSetName = ParameterlessTemplateSpecParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "ResourceId of the TemplateSpec to be used to create the stack")]
         public string TemplateSpecId { get; set; }
 
-        [Parameter(Position = 3, ParameterSetName = ParameterFileTemplateFileParameterSetName,
+        [Parameter(Position = 5, ParameterSetName = ParameterFileTemplateFileParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Parameter file to use for the template")]
-        [Parameter(Position = 3, ParameterSetName = ParameterFileTemplateUriParameterSetName,
+        [Parameter(Position = 5, ParameterSetName = ParameterFileTemplateUriParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Parameter file to use for the template")]
-        [Parameter(Position = 3, ParameterSetName = ParameterFileTemplateSpecParameterSetName,
+        [Parameter(Position = 5, ParameterSetName = ParameterFileTemplateSpecParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Parameter file to use for the template")]
         public string TemplateParameterFile { get; set; }
 
-        [Parameter(Position = 3, ParameterSetName = ParameterUriTemplateFileParameterSetName,
+        [Parameter(Position = 5, ParameterSetName = ParameterUriTemplateFileParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Parameter file to use for the template")]
-        [Parameter(Position = 3, ParameterSetName = ParameterUriTemplateUriParameterSetName,
+        [Parameter(Position = 5, ParameterSetName = ParameterUriTemplateUriParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Parameter file to use for the template")]
-        [Parameter(Position = 3, ParameterSetName = ParameterUriTemplateSpecParameterSetName,
+        [Parameter(Position = 5, ParameterSetName = ParameterUriTemplateSpecParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Parameter file to use for the template")]
         public string TemplateParameterUri { get; set; }
 
-        [Parameter(ParameterSetName = ParameterObjectTemplateFileParameterSetName,
+        [Parameter(Position = 5, ParameterSetName = ParameterObjectTemplateFileParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "A hash table which represents the parameters.")]
-        [Parameter(ParameterSetName = ParameterObjectTemplateUriParameterSetName,
+        [Parameter(Position = 5, ParameterSetName = ParameterObjectTemplateUriParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "A hash table which represents the parameters.")]
-        [Parameter(ParameterSetName = ParameterObjectTemplateSpecParameterSetName,
+        [Parameter(Position = 5, ParameterSetName = ParameterObjectTemplateSpecParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "A hash table which represents the parameters.")]
         public Hashtable TemplateParameterObject { get; set; }
 
         [Parameter(Mandatory = false, ValueFromPipelineByPropertyName = true,
             HelpMessage = "Description for the stack")]
         public string Description { get; set; }
-
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true,
-            HelpMessage = "Location of the stack")]
-        public string Location { get; set; }
-
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true,
-            HelpMessage = "The subscription Id at which the deployment should be created.")]
-        public string DeploymentSubscriptionId { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = "Signal to delete both unmanaged Resources and ResourceGroups after deleting stack.")]
         public SwitchParameter DeleteAll { get; set; }
@@ -140,6 +141,23 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         // Not Yet Supported.
         /*[Parameter(Mandatory = false, HelpMessage = "Singal to delete unmanaged stack management groups after updating stack.")]
         public SwitchParameter DeleteManagementGroups { get; set; }*/
+
+        [Parameter(Mandatory = false, HelpMessage = "Mode for DenySettings. Possible values include: 'denyDelete', 'denyWriteAndDelete', and 'none'.")]
+        public string DenySettingsMode { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "List of AAD principal IDs excluded from the lock. Up to 5 principals are permitted.")]
+        public string[] DenySettingsExcludedPrincipals { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "List of role-based management operations that are excluded from " +
+            "the denySettings. Up to 200 actions are permitted.")]
+        public string[] DenySettingsExcludedActions { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "List of role-based management operations that are excluded from " +
+            "the denySettings. Up to 200 actions are permitted.")]
+        public string[] DenySettingsExcludedDataActions { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Apply to child scopes.")]
+        public SwitchParameter DenySettingsApplyToChildScopes { get; set; }
 
         [Parameter(Mandatory = false,
         HelpMessage = "Do not ask for confirmation when overwriting an existing stack.")]
@@ -220,7 +238,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                             resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
                             resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach",
                             managementGroupsCleanupAction: "detach",
-                            DeploymentSubscriptionId
+                            DeploymentSubscriptionId,
+                            DenySettingsMode,
+                            DenySettingsExcludedPrincipals,
+                            DenySettingsExcludedActions,
+                            DenySettingsApplyToChildScopes.IsPresent
                         );
 
                     WriteObject(deploymentStack);

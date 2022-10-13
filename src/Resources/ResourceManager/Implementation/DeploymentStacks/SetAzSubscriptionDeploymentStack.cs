@@ -16,6 +16,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 {
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
     using Microsoft.Azure.Commands.ResourceManager.Common.ArgumentCompleters;
+    using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components;
     using Microsoft.Azure.Management.ResourceManager.Models;
     using Microsoft.WindowsAzure.Commands.Utilities.Common;
     using System;
@@ -25,12 +26,12 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Management.Automation;
     using System.Text;
     using ProjectResources = Microsoft.Azure.Commands.ResourceManager.Cmdlets.Properties.Resources;
+    using Microsoft.Azure.Commands.Common.Authentication.Abstractions;
 
     [Cmdlet("Set", Common.AzureRMConstants.AzureRMPrefix + "SubscriptionDeploymentStack",
         SupportsShouldProcess = true, DefaultParameterSetName = SetAzSubscriptionDeploymentStack.ParameterlessTemplateFileParameterSetName), OutputType(typeof(PSDeploymentStack))]
     public class SetAzSubscriptionDeploymentStack : DeploymentStacksCmdletBase
     {
-
         #region Cmdlet Parameters and Parameter Set Definitions
 
         internal const string ParameterlessTemplateFileParameterSetName = "ByTemplateFileWithNoParameters";
@@ -101,11 +102,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Parameter file to use for the template")]
         public string TemplateParameterUri { get; set; }
 
-        [Parameter(ParameterSetName = ParameterObjectTemplateFileParameterSetName,
+        [Parameter(Position = 2, ParameterSetName = ParameterObjectTemplateFileParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "A hash table which represents the parameters.")]
-        [Parameter(ParameterSetName = ParameterObjectTemplateUriParameterSetName,
+        [Parameter(Position = 2, ParameterSetName = ParameterObjectTemplateUriParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "A hash table which represents the parameters.")]
-        [Parameter(ParameterSetName = ParameterObjectTemplateSpecParameterSetName,
+        [Parameter(Position = 2, ParameterSetName = ParameterObjectTemplateSpecParameterSetName,
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "A hash table which represents the parameters.")]
         public Hashtable TemplateParameterObject { get; set; }
 
@@ -118,8 +119,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         public string Location { get; set; }
 
         [Parameter(Mandatory = false,
-            HelpMessage = "The scope at which the initial deployment should be created. If a scope isn't specified, it will default to the scope of the deployment stack.")]
-        public String DeploymentScope { get; set; }
+            HelpMessage = "The ResourceGroup at which the deployment will be created. If none is specified, it will default to the " +
+            "subscription level scope of the deployment stack.")]
+        public string ResourceGroupName { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = "Signal to delete both unmanaged Resources and ResourceGroups after deleting stack.")]
         public SwitchParameter DeleteAll { get; set; }
@@ -134,8 +136,25 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         /*[Parameter(Mandatory = false, HelpMessage = "Singal to delete unmanaged stack management groups after updating stack.")]
         public SwitchParameter DeleteManagementGroups { get; set; }*/
 
-        [Parameter(Mandatory = false,
-        HelpMessage = "Do not ask for confirmation when overwriting an existing stack.")]
+        [Parameter(Mandatory = false, HelpMessage = "Mode for DenySettings. Possible values include: 'denyDelete', 'denyWriteAndDelete', and 'none'.")]
+        public string DenySettingsMode { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "List of AAD principal IDs excluded from the lock. Up to 5 principals are permitted.")]
+        public string[] DenySettingsExcludedPrincipals { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "List of role-based management operations that are excluded from " +
+            "the denySettings. Up to 200 actions are permitted.")]
+        public string[] DenySettingsExcludedActions { get; set; }
+
+        // Not Yet Supported.
+        [Parameter(Mandatory = false, HelpMessage = "List of role-based management operations that are excluded from " +
+            "the denySettings. Up to 200 actions are permitted.")]
+        public string[] DenySettingsExcludedDataActions { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Apply to child scopes.")]
+        public SwitchParameter DenySettingsApplyToChildScopes { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Do not ask for confirmation when overwriting an existing stack.")]
         public SwitchParameter Force { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = "Run cmdlet in the background")]
@@ -199,6 +218,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 var shouldDeleteResources = (DeleteAll.ToBool() || DeleteResources.ToBool()) ? true : false;
                 var shouldDeleteResourceGroups = (DeleteAll.ToBool() || DeleteResourceGroups.ToBool()) ? true : false;
 
+                // construct deploymentScope if ResourceGroup was provided
+                var deploymentScope = ResourceGroupName != null ? "/subscriptions/" + DeploymentStacksSdkClient.DeploymentStacksClient.SubscriptionId
+                        + "/resourceGroups/" + ResourceGroupName : null;
+
                 Action createOrUpdateAction = () =>
                 {
                     var deploymentStack = DeploymentStacksSdkClient.SubscriptionCreateOrUpdateDeploymentStack(
@@ -212,7 +235,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                             resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
                             resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach",
                             managementGroupsCleanupAction: "detach",
-                            DeploymentScope
+                            deploymentScope,
+                            DenySettingsMode,
+                            DenySettingsExcludedPrincipals,
+                            DenySettingsExcludedActions,
+                            DenySettingsApplyToChildScopes.IsPresent
                         );
 
                     WriteObject(deploymentStack);

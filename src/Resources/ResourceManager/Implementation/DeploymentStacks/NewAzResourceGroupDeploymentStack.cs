@@ -115,8 +115,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "A hash table which represents the parameters.")]
         public Hashtable TemplateParameterObject { get; set; }
 
-        [Parameter(Mandatory = false, ValueFromPipelineByPropertyName = true,
-            HelpMessage = "Description for the stack")]
+        [Parameter(Mandatory = false, ValueFromPipelineByPropertyName = true, HelpMessage = "Description for the stack")]
         public string Description { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = "Signal to delete both unmanaged Resources and ResourceGroups after updating stack.")]
@@ -131,6 +130,23 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         // Not Yet Supported.
         /*[Parameter(Mandatory = false, HelpMessage = "Singal to delete unmanaged stack management groups after updating stack.")]
         public SwitchParameter DeleteManagementGroups { get; set; }*/
+        
+        [Parameter(Mandatory = false, HelpMessage = "Mode for DenySettings. Possible values include: 'denyDelete', 'denyWriteAndDelete', and 'none'.")]
+        public string DenySettingsMode { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "List of AAD principal IDs excluded from the lock. Up to 5 principals are permitted.")]
+        public string[] DenySettingsExcludedPrincipals { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "List of role-based management operations that are excluded from " +
+            "the denySettings. Up to 200 actions are permitted.")]
+        public string[] DenySettingsExcludedActions { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "List of role-based management operations that are excluded from " +
+            "the denySettings. Up to 200 actions are permitted.")]
+        public string[] DenySettingsExcludedDataActions { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Apply to child scopes.")]
+        public SwitchParameter DenySettingsApplyToChildScopes { get; set; }
 
         [Parameter(Mandatory = false,
         HelpMessage = "Do not ask for confirmation when overwriting an existing stack.")]
@@ -194,8 +210,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         break;
                 }
 
-                
-
                 var shouldDeleteResources = (DeleteAll.ToBool() || DeleteResources.ToBool()) ? true : false;
                 var shouldDeleteResourceGroups = (DeleteAll.ToBool() || DeleteResourceGroups.ToBool()) ? true : false;
 
@@ -211,7 +225,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         Description,
                         resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
                         resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach",
-                        managementGroupsCleanupAction: "detach"
+                        managementGroupsCleanupAction: "detach",
+                        DenySettingsMode,
+                        DenySettingsExcludedPrincipals,
+                        DenySettingsExcludedActions,
+                        DenySettingsApplyToChildScopes.IsPresent
                     );
 
                     WriteObject(deploymentStack);

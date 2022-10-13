@@ -135,6 +135,23 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         /*[Parameter(Mandatory = false, HelpMessage = "Singal to delete unmanaged stack management groups after updating stack.")]
         public SwitchParameter DeleteManagementGroups { get; set; }*/
 
+        [Parameter(Mandatory = false, HelpMessage = "Mode for DenySettings. Possible values include: 'denyDelete', 'denyWriteAndDelete', and 'none'.")]
+        public string DenySettingsMode { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "List of AAD principal IDs excluded from the lock. Up to 5 principals are permitted.")]
+        public string[] DenySettingsExcludedPrincipals { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "List of role-based management operations that are excluded from " +
+            "the denySettings. Up to 200 actions are permitted.")]
+        public string[] DenySettingsExcludedActions { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "List of role-based management operations that are excluded from " +
+            "the denySettings. Up to 200 actions are permitted.")]
+        public string[] DenySettingsExcludedDataActions { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "Apply to child scopes.")]
+        public SwitchParameter DenySettingsApplyToChildScopes { get; set; }
+
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true,
             HelpMessage = "The subscription id at which the deployment should be created.")]
         public string DeploymentSubscriptionId { get; set; }
@@ -218,7 +235,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
                         resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach",
                         managementGroupsCleanupAction: "detach",
-                        DeploymentSubscriptionId
+                        DeploymentSubscriptionId,
+                        DenySettingsMode,
+                        DenySettingsExcludedPrincipals,
+                        DenySettingsExcludedActions,
+                        DenySettingsApplyToChildScopes.IsPresent
                     );
 
                     WriteObject(deploymentStack);

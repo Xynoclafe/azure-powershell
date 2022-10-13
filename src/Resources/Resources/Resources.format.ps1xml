@@ -514,6 +514,34 @@
 							  <Label>ProvisioningState</Label>
 							  <PropertyName>provisioningState</PropertyName>
 						  </ListItem>
+              <ListItem>
+                <Label>ManagedResources</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.resources -ne $null</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$_.managedResourcesString</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>DetachedResources</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.detachedResources -ne $null</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$_.detachedResourcesString</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>DeletedResources</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.deletedResources -ne $null</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$_.deletedResourcesString</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>FailedResources</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.failedResources -ne $null</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$_.failedResourcesString</ScriptBlock>
+              </ListItem>
 						  <ListItem>
 							  <Label>ResourcesCleanupAction</Label>
                 <ScriptBlock>$_.ActionOnUnmanage.Resources</ScriptBlock>

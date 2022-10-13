@@ -16,6 +16,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 {
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
+    using Microsoft.Azure.Commands.ResourceManager.Common.ArgumentCompleters;
     using System;
     using System.Collections.Generic;
     using System.Management.Automation;
@@ -42,6 +43,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
              HelpMessage = "The id of the ResourceGroup where the DeploymentStack is deployed")]
         [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByDeploymentStackNameParameterSetName,
              HelpMessage = "The id of the ResourceGroup where the DeploymentStack is deployed")]
+        [ResourceGroupCompleter]
         [ValidateNotNullOrEmpty]
         public string ResourceGroupName { get; set; }
 

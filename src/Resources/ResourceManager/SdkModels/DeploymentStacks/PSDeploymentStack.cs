@@ -29,6 +29,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
         
         public DeploymentStacksTemplateLink templateLink { get; set; }
 
+        public DenySettings denySettings { get; set; }
+
         public object parameters { get; set; }
 
         public DeploymentStacksParametersLink parametersLink { get; set; }
@@ -42,6 +44,12 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
         public string description { get; set; }
 
         public IList<ManagedResourceReference> resources { get; set; }
+
+        public IList<ResourceReference> detachedResources { get; set; }
+
+        public IList<ResourceReferenceExtended> failedResources { get; set; }
+
+        public IList<ResourceReference> deletedResources { get; set; }
 
         public string deploymentId { get; set; }
 
@@ -70,6 +78,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
             this.deploymentScope = deploymentStack.DeploymentScope;
             this.description = deploymentStack.Description;
             this.resources = deploymentStack.Resources;
+            this.detachedResources = deploymentStack.DetachedResources;
+            this.deletedResources = deploymentStack.DeletedResources;
+            this.failedResources = deploymentStack.FailedResources;
             this.deploymentId = deploymentStack.DeploymentId;
             // this.locks = deploymentStack.Locks;
             this.error = deploymentStack.Error;
@@ -78,6 +89,21 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
         public string managedResourcesString
         {
             get { return ResourcesExtensions.GetStackResourcesAsString(resources); }
+        }
+
+        public string detachedResourcesString
+        {
+            get { return ResourcesExtensions.GetStackResourcesAsString(detachedResources); }
+        }
+
+        public string deletedResourcesString
+        {
+            get { return ResourcesExtensions.GetStackResourcesAsString(deletedResources); }
+        }
+
+        public string failedResourcesString
+        {
+            get { return ResourcesExtensions.GetStackResourcesAsString(failedResources); }
         }
 
         internal static PSDeploymentStack FromAzureSDKDeploymentStack(DeploymentStack stack)
