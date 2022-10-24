@@ -80,7 +80,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         "/subscriptions/<subid>/providers/Microsoft.Resources/deploymentStacks/<stackname>");
                 }
 
-                string confirmationMessage = $"Are you sure you want to remove Subscription scoped DeploymentStack '{Name}' with the following actions?" +
+                string confirmationMessage = $"Are you sure you want to remove Subscription scoped DeploymentStack '{Name}' " +
+                    $"in current Subscription with the following actions?" +
                     (!shouldDeleteResources || !shouldDeleteResourceGroups ? "\nDetaching: " : "") +
                     (!shouldDeleteResources ? "resources" : "") +
                     (!shouldDeleteResources && !shouldDeleteResourceGroups ? ", " : "") +

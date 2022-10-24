@@ -86,7 +86,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                     throw new PSArgumentException($"Provided Id '{ResourceId}' is not in correct form. Should be in form " +
                                 "/subscriptions/<subid>/resourceGroups/<rgname>/providers/Microsoft.Resources/deploymentStacks/<stackname>");
                 }
-                string confirmationMessage = $"Are you sure you want to remove ResourceGroup scoped DeploymentStack '{Name}' with the following actions?" +
+                string confirmationMessage = $"Are you sure you want to remove ResourceGroup scoped DeploymentStack '{Name}' " +
+                    $"in ResourceGroup '{ResourceGroupName}' with the following actions?" +
                     (!shouldDeleteResources || !shouldDeleteResourceGroups ? "\nDetaching: " : "") +
                     (!shouldDeleteResources ? "resources" : "") +
                     (!shouldDeleteResources && !shouldDeleteResourceGroups ? ", " : "") +

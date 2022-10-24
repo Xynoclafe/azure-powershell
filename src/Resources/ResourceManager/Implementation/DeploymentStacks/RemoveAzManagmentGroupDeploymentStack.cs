@@ -85,7 +85,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         "/providers/Microsoft.Management/managementGroups/<managementgroupid>/providers/Microsoft.Resources/deploymentStacks/<stackname>");
                 }
 
-                string confirmationMessage = $"Are you sure you want to remove ManagementGroup scoped DeploymentStack '{Name}' with the following actions?" +
+                string confirmationMessage = $"Are you sure you want to remove ManagementGroup scoped DeploymentStack '{Name}' " +
+                    $"in ManagementGroup '{ManagementGroupId}' with the following actions?" +
                     (!shouldDeleteResources || !shouldDeleteResourceGroups ? "\nDetaching: " : "") +
                     (!shouldDeleteResources ? "resources" : "") +
                     (!shouldDeleteResources && !shouldDeleteResourceGroups ? ", " : "") +
