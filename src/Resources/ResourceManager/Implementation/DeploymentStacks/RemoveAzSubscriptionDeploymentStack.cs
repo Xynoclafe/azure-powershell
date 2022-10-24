@@ -23,7 +23,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Text;
 
     [Cmdlet("Remove", Common.AzureRMConstants.AzureRMPrefix + "SubscriptionDeploymentStack",
-        SupportsShouldProcess = true, DefaultParameterSetName = RemoveAzSubscriptionDeploymentStack.RemoveByResourceIdParameterSetName), OutputType(typeof(bool))]
+        SupportsShouldProcess = true, DefaultParameterSetName = RemoveByResourceNameParameterSetName), OutputType(typeof(bool))]
     public class RemoveAzSubscriptionDeploymentStack : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
@@ -32,7 +32,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         internal const string RemoveByResourceNameParameterSetName = "RemoveByResourceName";
 
         [Alias("StackName")]
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceNameParameterSetName,
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceNameParameterSetName,
             HelpMessage = "The name of the deploymentStack to delete")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
@@ -76,10 +76,19 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 // failed resolving the resource id
                 if (Name == null)
                 {
-                    throw new PSArgumentException($"Provided Id '{ResourceId}' is not in correct form.");
+                    throw new PSArgumentException($"Provided Id '{ResourceId}' is not in correct form. Should be in form " +
+                        "/subscriptions/<subid>/providers/Microsoft.Resources/deploymentStacks/<stackname>");
                 }
 
-                string confirmationMessage = $"Are you sure you want to remove DeploymentStack '{Name}'";
+                string confirmationMessage = $"Are you sure you want to remove Subscription scoped DeploymentStack '{Name}' with the following actions?" +
+                    (!shouldDeleteResources || !shouldDeleteResourceGroups ? "\nDetaching: " : "") +
+                    (!shouldDeleteResources ? "resources" : "") +
+                    (!shouldDeleteResources && !shouldDeleteResourceGroups ? ", " : "") +
+                    (!shouldDeleteResourceGroups ? "resourceGroups" : "") +
+                    (shouldDeleteResources || shouldDeleteResourceGroups ? "\nDeleting: " : "") +
+                    (shouldDeleteResources ? "resources" : "") +
+                    (shouldDeleteResources && shouldDeleteResourceGroups ? ", " : "") +
+                    (shouldDeleteResourceGroups ? "resourceGroups" : "");
 
                 ConfirmAction(
                     Force.IsPresent,

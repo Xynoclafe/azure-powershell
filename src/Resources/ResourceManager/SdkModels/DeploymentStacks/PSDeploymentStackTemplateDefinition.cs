@@ -1,17 +1,17 @@
 ﻿using Microsoft.Azure.Management.ResourceManager.Models;
 
-namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels.DeploymentStacks
+namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
 {
     public class PSDeploymentStackTemplateDefinition
     {
-        public object Template { get; set; }
+        public string Template { get; set; }
 
         public DeploymentStacksTemplateLink TemplateLink { get; set; }
 
-        internal PSDeploymentStackTemplateDefinition(DeploymentStackTemplateDefinition deploymentStackTemplateDefinition)
+        internal PSDeploymentStackTemplateDefinition(string template, DeploymentStacksTemplateLink link)
         {
-            Template = deploymentStackTemplateDefinition.Template;
-            TemplateLink = deploymentStackTemplateDefinition.TemplateLink; 
+            Template = template;
+            TemplateLink = link; 
         }
 
     }

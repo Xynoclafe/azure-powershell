@@ -27,7 +27,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using ProjectResources = Microsoft.Azure.Commands.ResourceManager.Cmdlets.Properties.Resources;
 
     [Cmdlet("New", Common.AzureRMConstants.AzureRMPrefix + "ResourceGroupDeploymentStack",
-        SupportsShouldProcess = true, DefaultParameterSetName = NewAzResourceGroupDeploymentStack.ParameterlessTemplateFileParameterSetName), OutputType(typeof(PSDeploymentStack))]
+        SupportsShouldProcess = true, DefaultParameterSetName = ParameterlessTemplateFileParameterSetName), OutputType(typeof(PSDeploymentStack))]
     public class NewAzResourceGroupDeploymentStack : DeploymentStacksCmdletBase
     {
 
@@ -132,7 +132,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         public SwitchParameter DeleteManagementGroups { get; set; }*/
         
         [Parameter(Mandatory = false, HelpMessage = "Mode for DenySettings. Possible values include: 'denyDelete', 'denyWriteAndDelete', and 'none'.")]
-        public string DenySettingsMode { get; set; }
+        public PSDenySettingsMode DenySettingsMode { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = "List of AAD principal IDs excluded from the lock. Up to 5 principals are permitted.")]
         public string[] DenySettingsExcludedPrincipals { get; set; }
@@ -226,7 +226,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
                         resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach",
                         managementGroupsCleanupAction: "detach",
-                        DenySettingsMode,
+                        DenySettingsMode.ToString(),
                         DenySettingsExcludedPrincipals,
                         DenySettingsExcludedActions,
                         DenySettingsApplyToChildScopes.IsPresent

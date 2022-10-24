@@ -78,32 +78,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
             this.deploymentScope = deploymentStack.DeploymentScope;
             this.description = deploymentStack.Description;
             this.resources = deploymentStack.Resources;
+            this.denySettings = deploymentStack.DenySettings;
             this.detachedResources = deploymentStack.DetachedResources;
             this.deletedResources = deploymentStack.DeletedResources;
             this.failedResources = deploymentStack.FailedResources;
             this.deploymentId = deploymentStack.DeploymentId;
             // this.locks = deploymentStack.Locks;
             this.error = deploymentStack.Error;
-        }
-
-        public string managedResourcesString
-        {
-            get { return ResourcesExtensions.GetStackResourcesAsString(resources); }
-        }
-
-        public string detachedResourcesString
-        {
-            get { return ResourcesExtensions.GetStackResourcesAsString(detachedResources); }
-        }
-
-        public string deletedResourcesString
-        {
-            get { return ResourcesExtensions.GetStackResourcesAsString(deletedResources); }
-        }
-
-        public string failedResourcesString
-        {
-            get { return ResourcesExtensions.GetStackResourcesAsString(failedResources); }
         }
 
         internal static PSDeploymentStack FromAzureSDKDeploymentStack(DeploymentStack stack)

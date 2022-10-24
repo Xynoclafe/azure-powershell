@@ -514,34 +514,6 @@
 							  <Label>ProvisioningState</Label>
 							  <PropertyName>provisioningState</PropertyName>
 						  </ListItem>
-              <ListItem>
-                <Label>ManagedResources</Label>
-                <ItemSelectionCondition>
-                  <ScriptBlock>$_.resources -ne $null</ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>$_.managedResourcesString</ScriptBlock>
-              </ListItem>
-              <ListItem>
-                <Label>DetachedResources</Label>
-                <ItemSelectionCondition>
-                  <ScriptBlock>$_.detachedResources -ne $null</ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>$_.detachedResourcesString</ScriptBlock>
-              </ListItem>
-              <ListItem>
-                <Label>DeletedResources</Label>
-                <ItemSelectionCondition>
-                  <ScriptBlock>$_.deletedResources -ne $null</ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>$_.deletedResourcesString</ScriptBlock>
-              </ListItem>
-              <ListItem>
-                <Label>FailedResources</Label>
-                <ItemSelectionCondition>
-                  <ScriptBlock>$_.failedResources -ne $null</ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>$_.failedResourcesString</ScriptBlock>
-              </ListItem>
 						  <ListItem>
 							  <Label>ResourcesCleanupAction</Label>
                 <ScriptBlock>$_.ActionOnUnmanage.Resources</ScriptBlock>
@@ -549,6 +521,13 @@
               <ListItem>
                 <Label>ResourceGroupsCleanupAction</Label>
                 <ScriptBlock>$_.ActionOnUnmanage.ResourceGroups</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>DenySettingsMode</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.DenySettings -ne $null -And $_.DenySettings.Mode -ne $null</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$_.DenySettings.Mode</ScriptBlock>
               </ListItem>
 						  <ListItem>
 							  <Label>Location</Label>
@@ -572,13 +551,6 @@
 							  <ScriptBlock>$_.SystemData.createdAt</ScriptBlock>
 						  </ListItem>
 						  <ListItem>
-							  <Label>ManagedResources</Label>
-							  <ItemSelectionCondition>
-								  <ScriptBlock>$_.managedResources -ne $null</ScriptBlock>
-							  </ItemSelectionCondition>
-							  <ScriptBlock>$_.managedResourcesString</ScriptBlock>
-						  </ListItem>
-						  <ListItem>
 							  <Label>DeploymentId</Label>
 							  <ItemSelectionCondition>
 								  <ScriptBlock>$_.deploymentId -ne $null</ScriptBlock>
@@ -592,13 +564,41 @@
 							  </ItemSelectionCondition>
 							  <ScriptBlock>$_.snapshotId</ScriptBlock>
 						  </ListItem>
-						  <ListItem>
-							  <Label>Error</Label>
-							  <ItemSelectionCondition>
-								  <ScriptBlock>$_.error -ne $null</ScriptBlock>
-							  </ItemSelectionCondition>
-							  <ScriptBlock>$e=$_.error; while($e.Details -ne $null){$e = $e.Details[0]}$e.Code + " - " +$e.Message</ScriptBlock>
-						  </ListItem>
+              <ListItem>
+                <Label>Resources</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.resources -ne $null</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$s = ""; Foreach($item in $_.resources) { $n = ""; if ($s -ne "") { $n = "`n"; } $s = $s + $n + $item.id; } $s;</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>DetachedResources</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.detachedResources -ne $null</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$s = ""; Foreach($item in $_.detachedResources) { $n = ""; if ($s -ne "") { $n = "`n"; } $s = $s + $n + $item.id; } $s;</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>DeletedResources</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.deletedResources -ne $null</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$s = ""; Foreach($item in $_.deletedResources) { $n = ""; if ($s -ne "") { $n = "`n"; } $s = $s + $n + $item.id; } $s;</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>FailedResources</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.failedResources -ne $null</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$s = ""; Foreach($item in $_.failedResources) { $n = ""; if ($s -ne "") { $n = ",`n"; } $s = $s + $n + "{`n`tid: " +  $item.id + "`n`terror: " + $item.error.message + "`n}"} $s;</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>Error</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.error -ne $null</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$e=$_.error; while($e.Details -ne $null){$e = $e.Details[0]}$e.Code + " - " +$e.Message</ScriptBlock>
+              </ListItem>
 					  </ListItems>
 				  </ListEntry>
 			  </ListEntries>
@@ -633,6 +633,13 @@
                 <Label>ResourceGroupsCleanupAction</Label>
                 <ScriptBlock>$_.ActionOnUnmanage.ResourceGroups</ScriptBlock>
               </ListItem>
+              <ListItem>
+							  <Label>DenySettingsMode</Label>
+							  <ItemSelectionCondition>
+								  <ScriptBlock>$_.DenySettings -ne $null -And $DenySettings.Mode -ne $null</ScriptBlock>
+							  </ItemSelectionCondition>
+							  <ScriptBlock>$_.DenySettings.Mode</ScriptBlock>
+						  </ListItem>
 						  <ListItem>
 							  <Label>Location</Label>
 							  <ItemSelectionCondition>
@@ -655,51 +662,79 @@
 							  <ScriptBlock>$_.SystemData.createdAt</ScriptBlock>
 						  </ListItem>
 						  <ListItem>
-							  <Label>ManagedResources</Label>
-							  <ItemSelectionCondition>
-								  <ScriptBlock>$_.managedResources -ne $null</ScriptBlock>
-							  </ItemSelectionCondition>
-							  <ScriptBlock>$_.managedResourcesString</ScriptBlock>
-						  </ListItem>
-						  <ListItem>
-							  <Label>DetachedResources</Label>
-							  <ItemSelectionCondition>
-								  <ScriptBlock>$_.detachedResources -ne $null</ScriptBlock>
-							  </ItemSelectionCondition>
-							  <ScriptBlock>$_.detachedResourcesString</ScriptBlock>
-						  </ListItem>
-						  <ListItem>
-							  <Label>DeletedResources</Label>
-							  <ItemSelectionCondition>
-								  <ScriptBlock>$_.deletedResources -ne $null</ScriptBlock>
-							  </ItemSelectionCondition>
-							  <ScriptBlock>$_.deletedResourcesString</ScriptBlock>
-						  </ListItem>
-						  <ListItem>
-							  <Label>FailedResources</Label>
-							  <ItemSelectionCondition>
-								  <ScriptBlock>$_.failedResources -ne $null</ScriptBlock>
-							  </ItemSelectionCondition>
-							  <ScriptBlock>$_.failedResourcesString</ScriptBlock>
-						  </ListItem>
-						  <ListItem>
 							  <Label>DeploymentId</Label>
 							  <ItemSelectionCondition>
 								  <ScriptBlock>$_.deploymentId -ne $null</ScriptBlock>
 							  </ItemSelectionCondition>
 							  <ScriptBlock>$_.deploymentId</ScriptBlock>
 						  </ListItem>
-						  <ListItem>
-							  <Label>Error</Label>
-							  <ItemSelectionCondition>
-								  <ScriptBlock>$_.error -ne $null</ScriptBlock>
-							  </ItemSelectionCondition>
-							  <ScriptBlock>$_.error.Message</ScriptBlock>
-						  </ListItem>
+              <ListItem>
+                <Label>Resources</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.resources -ne $null</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>Foreach($item in $_.resources) { $item.id }</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>DetachedResources</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.detachedResources -ne $null</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>Foreach($item in $_.detachedResources) { $item.id }</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>DeletedResources</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.deletedResources -ne $null</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>Foreach($item in $_.deletedResources) { $item.id }</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>FailedResources</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.failedResources -ne $null</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>Foreach($item in $_.failedResources) { "id: " + $item.id; "error: " + $item.error.message + "`n"}</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>Error</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.error -ne $null</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$e=$_.error; while($e.Details -ne $null){$e = $e.Details[0]}$e.Code + " - " +$e.Message</ScriptBlock>
+              </ListItem>
 					  </ListItems>
 				  </ListEntry>
 			  </ListEntries>
 		  </ListControl>
 	  </View>
+    <View>
+      <Name>Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels.PSDeploymentStackTemplateDefinition</Name>
+      <ViewSelectedBy>
+        <TypeName>Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels.PSDeploymentStackTemplateDefinition</TypeName>
+      </ViewSelectedBy>
+      <ListControl>
+        <ListEntries>
+          <ListEntry>
+            <ListItems>
+              <ListItem>
+                <Label>Template</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.template -ne $null</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$_.template</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>TemplateLink</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.templatelink -ne $null</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$_.templatelink</ScriptBlock>
+              </ListItem>
+            </ListItems>
+          </ListEntry>
+        </ListEntries>
+      </ListControl>
+    </View>
   </ViewDefinitions>
 </Configuration>

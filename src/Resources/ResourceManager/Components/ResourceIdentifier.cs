@@ -93,25 +93,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components
             return new ResourceIdentifier();
         }
 
-        public static ResourceIdentifier FromManagementGroupResourceIdentifier(string managementGroupResourceId)
-        {
-            if (!string.IsNullOrEmpty(managementGroupResourceId))
-            {
-                string[] tokens = managementGroupResourceId.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-                if (tokens.Length != 8)
-                {
-                    throw new ArgumentException(ProjectResources.InvalidFormatOfResourceGroupId, "resourceGroupId");
-                }
-                return new ResourceIdentifier
-                {
-                    Subscription = tokens[1],
-                    ResourceGroupName = tokens[3],
-                };
-            }
-
-            return new ResourceIdentifier();
-        }
-
         public static string GetProviderFromResourceType(string resourceType)
         {
             if (resourceType == null)

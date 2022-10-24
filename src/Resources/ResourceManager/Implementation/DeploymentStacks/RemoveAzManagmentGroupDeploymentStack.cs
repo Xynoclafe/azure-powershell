@@ -22,22 +22,22 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Text;
 
     [Cmdlet("Remove", Common.AzureRMConstants.AzureRMPrefix + "ManagementGroupDeploymentStack",
-        SupportsShouldProcess = true, DefaultParameterSetName = RemoveAzManagementGroupDeploymentStack.RemoveByResourceIdParameterSetName), OutputType(typeof(bool))]
+        SupportsShouldProcess = true, DefaultParameterSetName = RemoveByResourceNameParameterSetName), OutputType(typeof(bool))]
     public class RemoveAzManagementGroupDeploymentStack : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
 
         internal const string RemoveByResourceIdParameterSetName = "RemoveByResourceId";
-        internal const string RemoveByResourceNameParameterSetname = "RemoveByResourceName";
+        internal const string RemoveByResourceNameParameterSetName = "RemoveByResourceName";
 
         [Alias("StackName")]
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceNameParameterSetname,
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceNameParameterSetName,
             HelpMessage = "The name of the DeploymentStack to delete")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
         [Alias("Id")]
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceIdParameterSetName,
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceIdParameterSetName,
             HelpMessage = "ResourceId of the DeploymentStack to delete")]
         [ValidateNotNullOrEmpty]
         public string ResourceId { get; set; }
@@ -81,10 +81,19 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 // failed resolving the resource id
                 if (Name == null || ManagementGroupId == null)
                 {
-                    throw new PSArgumentException($"Provided Id '{ResourceId}' is not in correct form.");
+                    throw new PSArgumentException($"Provided Id '{ResourceId}' is not in correct form. Should be in form " +
+                        "/providers/Microsoft.Management/managementGroups/<managementgroupid>/providers/Microsoft.Resources/deploymentStacks/<stackname>");
                 }
 
-                string confirmationMessage = $"Are you sure you want to remove DeploymentStack '{Name}'";
+                string confirmationMessage = $"Are you sure you want to remove ManagementGroup scoped DeploymentStack '{Name}' with the following actions?" +
+                    (!shouldDeleteResources || !shouldDeleteResourceGroups ? "\nDetaching: " : "") +
+                    (!shouldDeleteResources ? "resources" : "") +
+                    (!shouldDeleteResources && !shouldDeleteResourceGroups ? ", " : "") +
+                    (!shouldDeleteResourceGroups ? "resourceGroups" : "") +
+                    (shouldDeleteResources || shouldDeleteResourceGroups ? "\nDeleting: " : "") +
+                    (shouldDeleteResources ? "resources" : "") +
+                    (shouldDeleteResources && shouldDeleteResourceGroups ? ", " : "") +
+                    (shouldDeleteResourceGroups ? "resourceGroups" : "");
 
                 ConfirmAction(
                     Force.IsPresent,

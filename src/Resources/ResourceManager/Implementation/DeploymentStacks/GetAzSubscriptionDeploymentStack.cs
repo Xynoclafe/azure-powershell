@@ -22,7 +22,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Text;
 
     [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "SubscriptionDeploymentStack",
-        DefaultParameterSetName = GetAzSubscriptionDeploymentStack.ListParameterSetname), OutputType(typeof(PSDeploymentStack))]
+        DefaultParameterSetName = ListParameterSetname), OutputType(typeof(PSDeploymentStack))]
     public class GetAzSubscriptionDeploymentStack : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
@@ -32,7 +32,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         internal const string ListParameterSetname = "ListDeploymentStacks";
 
         [Alias("StackName")]
-        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByStackNameParameterSetname,
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByStackNameParameterSetname,
             HelpMessage = "The name of the DeploymentStack to get")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
@@ -61,9 +61,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         Name = ResourceIdUtility.GetDeploymentName(ResourceId);
                         if (Name == null)
                         {
-                            throw new PSArgumentException($"Provided Id '{ResourceId}' is not in correct form.");
+                            throw new PSArgumentException($"Provided Id '{ResourceId}' is not in correct form. Should be in form " +
+                                "/subscriptions/<subid>/providers/Microsoft.Resources/deploymentStacks/<stackname>");
                         }
-                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(ResourceIdUtility.GetResourceName(Name)), true);
+                        WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(Name), true);
                         break;
                     case ListParameterSetname:
                         WriteObject(DeploymentStacksSdkClient.ListSubscriptionDeploymentStack(), true);

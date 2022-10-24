@@ -20,8 +20,6 @@ using System.Linq;
 using Microsoft.Rest.Azure;
 using System.Threading.Tasks;
 using ProjectResources = Microsoft.Azure.Commands.ResourceManager.Cmdlets.Properties.Resources;
-using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels.DeploymentStacks;
-
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 {
     public class DeploymentStacksSdkClient
@@ -102,7 +100,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             {
                 var deploymentStack = DeploymentStacksClient.DeploymentStacks.ExportTemplateAtResourceGroup(resourceGroupName, deploymentStackName);
 
-                return new PSDeploymentStackTemplateDefinition(deploymentStack);
+                return new PSDeploymentStackTemplateDefinition(deploymentStack.Template.ToString(), deploymentStack.TemplateLink);
             }
             catch (Exception ex)
             {
@@ -136,7 +134,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             {
                 var deploymentStack = DeploymentStacksClient.DeploymentStacks.ExportTemplateAtSubscription(deploymentStackName);
 
-                return new PSDeploymentStackTemplateDefinition(deploymentStack);
+                return new PSDeploymentStackTemplateDefinition(deploymentStack.Template.ToString(), deploymentStack.TemplateLink);
             }
             catch (Exception ex)
             {
@@ -171,7 +169,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             {
                 var deploymentStack = DeploymentStacksClient.DeploymentStacks.ExportTemplateAtManagementGroup(managementGroupId, deploymentStackName);
 
-                return new PSDeploymentStackTemplateDefinition(deploymentStack);
+                return new PSDeploymentStackTemplateDefinition(deploymentStack.Template.ToString(), deploymentStack.TemplateLink);
             }
             catch (Exception ex)
             {

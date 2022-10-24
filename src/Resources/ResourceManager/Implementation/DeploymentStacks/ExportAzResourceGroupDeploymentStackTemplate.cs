@@ -15,7 +15,7 @@
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 {
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components;
-    using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels.DeploymentStacks;
+    using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Utilities;
     using Microsoft.Azure.Commands.ResourceManager.Common.ArgumentCompleters;
     using Microsoft.WindowsAzure.Commands.Utilities.Common;
@@ -33,7 +33,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         internal const string ExportByNameAndResourceGroupNameParameterSetName = "ExportByNameAndResourceGroupName";
 
         [Alias("Id")]
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ExportByResourceIdParameterSetName,
+        [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ExportByResourceIdParameterSetName,
              HelpMessage = "ResourceId of the DeploymentStack to get")]
         [ValidateNotNullOrEmpty]
         public string ResourceId { get; set; }
@@ -61,11 +61,12 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 switch (ParameterSetName)
                 {
                     case ExportByResourceIdParameterSetName:
-                        ResourceGroupName = ResourceIdUtility.GetManagementGroupId(ResourceId);
+                        ResourceGroupName = ResourceIdUtility.GetResourceGroupName(ResourceId);
                         Name = ResourceIdUtility.GetDeploymentName(ResourceId);
                         if (ResourceGroupName == null || Name == null)
                         {
-                            throw new PSArgumentException($"Provided Id '{ResourceId}' is not in correct form.");
+                            throw new PSArgumentException($"Provided Id '{ResourceId}' is not in correct form. Should be in form " + 
+                                "/subscriptions/<subid>/resourceGroups/<rgname>/providers/Microsoft.Resources/deploymentStacks/<stackname>");
                         }
                         WriteObject(DeploymentStacksSdkClient.ExportResourceGroupDeploymentStack(ResourceGroupName, Name), true);
                         break;
