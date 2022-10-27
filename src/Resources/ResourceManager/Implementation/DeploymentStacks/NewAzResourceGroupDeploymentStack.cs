@@ -240,7 +240,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         Name,
                         throwIfNotExists: false) != null)
                 {
-                    string confirmationMessage = $"The DeploymentStack '{Name}' you're trying to create already exists in ResourceGroup '{ResourceGroupName}'." +
+                    string confirmationMessage = $"The DeploymentStack '{Name}' you're trying to create already exists in ResourceGroup '{ResourceGroupName}'. " +
                         $"Do you want to overwrite it with the following actions?" +
                         (!shouldDeleteResources || !shouldDeleteResourceGroups ? "\nDetaching: " : "") +
                         (!shouldDeleteResources ? "resources" : "") +
