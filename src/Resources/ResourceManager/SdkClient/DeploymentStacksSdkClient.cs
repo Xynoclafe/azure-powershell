@@ -20,6 +20,10 @@ using System.Linq;
 using Microsoft.Rest.Azure;
 using System.Threading.Tasks;
 using ProjectResources = Microsoft.Azure.Commands.ResourceManager.Cmdlets.Properties.Resources;
+using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels.DeploymentStacks;
+using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels.Deployments;
+using System.Net;
+
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 {
     public class DeploymentStacksSdkClient
@@ -39,6 +43,33 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
         public DeploymentStacksSdkClient(IDeploymentStacksClient deploymentStacksClient)
         {
             this.DeploymentStacksClient = deploymentStacksClient;
+        }
+
+        /// <summary>
+        /// Field that holds the resource client instance
+        /// </summary>
+        private ResourceManagerSdkClient resourceManagerSdkClient;
+
+        /// <summary>
+        /// Gets or sets the resource manager sdk client
+        /// </summary>
+        public ResourceManagerSdkClient ResourceManagerSdkClient
+        {
+            get
+            {
+                if (this.resourceManagerSdkClient == null)
+                {
+                    this.resourceManagerSdkClient = new ResourceManagerSdkClient(azureContext);
+                }
+
+                this.resourceManagerSdkClient.VerboseLogger = WriteVerbose;
+                this.resourceManagerSdkClient.ErrorLogger = WriteError;
+                this.resourceManagerSdkClient.WarningLogger = WriteWarning;
+
+                return this.resourceManagerSdkClient;
+            }
+
+            set { this.resourceManagerSdkClient = value; }
         }
 
         /// <summary>
@@ -709,6 +740,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             const int counterUnit = 1000;
             int step = 5;
             int phaseOne = 400;
+            bool deploymentOperationFlag = true;
             do
             {
                 WriteVerbose(string.Format("Checking stack deployment status", step));
@@ -734,6 +766,12 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                     }
                 }
 
+                if(!string.IsNullOrEmpty(stack.DeploymentId) && deploymentOperationFlag)
+                {
+                    deploymentOperationFlag = false;
+                    PollDeployments(stack);
+                }
+
             } while (!status.Any(s => s.Equals(stack.ProvisioningState, StringComparison.OrdinalIgnoreCase)));
 
             return stack;
@@ -756,6 +794,30 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                     throw new NotImplementedException();
             }
         }
+
+        //verboseLoggingStuff - subject to change
+
+        private DeploymentStack PollDeployments(DeploymentStack stack)
+        {
+            string deploymentId = stack.DeploymentId;
+            PSDeploymentCmdletParameters parameters = new PSDeploymentCmdletParameters();
+            parameters.DeploymentName = ResourceIdUtility.GetDeploymentName(deploymentId);
+            parameters.ResourceGroupName = ResourceIdUtility.GetResourceGroupName(deploymentId);
+            parameters.ManagementGroupId = ResourceIdUtility.GetManagementGroupId(deploymentId);
+            if (parameters.ResourceGroupName != null)
+            {
+                parameters.ScopeType = DeploymentScopeType.ResourceGroup;
+                ResourceManagerSdkClient.ProvisionDeploymentStatus(parameters, new Deployment()); //Only called for RG at this time to avoid replication issues
+            }
+            else if (parameters.ManagementGroupId != null)
+                parameters.ScopeType = DeploymentScopeType.ManagementGroup;
+            else
+                parameters.ScopeType = DeploymentScopeType.Subscription;
+            //Enable when deploymentOperations can be fetched for all scopes and not just RG
+            //resourceManagerSdkClient.ProvisionDeploymentStatus(parameters, new Deployment());
+            return stack;
+        }
+
 
         public PSDeploymentStack UpdateResourceGroupDeploymentStack(
             string deploymentStackName,
