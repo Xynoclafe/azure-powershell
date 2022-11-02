@@ -79,10 +79,9 @@ function Test-NewResourceGroupDeploymentStack
 	$rname = Get-ResourceName
 	$rglocation = "West US 2"
 
-	try {
-		# TODO: Test URI parameter types for Templates and Template Parameters.
-		# TODO: Bad template Content
-		# TODO: Maybe more with parameter object?
+	try 
+	{
+		# TODO Testing: URI parameter types for templates and template parameters, bad template content, more with parameter object validation...
 
 		# Prepare
 		New-AzResourceGroup -Name $rgname -Location $rglocation
@@ -111,7 +110,7 @@ function Test-NewResourceGroupDeploymentStack
 
 		# Test - Failure - template parameter file not found
 		$missingFile = "missingFile145.json"
-		# TODO: Figure out if these two error messages should be the same.
+		# TODO: File does not exist error messages should be the same.
 		$exceptionMessage = "The provided file $missingFile doesn't exist"
 		$partialExceptionMessage = "does not exist"
 		Assert-ThrowsContains { New-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile $missingFile -Force } $partialExceptionMessage
@@ -141,7 +140,8 @@ function Test-NewResourceGroupDeploymentStackUnmanageActions
 	$rname = Get-ResourceName
 	$rglocation = "West US 2"
 
-	try {
+	try 
+	{
 		# Prepare
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 
@@ -199,7 +199,7 @@ Tests NEW operation with deny settings on deploymentStacks at the RG scope.
 #>
 function Test-NewResourceGroupDeploymentStackDenySettings
 {
-	# TODO
+	# TODO: Test once deny settings changes are in PROD.
 }
 
 <#
@@ -213,10 +213,9 @@ function Test-SetResourceGroupDeploymentStack
 	$rname = Get-ResourceName
 	$rglocation = "West US 2"
 
-	try {
-		# TODO: Test URI parameter types for Templates and Template Parameters.
-		# TODO: Bad template Content
-		# TODO: Maybe more with parameter object?
+	try 
+	{
+		# TODO Testing: URI parameter types for templates and template parameters, bad template content, more with parameter object validation...
 
 		# Prepare
 		New-AzResourceGroup -Name $rgname -Location $rglocation
@@ -245,7 +244,7 @@ function Test-SetResourceGroupDeploymentStack
 
 		# Test - Failure - template parameter file not found
 		$missingFile = "missingFile145.json"
-		# TODO: Figure out if these two error messages should be the same.
+		# TODO: File does not exist error messages should be the same.
 		$exceptionMessage = "The provided file '$missingFile' doesn't exist"
 		$partialExceptionMessage = "does not exist"
 		Assert-ThrowsContains { Set-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile $missingFile -Force } $partialExceptionMessage
@@ -275,7 +274,8 @@ function Test-SetResourceGroupDeploymentStackUnmanageActions
 	$rname = Get-ResourceName
 	$rglocation = "West US 2"
 
-	try {
+	try 
+	{
 		# Prepare
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 
@@ -347,7 +347,8 @@ function Test-NewAndSetResourceGroupDeploymentStackWithBicep
 	$rname = Get-ResourceName
 	$rglocation = "West US 2"
 	
-	try {
+	try 
+	{
 		# Prepare
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 
@@ -369,9 +370,9 @@ function Test-NewAndSetResourceGroupDeploymentStackWithBicep
 
  <#
  .SYNOPSIS
- Tests NEW and SET operations on deploymentStacks at the RG scope using template specs.
+ Tests NEW, SET and EXPORT operations on deploymentStacks at the RG scope using template specs.
  #>
- function Test-NewAndSetResourceGroupDeploymentStackWithTemplateSpec
+ function Test-NewAndSetAndExportResourceGroupDeploymentStackWithTemplateSpec
  {
  	# Setup
  	$rgname = Get-ResourceGroupName
@@ -379,22 +380,29 @@ function Test-NewAndSetResourceGroupDeploymentStackWithBicep
  	$rname = Get-ResourceName
  	$rglocation = "West US 2"
 
- 	try {
+ 	try 
+	{
  		# Prepare
  		New-AzResourceGroup -Name $rgname -Location $rglocation
  		$sampleTemplateJson = Get-Content -Raw -Path StacksRGTemplate.json
         $basicCreatedTemplateSpec = New-AzTemplateSpec -ResourceGroupName $rgname -Name $rname -Location $rgLocation -Version "v1" -TemplateJson $sampleTemplateJson -Force
  		$resourceId = $basicCreatedTemplateSpec.Id + "/versions/v1"
 
- 		# Test - New-AzResourceGroupDeploymentStacks using templateSpecs
+ 		# Test - New-AzResourceGroupDeploymentStack using templateSpecs
  		$deployment = New-AzResourceGroupDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateSpec $resourceId -TemplateParameterFile StacksRGTemplateParams.json -Force
  		$id = $deployment.id
  		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
- 		# Test - Set-AzResourceGroupDeploymentStacks using templateSpecs
+ 		# Test - Set-AzResourceGroupDeploymentStack using templateSpecs
  		$deployment = Set-AzResourceGroupDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateSpec $resourceId -TemplateParameterFile StacksRGTemplateParams.json -Force
  		$id = $deployment.id
  		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		# Test - Export-AzResourceGroupDeploymentStack checking for template link
+		$template = Export-AzResourceGroupDeploymentStackTemplate -Name $stackname -ResourceGroupName $rgname
+		Assert-NotNull $template
+		Assert-NotNull $template.TemplateLink
+		Assert-Null $template.Template
  	}
 
  	finally
@@ -416,9 +424,8 @@ function Test-RemoveResourceGroupDeploymentStack
 	$rglocation = "West US 2"
 	$subId = (Get-AzContext).Subscription.SubscriptionId
 
-	try {
-		# TODO: Maybe need to test async behavior.
-
+	try 
+	{
 		# Prepare
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 
@@ -480,7 +487,7 @@ function Test-RemoveResourceGroupDeploymentStack
 
 <#
 .SYNOPSIS
-Tests EXPORT operation on deploymentStacks.
+Tests EXPORT operation on deployment stack templates at RG scope.
 #>
 function Test-ExportResourceGroupDeploymentStackTemplate
 {
@@ -492,8 +499,6 @@ function Test-ExportResourceGroupDeploymentStackTemplate
 
 	try 
 	{
-		# TODO: Testing with TemplateLink
-
 		# Prepare
 		New-AzResourceGroup -Name $rgname -Location $rglocation 
 		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json
@@ -534,559 +539,47 @@ function Test-ExportResourceGroupDeploymentStackTemplate
     }
 }
 
-
 # ---------- Subscription Scope Tests ----------
 
 <#
 .SYNOPSIS
-Tests GET operation on deployment stacks at the RG scope.
+Tests GET operation on deployment stacks at the SUB scope.
 #>
 function Test-GetSubscriptionDeploymentStack
 {
 	# Setup
 	$rname = Get-ResourceName
-	$rglocation = "West US 2"
 	$subId = (Get-AzContext).Subscription.SubscriptionId
+	$location = "West US 2"
 
 	try
 	{
 		# Prepare 
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Force
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Force
 		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
 
 		# Test - GetByName - Success 
 		$getByName = Get-AzSubscriptionDeploymentStack -StackName $rname 
 		Assert-NotNull $getByName
 
-		# Test - GetByName- Failure - Stack NotFound
+		# Test - GetByName - Failure - Stack NotFound
 		$badStackName = "badstack1928273615"
-		$exceptionMessage = "DeploymentStack '$badStackName' in Resource Group '$rgname' not found."
-		Assert-Throws { Get-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -StackName $badStackName } $exceptionMessage
+		$exceptionMessage = "DeploymentStack '$badStackName' not found in current subscription scope."
+		Assert-Throws { Get-AzSubscriptionDeploymentStack -StackName $badStackName } $exceptionMessage
 
 		# Test - GetByResourceId - Success
-		$getByResourceId = Get-AzResourceGroupDeploymentStack -ResourceId $resourceId
+		$getByResourceId = Get-AzSubscriptionDeploymentStack -ResourceId $resourceId
 		Assert-NotNull $getByResourceId
 
 		# Test - GetByResourceId - Failure - Bad ID form
 		$badId = "a/bad/id"
-		$exceptionMessage = "Provided Id '$badId' is not in correct form. Should be in form /subscriptions/<subid>/resourceGroups/<rgname>/providers/Microsoft.Resources/deploymentStacks/<stackname>"
-		Assert-Throws { Get-AzResourceGroupDeploymentStack -ResourceId $badId } $exceptionMessage
-
-		# Test - ListByResourceGroupName - Success
-		$listByResourceGroup = Get-AzResourceGroupDeploymentStack -ResourceGroupName $rgname
-		Assert-AreNotEqual 0 $listByResourceGroup.Count
-		Assert-True { $listByResourceGroup.name.contains($rname) }
-	}
-	finally
-    {
-        # Cleanup
-        Clean-ResourceGroup $rgname
-    }
-}
-
-<#
-.SYNOPSIS
-Tests New operation on deployment stacks at the RG scope.
-#>
-function Test-NewResourceGroupDeploymentStack
-{
-	# Setup
-	$rgname = Get-ResourceGroupName
-	$rname = Get-ResourceName
-	$rglocation = "West US 2"
-
-	try {
-		# TODO: Test URI parameter types for Templates and Template Parameters.
-		# TODO: Bad template Content
-		# TODO: Maybe more with parameter object?
-
-		# Prepare
-		New-AzResourceGroup -Name $rgname -Location $rglocation
-		
-		# --- ParameterlessTemplateFileParameterSetName ---
-
-		# Test - Success
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile blankTemplate.json -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		# Test - Failure - template file not found
-		$missingFile = "missingFile142.json"
-		$exceptionMessage = "The provided file $missingFile doesn't exist"
-		Assert-Throws { New-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile $missingFile -Force } $exceptionMessage
-
-		# Test - Failure - RG does not exist
-		$badRGname = "badRG114172"
-		$exceptionMessage = "Operation returned an invalid status code 'NotFound' : ResourceGroupNotFound : Resource group '$badRGname' could not be found."
-		Assert-Throws { New-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $badRGname -TemplateFile blankTemplate.json -Force } $exceptionMessage
-
-		# --- ParameterFileTemplateFileParameterSetName ---
-
-		# Test - Success
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		# Test - Failure - template parameter file not found
-		$missingFile = "missingFile145.json"
-		# TODO: Figure out if these two error messages should be the same.
-		$exceptionMessage = "The provided file $missingFile doesn't exist"
-		$partialExceptionMessage = "does not exist"
-		Assert-ThrowsContains { New-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile $missingFile -Force } $partialExceptionMessage
-
-		# --- ParameterObjectTemplateFileParameterSetName ---
-
-		# Test - Success
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterObject @{templateSpecName = "StacksScenarioTestSpec"} -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-	}
-
-	finally
-    {
-        # Cleanup
-        Clean-ResourceGroup $rgname
-    }
-}
-
-<#
-.SYNOPSIS
-Tests NEW operation with unmanage action parameters on deploymentStacks at the RG scope.
-#>
-function Test-NewResourceGroupDeploymentStackUnmanageActions
-{
-	# Setup
-	$rgname = Get-ResourceGroupName
-	$rname = Get-ResourceName
-	$rglocation = "West US 2"
-
-	try {
-		# Prepare
-		New-AzResourceGroup -Name $rgname -Location $rglocation
-
-		# Test - Setting a blank stack with no flags set
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
-
-		# Test - Setting a blank stack with DeleteResources set 
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteResources -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
-
-		# Test - Setting a blank stack with DeleteResources and ResourceGroups set 
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteResources -DeleteResourceGroups -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
-
-		# Test - Setting a blank stack with DeleteAll set 
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteAll -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
-
-		# Test - Setting a stack with only DeleteResourceGroups set which should fail
-		$exceptionMessage = "Operation returned an invalid status code 'BadRequest' : DeploymentStackInvalidDeploymentStackDefinition : Deployment stack definition is invalid - ActionOnUnmanage is not correctly defined. Cannot set Resources to 'Detach' and Resource Groups to 'Delete'."
-		Assert-Throws { New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteResourceGroups -Force } $exceptionMessage
-	}
-
-	finally
-    {
-        # Cleanup
-        Clean-ResourceGroup $rgname
-    }
-}
-
-<#
-.SYNOPSIS
-Tests NEW operation with deny settings on deploymentStacks at the RG scope.
-#>
-function Test-NewResourceGroupDeploymentStackDenySettings
-{
-	# TODO
-}
-
-<#
-.SYNOPSIS
-Tests SET operation on deployment stacks at the RG scope.
-#>
-function Test-SetResourceGroupDeploymentStack
-{
-	# Setup
-	$rgname = Get-ResourceGroupName
-	$rname = Get-ResourceName
-	$rglocation = "West US 2"
-
-	try {
-		# TODO: Test URI parameter types for Templates and Template Parameters.
-		# TODO: Bad template Content
-		# TODO: Maybe more with parameter object?
-
-		# Prepare
-		New-AzResourceGroup -Name $rgname -Location $rglocation
-		
-		# --- ParameterlessTemplateFileParameterSetName ---
-
-		# Test - Success
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile blankTemplate.json -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		# Test - Failure - template file not found
-		$missingFile = "missingFile142.json"
-		$exceptionMessage = "The provided file '$missingFile' doesn't exist"
-		Assert-Throws { Set-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile $missingFile -Force } $exceptionMessage
-
-		# Test - Failure - RG does not exist
-		$badRGname = "badRG114172"
-		$exceptionMessage = "Operation returned an invalid status code 'NotFound' : ResourceGroupNotFound : Resource group '$badRGname' could not be found."
-		Assert-Throws { Set-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $badRGname -TemplateFile blankTemplate.json -Force } $exceptionMessage
-
-		# --- ParameterFileTemplateFileParameterSetName ---
-
-		# Test - Success
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		# Test - Failure - template parameter file not found
-		$missingFile = "missingFile145.json"
-		# TODO: Figure out if these two error messages should be the same.
-		$exceptionMessage = "The provided file '$missingFile' doesn't exist"
-		$partialExceptionMessage = "does not exist"
-		Assert-ThrowsContains { Set-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile $missingFile -Force } $partialExceptionMessage
-
-		# --- ParameterObjectTemplateFileParameterSetName ---
-
-		# Test - Success
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterObject @{templateSpecName = "StacksScenarioTestSpec"} -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-	}
-
-	finally
-    {
-        # Cleanup
-        Clean-ResourceGroup $rgname
-    }
-}
-
-<#
-.SYNOPSIS
-Tests SET operation with unmanage action parameters on deploymentStacks at the RG scope.
-#>
-function Test-SetResourceGroupDeploymentStackUnmanageActions
-{
-	# Setup
-	$rgname = Get-ResourceGroupName
-	$rname = Get-ResourceName
-	$rglocation = "West US 2"
-
-	try {
-		# Prepare
-		New-AzResourceGroup -Name $rgname -Location $rglocation
-
-		# Test - Setting a blank stack with no flags set
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
-
-		# Test - Setting a blank stack with DeleteResources set 
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteResources -Force
-
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
-
-		# Test - Setting a blank stack with DeleteResources and ResourceGroups set 
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteResources -DeleteResourceGroups -Force
-
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
-
-		# Test - Setting a blank stack with DeleteAll set 
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteAll -Force
-
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
-
-		# Test - Setting a stack with only DeleteResourceGroups set which should error 
-		$exceptionMessage = "Operation returned an invalid status code 'BadRequest' : DeploymentStackInvalidDeploymentStackDefinition : Deployment stack definition is invalid - ActionOnUnmanage is not correctly defined. Cannot set Resources to 'Detach' and Resource Groups to 'Delete'."
-		Assert-Throws { Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteResourceGroups -Force } $exceptionMessage
-	}
-
-	finally
-    {
-        # Cleanup
-        Clean-ResourceGroup $rgname
-    }
-}
-
-<#
-.SYNOPSIS
-Tests SET operation with deny settings on deploymentStacks at the RG scope.
-#>
-function Test-SetResourceGroupDeploymentStackDenySettings
-{
-	# TODO
-}
-
-<#
-.SYNOPSIS
-Tests NEW operation on deploymentStacks at the RG scope with bicep file.
-#>
-function Test-NewAndSetResourceGroupDeploymentStackWithBicep
-{
-	# Setup
-	$rgname = Get-ResourceGroupName
-	$rname = Get-ResourceName
-	$rglocation = "West US 2"
-	
-	try {
-		# Prepare
-		New-AzResourceGroup -Name $rgname -Location $rglocation
-
-		# Test - NewByNameAndResourceGroupAndBicepTemplateFile
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleDeploymentBicepFile.bicep
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		# Test - Set-AzResourceGroupDeploymentStacks
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleDeploymentBicepFile2.bicep
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-	}
-
-	finally 
-	{
-        # Cleanup
-        Clean-ResourceGroup $rgname
-	}
-}
-
- <#
- .SYNOPSIS
- Tests NEW and SET operations on deploymentStacks at the RG scope using template specs.
- #>
- function Test-NewAndSetResourceGroupDeploymentStackWithTemplateSpec
- {
- 	# Setup
- 	$rgname = Get-ResourceGroupName
- 	$stackname = Get-ResourceName
- 	$rname = Get-ResourceName
- 	$rglocation = "West US 2"
-
- 	try {
- 		# Prepare
- 		New-AzResourceGroup -Name $rgname -Location $rglocation
- 		$sampleTemplateJson = Get-Content -Raw -Path StacksRGTemplate.json
-        $basicCreatedTemplateSpec = New-AzTemplateSpec -ResourceGroupName $rgname -Name $rname -Location $rgLocation -Version "v1" -TemplateJson $sampleTemplateJson -Force
- 		$resourceId = $basicCreatedTemplateSpec.Id + "/versions/v1"
-
- 		# Test - New-AzResourceGroupDeploymentStacks using templateSpecs
- 		$deployment = New-AzResourceGroupDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateSpec $resourceId -TemplateParameterFile StacksRGTemplateParams.json -Force
- 		$id = $deployment.id
- 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
- 		# Test - Set-AzResourceGroupDeploymentStacks using templateSpecs
- 		$deployment = Set-AzResourceGroupDeploymentStack -Name $stackname -ResourceGroupName $rgname -TemplateSpec $resourceId -TemplateParameterFile StacksRGTemplateParams.json -Force
- 		$id = $deployment.id
- 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
- 	}
-
- 	finally
-     {
-         # Cleanup
-         Clean-ResourceGroup $rgname
-     }
- }
-
- <#
-.SYNOPSIS
-Tests REMOVE operation on deploymentStacks at RG scope.
-#>
-function Test-RemoveResourceGroupDeploymentStack
-{
-	# Setup
-	$rgname = Get-ResourceGroupName
-	$rname = Get-ResourceName
-	$rglocation = "West US 2"
-	$subId = (Get-AzContext).Subscription.SubscriptionId
-
-	try {
-		# TODO: Maybe need to test async behavior.
-
-		# Prepare
-		New-AzResourceGroup -Name $rgname -Location $rglocation
-
-		# --- RemoveByResourceIdParameterSetName ---
-
-		# Test - Success
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
-		$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname"
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		$deployment = Remove-AzResourceGroupDeploymentStack -Id $resourceId -Force
-		Assert-AreEqual "true" $deployment
-
-		# Test - Failure - Bad ID form 
-		$badId = "a/bad/id"
-		$exceptionMessage = "Provided Id '$badId' is not in correct form. Should be in form /subscriptions/<subid>/resourceGroups/<rgname>/providers/Microsoft.Resources/deploymentStacks/<stackname>"
-		Assert-Throws { Remove-AzResourceGroupDeploymentStack -Id $badId -Force } $exceptionMessage
-
-		# --- RemoveByNameAndResourceGroupName --- 
-
-		# Test - Failure - RG NotFound
-		$badResourceGroupName = "badrg1928273615"
-		$exceptionMessage = "Operation returned an invalid status code 'NotFound' : ResourceGroupNotFound : Resource group '$badResourceGroupName' could not be found."
-		Assert-Throws { Remove-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $badResourceGroupName -Force } $exceptionMessage
-
-		# Test - Failure - Stack NotFound
-		$badStackName = "badstack1928273615"
-		$exceptionMessage = "DeploymentStack '$badStackName' in ResourceGroup '$rgname' not found."
-		Assert-Throws { Remove-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -StackName $badStackName -Force } $exceptionMessage
-
-		# Test - Success - DeleteResources
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		$deployment = Remove-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -DeleteResources -Force
-		Assert-AreEqual "true" $deployment
-
-		# Test - Success - DeleteResources and DeleteResourceGroups
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		$deployment = Remove-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -DeleteResources -DeleteResourceGroups -Force
-		Assert-AreEqual "true" $deployment
-
-		# Test - Success - DeleteAll
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Force
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		$deployment = Remove-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -DeleteAll -Force
-		Assert-AreEqual "true" $deployment
-	}
-
-	finally
-    {
-        # Cleanup
-        Clean-ResourceGroup $rgname
-    }
-}
-
-<#
-.SYNOPSIS
-Tests EXPORT operation on deploymentStacks.
-#>
-function Test-ExportResourceGroupDeploymentStackTemplate
-{
-	# Setup
-	$rgname = Get-ResourceGroupName
-	$rname = Get-ResourceName
-	$rglocation = "West US 2"
-	$subId = (Get-AzContext).Subscription.SubscriptionId
-
-	try 
-	{
-		# TODO: Testing with TemplateLink
-
-		# Prepare
-		New-AzResourceGroup -Name $rgname -Location $rglocation 
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json
-		$resourceId = "/subscriptions/$subId/resourcegroups/$rgname/providers/Microsoft.Resources/deploymentStacks/$rname"
-
-		# --- ExportByResourceIdParameterSetName ---
-		$badId = "a/bad/id"
-		$exceptionMessage = "Provided Id '$badId' is not in correct form. Should be in form /subscriptions/<subid>/resourceGroups/<rgname>/providers/Microsoft.Resources/deploymentStacks/<stackname>"
-		Assert-Throws { Export-AzResourceGroupDeploymentStackTemplate -Id $badId } $exceptionMessage
-
-		# Test - Success
-		$deployment = Export-AzResourceGroupDeploymentStackTemplate -Id $resourceId
-		Assert-NotNull $deployment
-		Assert-NotNull $deployment.Template
-
-		# --- ExportByNameAndResourceGroupName ---
-
-		# Test - Failure - Resource Group NotFound
-		$badResourceGroupName = "badrg1928273615"
-		$exceptionMessage = "DeploymentStack '$rname' in Resource Group '$badResourceGroupName' not found."
-		Assert-Throws { Export-AzResourceGroupDeploymentStackTemplate -Name $rname -ResourceGroupName $badResourceGroupName } $exceptionMessage
-		
-		# Test - Failure - Stack NotFound
-		$badStackName = "badStack1928273615"
-		$exceptionMessage = "DeploymentStack '$badStackName' in Resource Group '$rgname' not found."
-		Assert-Throws { Export-AzResourceGroupDeploymentStackTemplate -Name $badStackName -ResourceGroupName $rgname } $exceptionMessage
-
-		# Test - Success
-		$deployment = Export-AzResourceGroupDeploymentStackTemplate -Name $rname -ResourceGroupName $rgname
-		Assert-NotNull $deployment
-		Assert-NotNull $deployment.Template 
-	}
-
-	finally
-    {
-        # Cleanup
-        Clean-ResourceGroup $rgname
-    }
-}
-
-
-# ---------- Subscription Scope Tests ----------
-
-<#
-.SYNOPSIS
-Tests GET operation on deploymentStacks at the Subscription scope.
-#>
-function Test-GetSubscriptionDeploymentStack
-{
-	# Setup
-	$rname = Get-ResourceName
-	$location = "West US 2"
-
-	try
-	{
-		# Prepare 
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json
-		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
-
-		# Test - GetByName
-		$getByName = Get-AzSubscriptionDeploymentStack -Name $rname 
-
-		# Assert
-		Assert-NotNull $getByName
-
-		# Test - GetByResourceId
-		$getByResourceId = Get-AzSubscriptionDeploymentStack -ResourceId $resourceId
-
-		#Assert
-		Assert-NotNull $getByResourceId
-
-		#Test - ListByResourceGroupName
-		$list = Get-AzSubscriptionDeploymentStack
-
-		# Assert
-		Assert-AreNotEqual 0 $list.Count
-		Assert-True { $list.name.contains($rname) }
+		$exceptionMessage = "Provided Id '$badId' is not in correct form. Should be in form /subscriptions/<subid>/providers/Microsoft.Resources/deploymentStacks/<stackname>"
+		Assert-Throws { Get-AzSubscriptionDeploymentStack -ResourceId $badId } $exceptionMessage
+
+		# Test - ListBySubscription - Success
+		$listBySubscription = Get-AzSubscriptionDeploymentStack
+		Assert-AreNotEqual 0 $listBySubscription.Count
+		Assert-True { $listBySubscription.name.contains($rname) }
 	}
 	finally
     {
@@ -1097,111 +590,53 @@ function Test-GetSubscriptionDeploymentStack
 
 <#
 .SYNOPSIS
-Tests NEW and SET operation on deploymentStacks at the subscription scope using a bicep template
-#>
-function Test-NewAndSetSubscriptionDeploymentStackWithBicep
-{
-	# Setup
-	$rname = Get-ResourceName
-	$rgname = Get-ResourceName
-	$rglocation = "West US"
-
-	try {
-		# Test - New-AzSubscriptionDeploymentStacks using templateSpecs
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile sampleSubscriptionDeploymentBicepFile.bicep -Location $rglocation
-
-		# Assert
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		# Test - Set-AzSubscriptionDeploymentStacks using templateSpecs
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile sampleSubscriptionDeploymentBicepFile.bicep -Location $rglocation
-
-		# Assert
-		assert-AreEqual "succeeded" $deployment.ProvisioningState
-	}
-	
-	finally
-	{
-		# Cleanup
-		Clean-DeploymentAtSubscription $rname
-	}
-}
-
-<#
-.SYNOPSIS
-Tests New operation on deploymentStacks at the Subscription scope.
+Tests NEW operation on deployment stacks at the SUB scope.
 #>
 function Test-NewSubscriptionDeploymentStack
 {
 	# Setup
 	$rname = Get-ResourceName
+	$location = "West US 2"
 
-	try {
-		# Test - ParameterlessTemplateFileParameterSetName
-
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -Force
-
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		# Test - ParameterObjectTemplateFileParameterSetName
-		# ...
-
-		# Test - ParameterFileTemplateFileParameterSetName
+	try 
+	{
+		# TODO Testing: URI parameter types for templates and template parameters, bad template content, more with parameter object validation...
 		
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
+		# --- ParameterlessTemplateFileParameterSetName ---
 
+		# Test - Success
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile blankTemplate.json -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		# Test - ParameterFileTemplateUriParameterSetName
-		# ...
+		# Test - Failure - template file not found
+		$missingFile = "missingFile142.json"
+		$exceptionMessage = "The provided file $missingFile doesn't exist"
+		Assert-Throws { New-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile $missingFile  -Location $location -Force } $exceptionMessage
 
-		# Test - ParameterUriTemplateFileParameterSetName
-		# ...
+		# --- ParameterFileTemplateFileParameterSetName ---
+
+		# Test - Success
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		# Test - Failure - template parameter file not found
+		$missingFile = "missingFile145.json"
+		# TODO: Figure out if these two error messages should be the same.
+		$exceptionMessage = "The provided file $missingFile doesn't exist"
+		$partialExceptionMessage = "does not exist"
+		Assert-ThrowsContains { New-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -TemplateParameterFile $missingFile -Location $location -Force } $partialExceptionMessage
+
+		# --- ParameterObjectTemplateFileParameterSetName ---
+
+		# Test - Success
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -TemplateParameterObject @{location = $location} -Location $location -Force
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 	}
 
 	finally
     {
         # Cleanup
-        Clean-DeploymentAtSubscription $rgname
-    }
-}
-
-<#
-.SYNOPSIS
-Tests SET operation on deployment stacks at the Sub scope.
-#>
-function Test-SetSubscriptionDeploymentStack
-{
-	# Setup
-	$rname = Get-ResourceName
-
-	try {
-		# Test - ParameterlessTemplateFileParameterSetName
-
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -Force
-
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		# Test - ParameterObjectTemplateFileParameterSetName
-		# ...
-
-		# Test - ParameterFileTemplateFileParameterSetName
-		
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
-
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		# Test - ParameterFileTemplateUriParameterSetName
-		# ...
-
-		# Test - ParameterUriTemplateFileParameterSetName
-		# ...
-	}
-
-	finally
-    {
-        # Cleanup
-        Clean-DeploymentAtSubscription $rgname
+        Clean-DeploymentAtSubscription $rname
     }
 }
 
@@ -1213,51 +648,49 @@ function Test-NewSubscriptionDeploymentStackUnmanageActions
 {
 	# Setup
 	$rname = Get-ResourceName
-	$rglocation = "West US 2"
+	$location = "West US 2"
 
-	try {
+	try 
+	{
+		# Test - Setting a blank stack with no flags set
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -Location $location -Force
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.Resources
+		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
 
 		# Test - Setting a blank stack with DeleteResources set 
-
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Force
-
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteResources -Force
-
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteResources -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.Resources
-		Assert-AreEqual "detach" $deployment.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
+		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
 
 		# Test - Setting a blank stack with DeleteResources and ResourceGroups set 
-
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Force
-
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteResources -DeleteResourceGroups -Force
-
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteResources -DeleteResourceGroups -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.Resources
-		Assert-AreEqual "delete" $deployment.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
+		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
 
 		# Test - Setting a blank stack with DeleteAll set 
-
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Force
-
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteAll -Force
-
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteAll -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.Resources
-		Assert-AreEqual "delete" $deployment.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
+		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
 
-		# Test - Setting a stack with only DeleteResourceGroups set which should error 
-		
-		$exceptionMessage = "New-AzSubscriptionDeploymentStack: Operation returned an invalid status code 'BadRequest' : DeploymentStackInvalidDeploymentStackDefinition : Deployment stack definition is invalid - ActionOnUnmanage is not correctly defined. Cannot set Resources to 'Detach' and Resource Groups to 'Delete'."
-		
-		Assert-Throws { New-AzResourceGroupDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteResourceGroups -Force } $exceptionMessage
+		# Test - Setting a stack with only DeleteResourceGroups set which should fail
+		$exceptionMessage = "Operation returned an invalid status code 'BadRequest' : DeploymentStackInvalidDeploymentStackDefinition : Deployment stack definition is invalid - ActionOnUnmanage is not correctly defined. Cannot set Resources to 'Detach' and Resource Groups to 'Delete'."
+		Assert-Throws { New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteResourceGroups -Location $location -Force } $exceptionMessage
 	}
 
 	finally
@@ -1267,6 +700,65 @@ function Test-NewSubscriptionDeploymentStackUnmanageActions
     }
 }
 
+<#
+.SYNOPSIS
+Tests NEW operation with deny settings on deploymentStacks at the Sub scope.
+#>
+function Test-NewSubscriptionDeploymentStackDenySettings
+{
+	# TODO
+}
+
+<#
+.SYNOPSIS
+Tests SET operation on deployment stacks at the Sub scope.
+#>
+function Test-SetResourceGroupDeploymentStack
+{
+	# Setup
+	$rname = Get-ResourceName
+	$location = "West US 2"
+
+	try {
+		# TODO Testing: URI parameter types for templates and template parameters, bad template content, more with parameter object validation...
+		
+		# --- ParameterlessTemplateFileParameterSetName ---
+
+		# Test - Success
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile blankTemplate.json -Location $location -Force
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		# Test - Failure - template file not found
+		$missingFile = "missingFile142.json"
+		$exceptionMessage = "The provided file '$missingFile' doesn't exist"
+		Assert-Throws { Set-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile $missingFile -Location $location -Force } $exceptionMessage
+
+		# --- ParameterFileTemplateFileParameterSetName ---
+
+		# Test - Success
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		# Test - Failure - template parameter file not found
+		$missingFile = "missingFile145.json"
+		# TODO: Figure out if these two error messages should be the same.
+		$exceptionMessage = "The provided file '$missingFile' doesn't exist"
+		$partialExceptionMessage = "does not exist"
+		Assert-ThrowsContains { Set-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -TemplateParameterFile $missingFile -Location $location -Force } $partialExceptionMessage
+
+		# --- ParameterObjectTemplateFileParameterSetName ---
+
+		# Test - Success
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -TemplateParameterObject @{location = $location} -Force
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+	}
+
+	finally
+    {
+        # Cleanup
+        Clean-DeploymentAtSubscription $rname
+    }
+}
 
 <#
 .SYNOPSIS
@@ -1276,104 +768,139 @@ function Test-SetSubscriptionDeploymentStackUnmanageActions
 {
 	# Setup
 	$rname = Get-ResourceName
-	$rglocation = "West US 2"
+	$location = "West US 2"
 
-	try {
+	try 
+	{
+		# Test - Setting a blank stack with no flags set
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname  -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Location $location -Force
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -Location $location -Force
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.Resources
+		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
 
 		# Test - Setting a blank stack with DeleteResources set 
-
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Force
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Location $location -Force
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteResources -Location $location -Force
 
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteResources -Force
-
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.Resources
-		Assert-AreEqual "detach" $deployment.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
+		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
 
 		# Test - Setting a blank stack with DeleteResources and ResourceGroups set 
-
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Force
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Location $location -Force
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteResources -DeleteResourceGroups -Location $location -Force
 
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteResources -DeleteResourceGroups -Force
-
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.Resources
-		Assert-AreEqual "delete" $deployment.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
+		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
 
 		# Test - Setting a blank stack with DeleteAll set 
-
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Force
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Location $location -Force
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteAll -Location $location -Force
 
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteAll -Force
-
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.Resources
-		Assert-AreEqual "delete" $deployment.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
+		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
 
 		# Test - Setting a stack with only DeleteResourceGroups set which should error 
-
-		$exceptionMessage = "Set-AzSubscriptionDeploymentStack: Operation returned an invalid status code 'BadRequest' : DeploymentStackInvalidDeploymentStackDefinition : Deployment stack definition is invalid - ActionOnUnmanage is not correctly defined. Cannot set Resources to 'Detach' and Resource Groups to 'Delete'."
-		
-		Assert-Throws { Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteResourceGroups -Force } $exceptionMessage
+		$exceptionMessage = "Operation returned an invalid status code 'BadRequest' : DeploymentStackInvalidDeploymentStackDefinition : Deployment stack definition is invalid - ActionOnUnmanage is not correctly defined. Cannot set Resources to 'Detach' and Resource Groups to 'Delete'."
+		Assert-Throws { Set-AzSubscriptionDeploymentStack -Name $rname  -TemplateFile blankTemplate.json -DeleteResourceGroups -Location $location -Force } $exceptionMessage
 	}
 
 	finally
     {
         # Cleanup
-		Clean-DeploymentAtSubscription $rname
+        Clean-DeploymentAtSubscription $rname
     }
 }
 
 <#
 .SYNOPSIS
-Tests NEW and SET operation on deploymentStacks at the subscription scope using template specs.
+Tests SET operation with deny settings on deploymentStacks at the Sub scope.
 #>
-function Test-NewAndSetSubscriptionDeploymentStackWithTemplateSpec
+function Test-SetSubscriptionDeploymentStackDenySettings
+{
+	# TODO
+}
+
+<#
+.SYNOPSIS
+Tests NEW operation on deploymentStacks at the Sub scope with bicep file.
+#>
+function Test-NewAndSetSubscriptionDeploymentStackWithBicep
 {
 	# Setup
-	$rgname = Get-ResourceGroupName
 	$rname = Get-ResourceName
-	$stackname = Get-ResourceName
-	$rglocation = "West US 2"
-
-	try {
-		# Prepare
-		New-AzResourceGroup -Name $rgname -Location $rglocation
-
-		$sampleTemplateJson = Get-Content -Raw -Path StacksSubTemplate.json
-        $basicCreatedTemplateSpec = New-AzTemplateSpec -ResourceGroupName $rgname -Name $rname -Location $rgLocation -Version "v1" -TemplateJson $sampleTemplateJson
-
-		$resourceId = $basicCreatedTemplateSpec.Id + "/versions/v1"
-
-		# Test - New-AzSubscriptionDeploymentStacks using templateSpecs
-		$deployment = New-AzSubscriptionDeploymentStack -Name $stackname -TemplateSpec $resourceId -TemplateParameterFile StacksSubTemplateParams.json -Location $rglocation
-		$id = $deployment.id
-
-		# Assert
+	
+	try 
+	{
+		# Test - NewByNameAndResourceGroupAndBicepTemplateFile
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile sampleDeploymentBicepFile.bicep
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		# Test - Set-AzSubscriptionDeploymentStacks using templateSpecs
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $stackname -TemplateSpec $resourceId -TemplateParameterFile StacksTemplateParams.json -Location $rglocation
-		$id = $deployment.id
-
-		# Assert
+		# Test - Set-AzSubscriptionDeploymentStacks
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile sampleDeploymentBicepFile2.bicep
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-
 	}
 
-	finally
-    {
+	finally 
+	{
         # Cleanup
-        Clean-ResourceGroup $rgname
-		Clean-DeploymentAtSubscription $stackname
-    }
+        Clean-DeploymentAtSubscription $rname
+	}
 }
+
+ <#
+ .SYNOPSIS
+ Tests NEW, SET, and EXPORT operations on deploymentStacks at the Sub scope using template specs.
+ #>
+ function Test-NewAndSetAndExportSubscriptionDeploymentStackWithTemplateSpec
+ {
+ 	# Setup
+ 	$rgname = Get-ResourceGroupName
+ 	$rname = Get-ResourceName
+ 	$stackname = Get-ResourceName
+ 	$rglocation = "West US 2"
+	$location = "West US 2"
+
+ 	try 
+	{
+ 		# Prepare
+ 		New-AzResourceGroup -Name $rgname -Location $rglocation
+ 		$sampleTemplateJson = Get-Content -Raw -Path StacksSubTemplate.json
+        $basicCreatedTemplateSpec = New-AzTemplateSpec -ResourceGroupName $rgname -Location $rgLocation -Name $rname -Version "v1" -TemplateJson $sampleTemplateJson -Force
+ 		$resourceId = $basicCreatedTemplateSpec.Id + "/versions/v1"
+
+ 		# Test - New-AzSubscriptionDeploymentStacks using templateSpecs
+ 		$deployment = New-AzSubscriptionDeploymentStack -Name $stackname -TemplateSpec $resourceId -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
+ 		$id = $deployment.id
+ 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+ 		# Test - Set-AzSubscriptionDeploymentStacks using templateSpecs
+ 		$deployment = Set-AzSubscriptionDeploymentStack -Name $stackname -TemplateSpec $resourceId -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
+ 		$id = $deployment.id
+ 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+
+		# Test - Export-AzSubscriptionDeploymentStack checking for template link
+		$template = Export-AzSubscriptionDeploymentStackTemplate -Name $stackname
+		Assert-NotNull $template
+		Assert-NotNull $template.TemplateLink
+		Assert-Null $template.Template
+ 	}
+
+ 	finally
+     {
+         # Cleanup
+         Clean-ResourceGroup $rgname
+		 Clean-DeploymentAtSubscription $rname
+     }
+ }
 
  <#
 .SYNOPSIS
@@ -1383,65 +910,52 @@ function Test-RemoveSubscriptionDeploymentStack
 {
 	# Setup
 	$rname = Get-ResourceName
-	$rglocation = "West US 2"
 	$subId = (Get-AzContext).Subscription.SubscriptionId
+	$location = "West US 2"
 
 	try {
+		# --- RemoveByResourceIdParameterSetName ---
 
-		# Test - RemoveByResourceId
-
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Force
+		# Test - Success
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
 		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
-
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		$deployment = Remove-AzSubscriptionDeploymentStack -Id $resourceId -Force
+		Assert-AreEqual "true" $deployment
 
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "detach" $deployment.Resources
-		Assert-AreEqual "detach" $deployment.ResourceGroups
+		# Test - Failure - Bad ID form 
+		$badId = "a/bad/id"
+		$exceptionMessage = "Provided Id '$badId' is not in correct form. Should be in form /subscriptions/<subid>/providers/Microsoft.Resources/deploymentStacks/<stackname>"
+		Assert-Throws { Remove-AzSubscriptionDeploymentStack -Id $badId -Force } $exceptionMessage
 
-		# Test - RemoveByNameAndResourceGroupName with DeleteResources set
+		# --- RemoveByNameParameterSetName --- 
 
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
+		# Test - Failure - Stack NotFound
+		$badStackName = "badstack1928273615"
+		$exceptionMessage = "DeploymentStack '$badStackName' not found in the curent subscription scope."
+		Assert-Throws { Remove-AzSubscriptionDeploymentStack -StackName $badStackName -Force } $exceptionMessage
 
+		# Test - Success - DeleteResources
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		$deployment = Remove-AzSubscriptionDeploymentStack -Name $rname -DeleteResources -Force
+		Assert-AreEqual "true" $deployment
 
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.Resources
-		Assert-AreEqual "detach" $deployment.ResourceGroups
-
-		# Test - RemoveByNameAndResourceGroupName with DeleteResources and DeleteResoueceGroups set
-
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Force
-
+		# Test - Success - DeleteResources and DeleteResourceGroups
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		$deployment = Remove-AzSubscriptionDeploymentStack -Name $rname -DeleteResources -DeleteResourceGroups -Force
+		Assert-AreEqual "true" $deployment
 
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.Resources
-		Assert-AreEqual "delete" $deployment.ResourceGroups
-
-		# Test - RemoveByNameAndResourceGroupName with DeleteAll set
-
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Force
-
+		# Test - Success - DeleteAll
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		$deployment = Remove-AzSubscriptionDeploymentStack -Name $rname -DeleteAll -Force
-
-		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.Resources
-		Assert-AreEqual "delete" $deployment.ResourceGroups
-
-		# Test - Setting a stack with only DeleteResourceGroups set which should error
-
-		$exceptionMessage = "Remove-AzSubscriptionDeploymentStack: Operation returned an invalid status code 'BadRequest' : DeploymentStackInvalidDeploymentStackDefinition : Deployment stack definition is invalid - ActionOnUnmanage is not correctly defined. Cannot set Resources to 'Detach' and Resource Groups to 'Delete'."
-		
-		Assert-Throws { Remove-AzSubscriptionDeploymentStack -Name $rname -DeleteResourceGroups -Force } $exceptionMessage
+		Assert-AreEqual "true" $deployment
 	}
 
 	finally
@@ -1459,44 +973,40 @@ function Test-ExportSubscriptionDeploymentStackTemplate
 {
 	# Setup
 	$rname = Get-ResourceName
-	$rglocation = "West US 2"
 	$subId = (Get-AzContext).Subscription.SubscriptionId
+	$location = "West US 2"
 
 	try 
 	{
-
-		# Test - Attempt to Export nonexistant template
-		$errorMessage = "Export-AzSubscriptionDeploymentStackTemplate: DeploymentStack '$rname' not found."
-		try 
-		{
-			Export-AzSubscriptionDeploymentStackTemplate -Name $rname
-		}
-		catch 
-		{
-			# $outputMessage = $_
-			# Assert-AreEqual $outputMessage $errorMessage
-		}
+		# TODO: Testing with TemplateLink
 
 		# Prepare
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
 		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
-		
-		# Assert
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		# Test - ExportByNameAndResourceGroupName
-		$deployment = Export-AzSubscriptionDeploymentStackTemplate -Name $rname 
+		# --- ExportByResourceIdParameterSetName ---
+		$badId = "a/bad/id"
+		$exceptionMessage = "Provided Id '$badId' is not in correct form. Should be in form /subscriptions/<subid>/providers/Microsoft.Resources/deploymentStacks/<stackname>"
+		Assert-Throws { Export-AzSubscriptionDeploymentStackTemplate -Id $badId } $exceptionMessage
 
-		# Assert
-		Assert-NotNull $deployment
-		Assert-NotNull $deployment.Template
-
-		# Test - ExportByResourceId
+		# Test - Success
 		$deployment = Export-AzSubscriptionDeploymentStackTemplate -Id $resourceId
-
-		# Assert
 		Assert-NotNull $deployment
 		Assert-NotNull $deployment.Template
+
+		# --- ExportByNameAndResourceGroupName ---
+		
+		# Test - Failure - Stack NotFound
+		# TODO: Bug in subscription stack export not returning NotFound
+		#$badStackName = "badStack1928273615"
+		#$exceptionMessage = "DeploymentStack '$badStackName' not found in the curent subscription scope."
+		#Assert-Throws { Export-AzSubscriptionDeploymentStackTemplate -Name $badStackName } $exceptionMessage
+
+		# Test - Success
+		$deployment = Export-AzSubscriptionDeploymentStackTemplate -Name $rname
+		Assert-NotNull $deployment
+		Assert-NotNull $deployment.Template 
 	}
 
 	finally
@@ -1508,51 +1018,9 @@ function Test-ExportSubscriptionDeploymentStackTemplate
 
 # ---------- Management Group Scope Tests ----------
 
-<#
-.SYNOPSIS
-Tests GET operation on deploymentStacks at the Management Group scope.
-#>
-function Test-GetManagementGroupDeploymentStack
-{
-	# Setup
-	$rgname = Get-ResourceGroupName
-	$rname = Get-ResourceName
-	$location = "West US 2"
+# TODO: Will pick up ManagementGroup scenario testing when it is available.
 
-	try
-	{
-		# Prepare 
-		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -Location $location -TemplateFile StacksMGTemplate.json -TemplateParameterFile StacksMGTemplateParams.json
-		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
-
-		# Test - GetByName
-		$getByName = Get-AzManagementGroupDeploymentStack -Name $rname 
-
-		# Assert
-		Assert-NotNull $getByName
-
-		# Test - GetByResourceId
-		$getByResourceId = Get-AzManagementGroupDeploymentStack -ResourceId $resourceId
-
-		#Assert
-		Assert-NotNull $getByResourceId
-
-		#Test - ListByResourceGroupName
-		$list = Get-AzManagementGroupDeploymentStack
-
-		# Assert
-		Assert-AreNotEqual 0 $list.Count
-		Assert-True { $list.name.contains($rname) }
-	}
-	finally
-    {
-        # Cleanup
-		# TODO: Cleanup management group scope
-        Clean-DeploymentAtSubscription $rname
-    }
-}
-
-# ---------- Snapshot Tests ----------
+# ----------  (Deprecated) Snapshot Tests ----------
 
 <#
 .SYNOPSIS

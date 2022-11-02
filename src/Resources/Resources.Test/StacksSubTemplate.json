@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.10.61.36676",
-      "templateHash": "11056049241108829469"
+      "version": "0.11.1.770",
+      "templateHash": "3437006507074710972"
     }
   },
   "parameters": {
@@ -63,8 +63,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.10.61.36676",
-              "templateHash": "17153633978902658024"
+              "version": "0.11.1.770",
+              "templateHash": "611995206432819389"
             }
           },
           "parameters": {
@@ -115,7 +115,10 @@
             }
           ]
         }
-      }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('rgName'))]"
+      ]
     }
   ]
 }
