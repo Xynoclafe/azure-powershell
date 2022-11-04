@@ -56,14 +56,14 @@ namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestSetResourceGroupDeploymentStack()
         {
-            TestRunner.RunTestScript("Test-NewResourceGroupDeploymentStack");
+            TestRunner.RunTestScript("Test-SetResourceGroupDeploymentStack");
         }
 
         [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestSetResourceGroupDeploymentStackUnmanageActions()
         {
-            TestRunner.RunTestScript("Test-NewResourceGroupDeploymentStackUnmanageActions");
+            TestRunner.RunTestScript("Test-SetResourceGroupDeploymentStackUnmanageActions");
         }
 
         [Fact()]
@@ -133,14 +133,14 @@ namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestSetSubscriptionDeploymentStack()
         {
-            TestRunner.RunTestScript("Test-NewSubscriptionDeploymentStack");
+            TestRunner.RunTestScript("Test-SetSubscriptionDeploymentStack");
         }
 
         [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestSetSubscriptionDeploymentStackUnmanageActions()
         {
-            TestRunner.RunTestScript("Test-NewSubscriptionDeploymentStackUnmanageActions");
+            TestRunner.RunTestScript("Test-SetSubscriptionDeploymentStackUnmanageActions");
         }
 
         [Fact()]
@@ -152,9 +152,9 @@ namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
 
         [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestNewAndSetSubscriptionDeploymentStackWithTemplateSpec()
+        public void TestNewAndSetAndExportSubscriptionDeploymentStackWithTemplateSpec()
         {
-            TestRunner.RunTestScript("Test-NewAndSetSubscriptionDeploymentStackWithTemplateSpec");
+            TestRunner.RunTestScript("Test-NewAndSetAndExportSubscriptionDeploymentStackWithTemplateSpec");
         }
 
         [Fact()]

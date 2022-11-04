@@ -228,7 +228,7 @@ function Test-SetResourceGroupDeploymentStack
 
 		# Test - Failure - template file not found
 		$missingFile = "missingFile142.json"
-		$exceptionMessage = "The provided file '$missingFile' doesn't exist"
+		$exceptionMessage = "The provided file $missingFile doesn't exist"
 		Assert-Throws { Set-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile $missingFile -Force } $exceptionMessage
 
 		# Test - Failure - RG does not exist
@@ -245,7 +245,7 @@ function Test-SetResourceGroupDeploymentStack
 		# Test - Failure - template parameter file not found
 		$missingFile = "missingFile145.json"
 		# TODO: File does not exist error messages should be the same.
-		$exceptionMessage = "The provided file '$missingFile' doesn't exist"
+		$exceptionMessage = "The provided file $missingFile doesn't exist"
 		$partialExceptionMessage = "does not exist"
 		Assert-ThrowsContains { Set-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile $missingFile -Force } $partialExceptionMessage
 
@@ -353,11 +353,11 @@ function Test-NewAndSetResourceGroupDeploymentStackWithBicep
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 
 		# Test - NewByNameAndResourceGroupAndBicepTemplateFile
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleDeploymentBicepFile.bicep
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.bicep -TemplateParameterFile StacksRGTemplateParams.json
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		# Test - Set-AzResourceGroupDeploymentStacks
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile sampleDeploymentBicepFile2.bicep
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.bicep -TemplateParameterFile StacksRGTemplateParams.json
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 	}
 
@@ -629,7 +629,7 @@ function Test-NewSubscriptionDeploymentStack
 		# --- ParameterObjectTemplateFileParameterSetName ---
 
 		# Test - Success
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -TemplateParameterObject @{location = $location} -Location $location -Force
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -TemplateParameterObject @{location = "westus"} -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 	}
 
@@ -713,7 +713,7 @@ function Test-NewSubscriptionDeploymentStackDenySettings
 .SYNOPSIS
 Tests SET operation on deployment stacks at the Sub scope.
 #>
-function Test-SetResourceGroupDeploymentStack
+function Test-SetSubscriptionDeploymentStack
 {
 	# Setup
 	$rname = Get-ResourceName
@@ -730,7 +730,7 @@ function Test-SetResourceGroupDeploymentStack
 
 		# Test - Failure - template file not found
 		$missingFile = "missingFile142.json"
-		$exceptionMessage = "The provided file '$missingFile' doesn't exist"
+		$exceptionMessage = "The provided file $missingFile doesn't exist"
 		Assert-Throws { Set-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile $missingFile -Location $location -Force } $exceptionMessage
 
 		# --- ParameterFileTemplateFileParameterSetName ---
@@ -742,14 +742,14 @@ function Test-SetResourceGroupDeploymentStack
 		# Test - Failure - template parameter file not found
 		$missingFile = "missingFile145.json"
 		# TODO: Figure out if these two error messages should be the same.
-		$exceptionMessage = "The provided file '$missingFile' doesn't exist"
+		$exceptionMessage = "The provided file $missingFile doesn't exist"
 		$partialExceptionMessage = "does not exist"
 		Assert-ThrowsContains { Set-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -TemplateParameterFile $missingFile -Location $location -Force } $partialExceptionMessage
 
 		# --- ParameterObjectTemplateFileParameterSetName ---
 
 		# Test - Success
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -TemplateParameterObject @{location = $location} -Force
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -Location $location -TemplateParameterObject @{location = "westus"} -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 	}
 
@@ -837,15 +837,16 @@ function Test-NewAndSetSubscriptionDeploymentStackWithBicep
 {
 	# Setup
 	$rname = Get-ResourceName
+	$location = "West US 2"
 	
 	try 
 	{
 		# Test - NewByNameAndResourceGroupAndBicepTemplateFile
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile sampleDeploymentBicepFile.bicep
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.bicep -TemplateParameterFile StacksSubTemplateParams.json -Location $location
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		# Test - Set-AzSubscriptionDeploymentStacks
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile sampleDeploymentBicepFile2.bicep
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate2.bicep -TemplateParameterFile StacksSubTemplateParams.json -Location $location
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 	}
 
