@@ -6,8 +6,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
     {
         public string Template { get; set; }
 
-        //public PSDeploymentStackTemplateLink TemplateLink { get; set; }
-        public DeploymentStacksTemplateLink TemplateLink { get; set; }
+        public PSDeploymentStackTemplateLink TemplateLink { get; set; }
 
         internal PSDeploymentStackTemplateDefinition(object template, DeploymentStacksTemplateLink link)
         {
@@ -15,8 +14,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
             {
                 Template = template.ToString();
             }
-            //TemplateLink = new PSDeploymentStackTemplateLink(link);
-            TemplateLink = link;
+            if (link != null)
+            {
+                TemplateLink = new PSDeploymentStackTemplateLink(link);
+            }
         }
     }
 }

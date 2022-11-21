@@ -182,7 +182,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                             return null;
                         else
                             throw new PSArgumentException(
-                            $"DeploymentStack '{deploymentStackName}' in Management Group '{managementGroupId}' not found."
+                            $"DeploymentStack '{deploymentStackName}' not found in Management Group '{managementGroupId}'."
                         );
                     }
                     else
@@ -307,7 +307,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                             return null;
                         else
                             throw new PSArgumentException(
-                            $"DeploymentStack '{deploymentStackName}' not found in current management group scope."
+                            $"DeploymentStack '{deploymentStackName}' not found in management group '{managementGroupId}'."
                         );
                     }
                     else
@@ -357,7 +357,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             string templateSpec,
             string parameterUri,
             Hashtable parameters,
-            string description,
+            string description, 
             string resourcesCleanupAction,
             string resourceGroupsCleanupAction,
             string managementGroupsCleanupAction,
@@ -378,7 +378,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             {
                 Mode = denySettingsMode,
                 ExcludedPrincipals = denySettingsExcludedPrincipales,
-                ExcludedActions = denySettingsExcludedActions
+                ExcludedActions = denySettingsExcludedActions,
+                ApplyToChildScopes = denySettingsApplyToChildScopes
             };
 
             var deploymentStackModel = new DeploymentStack
@@ -457,17 +458,14 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
         internal void DeleteSubscriptionDeploymentStack(string name, string resourcesCleanupAction, string resourceGroupsCleanupAction)
         {
-            var deleteResponse = DeploymentStacksClient.DeploymentStacks
-                    .DeleteAtSubscriptionWithHttpMessagesAsync(name, resourcesCleanupAction, resourceGroupsCleanupAction)
-                    .GetAwaiter()
-                    .GetResult();
+            var deleteResponse = DeploymentStacksClient.DeploymentStacks.DeleteAtSubscription(name, resourcesCleanupAction, resourceGroupsCleanupAction);
 
-            if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
+/*            if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
                 throw new PSArgumentException(
                         $"DeploymentStack '{name}' not found in the curent subscription scope."
                     );
-            }
+            }*/
 
             return;
         }
@@ -501,7 +499,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             {
                 Mode = denySettingsMode,
                 ExcludedPrincipals = denySettingsExcludedPrincipales,
-                ExcludedActions = denySettingsExcludedActions
+                ExcludedActions = denySettingsExcludedActions,
+                ApplyToChildScopes = denySettingsApplyToChildScopes
             };
 
             var deploymentStackModel = new DeploymentStack
@@ -572,7 +571,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
                 throw new PSArgumentException(
-                        $"DeploymentStack '{name}' not found in the curent management group scope."
+                        $"DeploymentStack '{name}' not found in management group '{managementGroupId}'."
                     );
             }
 
@@ -609,6 +608,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                 Mode = denySettingsMode,
                 ExcludedPrincipals = denySettingsExcludedPrincipales,
                 ExcludedActions = denySettingsExcludedActions,
+                ApplyToChildScopes = denySettingsApplyToChildScopes
             };
 
             var deploymentStackModel = new DeploymentStack

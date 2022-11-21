@@ -514,13 +514,20 @@
 							  <Label>ProvisioningState</Label>
 							  <PropertyName>provisioningState</PropertyName>
 						  </ListItem>
+              <ListItem>
+                <Label>Parameters</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.Parameters -ne $null -And $_.Parameters.Keys.Count -ne 0</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$s = ""; foreach($v in $_.Parameters.Keys) { $n = ""; if ($s -ne "") { $n = "`n"; } $s = $s + $n + "{" + "Name: " + $v + ", Type: " + $_.Parameters[$v].Type + ", " + "Value: " + $_.Parameters[$v].Value + "}"} $s;</ScriptBlock>
+              </ListItem>
 						  <ListItem>
 							  <Label>ResourcesCleanupAction</Label>
-                <ScriptBlock>$_.ActionOnUnmanage.Resources</ScriptBlock>
+                <PropertyName>resourcesCleanupAction</PropertyName>
 						  </ListItem>
               <ListItem>
                 <Label>ResourceGroupsCleanupAction</Label>
-                <ScriptBlock>$_.ActionOnUnmanage.ResourceGroups</ScriptBlock>
+                <PropertyName>resourceGroupsCleanupAction</PropertyName>
               </ListItem>
               <ListItem>
                 <Label>DenySettingsMode</Label>
@@ -564,6 +571,13 @@
 							  </ItemSelectionCondition>
 							  <ScriptBlock>$_.snapshotId</ScriptBlock>
 						  </ListItem>
+              <ListItem>
+                <Label>Outputs</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.Outputs -ne $null -And $_.Outputs.Keys.Count -ne 0</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$s = ""; foreach($v in $_.Outputs.Keys) { $n = ""; if ($s -ne "") { $n = "`n"; } $s = $s + $n + "{" + "Name: " + $v + ", Type: " + $_.Outputs[$v].Type + ", " + "Value: " + $_.Outputs[$v].Value + "}"} $s;</ScriptBlock>
+              </ListItem>
               <ListItem>
                 <Label>Resources</Label>
                 <ItemSelectionCondition>
@@ -627,11 +641,11 @@
 						  </ListItem>
               <ListItem>
                 <Label>ResourcesCleanupAction</Label>
-                <ScriptBlock>$_.ActionOnUnmanage.Resources</ScriptBlock>
+                <PropertyName>resourcesCleanupAction</PropertyName>
               </ListItem>
               <ListItem>
                 <Label>ResourceGroupsCleanupAction</Label>
-                <ScriptBlock>$_.ActionOnUnmanage.ResourceGroups</ScriptBlock>
+                <PropertyName>resourceGroupsCleanupAction</PropertyName>
               </ListItem>
               <ListItem>
 							  <Label>DenySettingsMode</Label>
@@ -729,7 +743,7 @@
                 <ItemSelectionCondition>
                   <ScriptBlock>$_.templatelink -ne $null</ScriptBlock>
                 </ItemSelectionCondition>
-                <ScriptBlock>if ($_.templatelink.id) { $_.templatelink.id } else { $_.templatelink.uri }</ScriptBlock>
+                <ScriptBlock>ConvertTo-Json $_.templatelink</ScriptBlock>
               </ListItem>
             </ListItems>
           </ListEntry>
@@ -746,35 +760,35 @@
           <ListEntry>
             <ListItems>
               <ListItem>
-                <Label>TemplateLink.Id</Label>
+                <Label>Id</Label>
                 <ItemSelectionCondition>
                   <ScriptBlock>$_.Id -ne $null</ScriptBlock>
                 </ItemSelectionCondition>
                 <ScriptBlock>$_.Id</ScriptBlock>
               </ListItem>
               <ListItem>
-                <Label>TemplateLink.Uri</Label>
+                <Label>Uri</Label>
                 <ItemSelectionCondition>
                   <ScriptBlock>$_.Uri -ne $null</ScriptBlock>
                 </ItemSelectionCondition>
                 <ScriptBlock>$_.Uri</ScriptBlock>
               </ListItem>
               <ListItem>
-                <Label>TemplateLink.ContentVersion</Label>
+                <Label>ContentVersion</Label>
                 <ItemSelectionCondition>
                   <ScriptBlock>$_.ContentVersion -ne $null</ScriptBlock>
                 </ItemSelectionCondition>
                 <ScriptBlock>$_.ContentVersion</ScriptBlock>
               </ListItem>
               <ListItem>
-                <Label>TemplateLink.RelativePath</Label>
+                <Label>RelativePath</Label>
                 <ItemSelectionCondition>
                   <ScriptBlock>$_.RelativePath -ne $null</ScriptBlock>
                 </ItemSelectionCondition>
                 <ScriptBlock>$_.RelativePath</ScriptBlock>
               </ListItem>
               <ListItem>
-                <Label>TemplateLink.QueryString</Label>
+                <Label>QueryString</Label>
                 <ItemSelectionCondition>
                   <ScriptBlock>$_.QueryString -ne $null</ScriptBlock>
                 </ItemSelectionCondition>

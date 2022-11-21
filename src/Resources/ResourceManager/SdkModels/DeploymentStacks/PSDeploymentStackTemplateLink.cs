@@ -20,11 +20,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
 
         internal PSDeploymentStackTemplateLink(DeploymentStacksTemplateLink link)
         {
-            link.Uri = Uri;
-            link.Id = Id;
-            link.RelativePath = RelativePath;
-            link.QueryString = QueryString;
-            link.ContentVersion = ContentVersion; 
+            Uri = link.Uri;
+            Id = link.Id;
+            RelativePath = link.RelativePath;
+            QueryString = link.QueryString;
+            ContentVersion = link.ContentVersion; 
         }
     }
 }
