@@ -39,12 +39,12 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         public string ResourceId { get; set; }
 
         [Alias("StackName")]
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ExportByNameAndManagementGroupIdParameterSetName, 
+        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ExportByNameAndManagementGroupIdParameterSetName, 
             HelpMessage = "The name of the DeploymentStack to get")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
-        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ExportByNameAndManagementGroupIdParameterSetName,
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ExportByNameAndManagementGroupIdParameterSetName,
             HelpMessage = "The id of the ManagementGroup where the DeploymentStack is deployed")]
         [ValidateNotNullOrEmpty]
         public string ManagementGroupId { get; set; }

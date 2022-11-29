@@ -38,14 +38,14 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         [ValidateNotNullOrEmpty]
         public string ResourceId { get; set; }
 
-        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ExportByNameAndResourceGroupNameParameterSetName,
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ExportByNameAndResourceGroupNameParameterSetName,
              HelpMessage = "The name of the ResourceGroup where the DeploymentStack is deployed")]
         [ResourceGroupCompleter]
         [ValidateNotNullOrEmpty]
         public string ResourceGroupName { get; set; }
 
         [Alias("StackName")]
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ExportByNameAndResourceGroupNameParameterSetName,
+        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ExportByNameAndResourceGroupNameParameterSetName,
              HelpMessage = "The name of the DeploymentStack to get")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }

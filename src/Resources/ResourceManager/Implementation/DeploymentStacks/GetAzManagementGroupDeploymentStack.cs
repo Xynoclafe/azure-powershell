@@ -32,7 +32,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         internal const string ListByManagementGroupIdParameterSetName = "ListByManagmentGroupId";
 
         [Alias("StackName")]
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByManagementGroupIdAndStackNameParameterSetName, 
+        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByManagementGroupIdAndStackNameParameterSetName, 
             HelpMessage = "The name of the DeploymentStack to get")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
@@ -45,7 +45,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = ListByManagementGroupIdParameterSetName,
              HelpMessage = "The id of the ManagementGroup where the DeploymentStack is deployed")]
-        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByManagementGroupIdAndStackNameParameterSetName,
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByManagementGroupIdAndStackNameParameterSetName,
             HelpMessage = "The id of the ManagementGroup where the DeploymentStack is deployed")]
         [ValidateNotNullOrEmpty]
         public string ManagementGroupId { get; set; }

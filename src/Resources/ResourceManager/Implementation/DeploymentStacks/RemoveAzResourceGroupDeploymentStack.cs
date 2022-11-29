@@ -32,12 +32,12 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         internal const string RemoveByNameAndResourceGroupNameParameterSetName = "RemoveByNameAndResourceGroupName";
 
         [Alias("StackName")]
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByNameAndResourceGroupNameParameterSetName,
+        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByNameAndResourceGroupNameParameterSetName,
             HelpMessage = "The name of the deploymentStack to delete")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
-        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByNameAndResourceGroupNameParameterSetName,
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByNameAndResourceGroupNameParameterSetName,
         HelpMessage = "The name of the Resource Group with the stack to delete")]
         [ResourceGroupCompleter]
         [ValidateNotNullOrEmpty]

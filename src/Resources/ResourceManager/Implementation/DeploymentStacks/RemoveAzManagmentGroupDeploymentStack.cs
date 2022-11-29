@@ -31,7 +31,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         internal const string RemoveByResourceNameParameterSetName = "RemoveByResourceName";
 
         [Alias("StackName")]
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceNameParameterSetName,
+        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceNameParameterSetName,
             HelpMessage = "The name of the DeploymentStack to delete")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
@@ -42,7 +42,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         [ValidateNotNullOrEmpty]
         public string ResourceId { get; set; }
 
-        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, 
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, 
             HelpMessage = "The id of the ManagementGroup where the DeploymentStack is being deleted")]
         [ValidateNotNullOrEmpty]
         public string ManagementGroupId { get; set; }
