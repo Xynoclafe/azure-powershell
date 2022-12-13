@@ -177,5 +177,12 @@ namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
         {
             TestRunner.RunTestScript("Test-RemoveSubscriptionDeploymentStack");
         }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestGetManagementGroupDeploymentStack()
+        {
+            TestRunner.RunTestScript("Test-GetManagementGroupDeploymentStack");
+        }
     }
 }
