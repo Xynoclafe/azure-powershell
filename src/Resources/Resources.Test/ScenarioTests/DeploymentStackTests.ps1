@@ -149,8 +149,8 @@ function Test-NewResourceGroupDeploymentStackUnmanageActions
 
 		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "detach" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "detach" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteResources set 
 		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
@@ -158,8 +158,8 @@ function Test-NewResourceGroupDeploymentStackUnmanageActions
 
 		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteResources -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "detach" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteResources and ResourceGroups set 
 		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Force
@@ -167,8 +167,8 @@ function Test-NewResourceGroupDeploymentStackUnmanageActions
 
 		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteResources -DeleteResourceGroups -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "delete" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteAll set 
 		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Force
@@ -176,8 +176,8 @@ function Test-NewResourceGroupDeploymentStackUnmanageActions
 
 		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteAll -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "delete" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a stack with only DeleteResourceGroups set which should fail
 		$exceptionMessage = "Operation returned an invalid status code 'BadRequest' : DeploymentStackInvalidDeploymentStackDefinition : Deployment stack definition is invalid - ActionOnUnmanage is not correctly defined. Cannot set Resources to 'Detach' and Resource Groups to 'Delete'."
@@ -193,9 +193,9 @@ function Test-NewResourceGroupDeploymentStackUnmanageActions
 
 <#
 .SYNOPSIS
-Tests NEW operation with deny settings on deploymentStacks at the RG scope.
+Tests NEW and SET operations with deny settings on deploymentStacks at the RG scope.
 #>
-function Test-NewResourceGroupDeploymentStackDenySettings
+function Test-NewAndSetResourceGroupDeploymentStackDenySettings
 {
 	# Setup
 	$rgname = Get-ResourceGroupName
@@ -207,10 +207,15 @@ function Test-NewResourceGroupDeploymentStackDenySettings
 		# Prepare
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 
-		# Test - All DenySettings Parameters
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -DenySettingsMode DenyDelete -DenySetingsApplyToChildScopes -DenySettingsExcludedAction @("a1", "a2") -DenySettingsExcludedPrinciples @("p1", "p2") -Force
+		# Test - NEW - DenySettingsMode and ApplyToChildScopes
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -DenySettingsMode DenyDelete -DenySettingsApplyToChildScopes -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "DenyDelete" $deployment.DenySettingsMode
+		Assert-AreEqual "DenyDelete" $deployment.DenySettings.Mode
+
+		# Test - SET - DenySettingsMode and ApplyToChildScopes
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -DenySettingsMode DenyDelete -DenySettingsApplyToChildScopes -Force
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+		Assert-AreEqual "DenyDelete" $deployment.DenySettings.Mode
 	}
 
 	finally
@@ -240,8 +245,10 @@ function Test-SetResourceGroupDeploymentStack
 		
 		# --- ParameterlessTemplateFileParameterSetName ---
 
-		# Test - Success
+		# Test - Success SET after NEW
 		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile blankTemplate.json -Force
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		# Test - Failure - template file not found
@@ -301,8 +308,8 @@ function Test-SetResourceGroupDeploymentStackUnmanageActions
 
 		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "detach" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "detach" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteResources set 
 		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
@@ -310,8 +317,8 @@ function Test-SetResourceGroupDeploymentStackUnmanageActions
 		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteResources -Force
 
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "detach" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteResources and ResourceGroups set 
 		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Force
@@ -319,8 +326,8 @@ function Test-SetResourceGroupDeploymentStackUnmanageActions
 		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteResources -DeleteResourceGroups -Force
 
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "delete" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteAll set 
 		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Force
@@ -328,8 +335,8 @@ function Test-SetResourceGroupDeploymentStackUnmanageActions
 		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DeleteAll -Force
 
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "delete" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a stack with only DeleteResourceGroups set which should error 
 		$exceptionMessage = "Operation returned an invalid status code 'BadRequest' : DeploymentStackInvalidDeploymentStackDefinition : Deployment stack definition is invalid - ActionOnUnmanage is not correctly defined. Cannot set Resources to 'Detach' and Resource Groups to 'Delete'."
@@ -341,15 +348,6 @@ function Test-SetResourceGroupDeploymentStackUnmanageActions
         # Cleanup
         Clean-ResourceGroup $rgname
     }
-}
-
-<#
-.SYNOPSIS
-Tests SET operation with deny settings on deploymentStacks at the RG scope.
-#>
-function Test-SetResourceGroupDeploymentStackDenySettings
-{
-	# TODO
 }
 
 <#
@@ -369,11 +367,11 @@ function Test-NewAndSetResourceGroupDeploymentStackWithBicep
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 
 		# Test - NewByNameAndResourceGroupAndBicepTemplateFile
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.bicep -TemplateParameterFile StacksRGTemplateParams.json
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGBicepTest1.bicep -TemplateParameterFile StacksRGTemplateParams.json
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		# Test - Set-AzResourceGroupDeploymentStacks
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.bicep -TemplateParameterFile StacksRGTemplateParams.json
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGBicepTest2.bicep -TemplateParameterFile StacksRGTemplateParams.json
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 	}
 
@@ -672,8 +670,8 @@ function Test-NewSubscriptionDeploymentStackUnmanageActions
 
 		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "detach" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "detach" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteResources set 
 		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
@@ -681,8 +679,8 @@ function Test-NewSubscriptionDeploymentStackUnmanageActions
 
 		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteResources -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "detach" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteResources and ResourceGroups set 
 		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
@@ -690,8 +688,8 @@ function Test-NewSubscriptionDeploymentStackUnmanageActions
 
 		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteResources -DeleteResourceGroups -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "delete" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteAll set 
 		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
@@ -699,8 +697,8 @@ function Test-NewSubscriptionDeploymentStackUnmanageActions
 
 		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteAll -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "delete" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a stack with only DeleteResourceGroups set which should fail
 		$exceptionMessage = "Operation returned an invalid status code 'BadRequest' : DeploymentStackInvalidDeploymentStackDefinition : Deployment stack definition is invalid - ActionOnUnmanage is not correctly defined. Cannot set Resources to 'Detach' and Resource Groups to 'Delete'."
@@ -716,9 +714,9 @@ function Test-NewSubscriptionDeploymentStackUnmanageActions
 
 <#
 .SYNOPSIS
-Tests NEW operation with deny settings on deploymentStacks at the Sub scope.
+Tests NEW and SET operations with deny settings on deploymentStacks at the Sub scope.
 #>
-function Test-NewSubscriptionDeploymentStackDenySettings
+function Test-NewAndSetSubscriptionDeploymentStackDenySettings
 {
 	# Setup
 	$rname = Get-ResourceName
@@ -726,10 +724,15 @@ function Test-NewSubscriptionDeploymentStackDenySettings
 
 	try 
 	{
-		# Test - All DenySettings Parameters
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -Location $location -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -DenySettingsMode DenyDelete -DenySetingsApplyToChildScopes -DenySettingsExcludedAction @("a1", "a2") -DenySettingsExcludedPrinciples @("p1", "p2") -Force
+		# Test - NEW- DenySettingsMode and ApplyToChildScopes
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -DenySettingsMode DenyDelete -DenySettingsApplyToChildScopes -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "DenyDelete" $deployment.DenySettingsMode
+		Assert-AreEqual "DenyDelete" $deployment.DenySettings.Mode
+
+		# Test - SET - DenySettingsMode and ApplyToChildScopes
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -Location $location -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -DenySettingsMode DenyDelete -DenySettingsApplyToChildScopes -Force
+		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+		Assert-AreEqual "DenyDelete" $deployment.DenySettings.Mode
 	}
 
 	finally
@@ -800,40 +803,40 @@ function Test-SetSubscriptionDeploymentStackUnmanageActions
 	try 
 	{
 		# Test - Setting a blank stack with no flags set
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname  -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Location $location -Force
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "detach" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "detach" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteResources set 
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Location $location -Force
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteResources -Location $location -Force
 
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "detach" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteResources and ResourceGroups set 
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Location $location -Force
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteResources -DeleteResourceGroups -Location $location -Force
 
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "delete" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteAll set 
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Location $location -Force
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile blankTemplate.json -DeleteAll -Location $location -Force
 
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "delete" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a stack with only DeleteResourceGroups set which should error 
 		$exceptionMessage = "Operation returned an invalid status code 'BadRequest' : DeploymentStackInvalidDeploymentStackDefinition : Deployment stack definition is invalid - ActionOnUnmanage is not correctly defined. Cannot set Resources to 'Detach' and Resource Groups to 'Delete'."
@@ -849,16 +852,7 @@ function Test-SetSubscriptionDeploymentStackUnmanageActions
 
 <#
 .SYNOPSIS
-Tests SET operation with deny settings on deploymentStacks at the Sub scope.
-#>
-function Test-SetSubscriptionDeploymentStackDenySettings
-{
-	# TODO
-}
-
-<#
-.SYNOPSIS
-Tests NEW operation on deploymentStacks at the Sub scope with bicep file.
+Tests NEW and SET operations on deploymentStacks at the Sub scope with bicep file.
 #>
 function Test-NewAndSetSubscriptionDeploymentStackWithBicep
 {
@@ -869,11 +863,11 @@ function Test-NewAndSetSubscriptionDeploymentStackWithBicep
 	try 
 	{
 		# Test - NewByNameAndResourceGroupAndBicepTemplateFile
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.bicep -TemplateParameterFile StacksSubTemplateParams.json -Location $location
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubBicepTest1.bicep -TemplateParameterFile StacksSubTemplateParams.json -Location $location
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		# Test - Set-AzSubscriptionDeploymentStacks
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate2.bicep -TemplateParameterFile StacksSubTemplateParams.json -Location $location
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubBicepTest2.bicep -TemplateParameterFile StacksSubTemplateParams.json -Location $location
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 	}
 
@@ -960,9 +954,10 @@ function Test-RemoveSubscriptionDeploymentStack
 		# --- RemoveByNameParameterSetName --- 
 
 		# Test - Failure - Stack NotFound
-		$badStackName = "badstack1928273615"
-		$exceptionMessage = "DeploymentStack '$badStackName' not found in the curent subscription scope."
-		Assert-Throws { Remove-AzSubscriptionDeploymentStack -StackName $badStackName -Force } $exceptionMessage
+		# TODO: Bug in subscription stack export not returning NotFound
+		# $badStackName = "badstack1928273615"
+		# $exceptionMessage = "DeploymentStack '$badStackName' not found in the curent subscription scope."
+		# Assert-Throws { Remove-AzSubscriptionDeploymentStack -StackName $badStackName -Force } $exceptionMessage
 
 		# Test - Success - DeleteResources
 		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
@@ -1004,8 +999,6 @@ function Test-ExportSubscriptionDeploymentStackTemplate
 
 	try 
 	{
-		# TODO: Testing with TemplateLink
-
 		# Prepare
 		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
 		$resourceId = "/subscriptions/$subId/providers/Microsoft.Resources/deploymentStacks/$rname"
@@ -1021,7 +1014,7 @@ function Test-ExportSubscriptionDeploymentStackTemplate
 		Assert-NotNull $deployment
 		Assert-NotNull $deployment.Template
 
-		# --- ExportByNameAndResourceGroupName ---
+		# --- ExportByNameParameterSetName ---
 		
 		# Test - Failure - Stack NotFound
 		# TODO: Bug in subscription stack export not returning NotFound
@@ -1043,6 +1036,8 @@ function Test-ExportSubscriptionDeploymentStackTemplate
 }
 
 # ---------- Management Group Scope Tests ----------
+
+#TODO: Run Tests once MG Support is Ready
 
 <#
 .SYNOPSIS
@@ -1174,8 +1169,8 @@ function Test-NewManagementGroupDeploymentStackUnmanageActions
 
 		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -TemplateFile blankTemplate.json -DeploymentScopeId $subId -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "detach" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "detach" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteResources set 
 		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -TemplateFile StacksMGTemplate.json -TemplateParameterFile StacksMGTemplateParams.json -DeploymentScopeId $subId -Force
@@ -1183,8 +1178,8 @@ function Test-NewManagementGroupDeploymentStackUnmanageActions
 
 		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -TemplateFile blankTemplate.json -DeploymentScopeId $subId -DeleteResources -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "detach" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteResources and ResourceGroups set 
 		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -TemplateFile StacksMGTemplateWithNestedRG.json -TemplateParameterFile StacksMGTemplateWithNestedRGParams.json -DeploymentScopeId $subId -Force
@@ -1192,8 +1187,8 @@ function Test-NewManagementGroupDeploymentStackUnmanageActions
 
 		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -TemplateFile blankTemplate.json -DeleteResources -DeploymentScopeId $subId -DeleteResourceGroups -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "delete" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteAll set 
 		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -TemplateFile StacksMGTemplateWithNestedRG.json -TemplateParameterFile StacksMGTemplateWithNestedRGParams.json -DeploymentScopeId $subId -Force
@@ -1201,8 +1196,8 @@ function Test-NewManagementGroupDeploymentStackUnmanageActions
 
 		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -TemplateFile blankTemplate.json -DeploymentScopeId $subId -DeleteAll -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "delete" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a stack with only DeleteResourceGroups set which should fail
 		$exceptionMessage = "Operation returned an invalid status code 'BadRequest' : DeploymentStackInvalidDeploymentStackDefinition : Deployment stack definition is invalid - ActionOnUnmanage is not correctly defined. Cannot set Resources to 'Detach' and Resource Groups to 'Delete'."
@@ -1303,8 +1298,8 @@ function Test-SetManagementGroupDeploymentStackUnmanageActions
 
 		$deployment = Set-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -TemplateFile blankTemplate.json -DeploymentScopeId $subId -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "detach" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "detach" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteResources set 
 		$deployment = Set-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -TemplateFile StacksMGTemplate.json -TemplateParameterFile StacksMGTemplateParams.json -DeploymentScopeId $subId -Force
@@ -1312,8 +1307,8 @@ function Test-SetManagementGroupDeploymentStackUnmanageActions
 		$deployment = Set-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -TemplateFile blankTemplate.json -DeploymentScopeId $subId -DeleteResources -Force
 
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "detach" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "detach" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteResources and ResourceGroups set 
 		$deployment = Set-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -TemplateFile StacksMGTemplateWithNestedRG.json -TemplateParameterFile StacksMGTemplateWithNestedRGParams.json -DeploymentScopeId $subId -Force
@@ -1321,8 +1316,8 @@ function Test-SetManagementGroupDeploymentStackUnmanageActions
 		$deployment = Set-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -TemplateFile blankTemplate.json -DeploymentScopeId $subId -DeleteResources -DeleteResourceGroups -Force
 
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "delete" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteAll set 
 		$deployment = Set-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -TemplateFile StacksMGTemplateWithNestedRG.json -TemplateParameterFile StacksMGTemplateWithNestedRGParams.json -DeploymentScopeId $subId -Force
@@ -1330,8 +1325,8 @@ function Test-SetManagementGroupDeploymentStackUnmanageActions
 		$deployment = Set-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -TemplateFile blankTemplate.json -DeploymentScopeId $subId -DeleteAll -Force
 
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.Resources
-		Assert-AreEqual "delete" $deployment.ActionOnUnmanage.ResourceGroups
+		Assert-AreEqual "delete" $deployment.ResourcesCleanupAction
+		Assert-AreEqual "delete" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a stack with only DeleteResourceGroups set which should error 
 		$exceptionMessage = "Operation returned an invalid status code 'BadRequest' : DeploymentStackInvalidDeploymentStackDefinition : Deployment stack definition is invalid - ActionOnUnmanage is not correctly defined. Cannot set Resources to 'Detach' and Resource Groups to 'Delete'."

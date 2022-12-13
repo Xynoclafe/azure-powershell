@@ -47,13 +47,6 @@ namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
 
         [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestNewResourceGroupDeploymentStackDenySettings()
-        {
-            TestRunner.RunTestScript("Test-NewResourceGroupDeploymentStackDenySettings");
-        }
-
-        [Fact()]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestSetResourceGroupDeploymentStack()
         {
             TestRunner.RunTestScript("Test-SetResourceGroupDeploymentStack");
@@ -61,16 +54,16 @@ namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
 
         [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestSetResourceGroupDeploymentStackUnmanageActions()
+        public void TestNewAndSetResourceGroupDeploymentStackDenySettings()
         {
-            TestRunner.RunTestScript("Test-SetResourceGroupDeploymentStackUnmanageActions");
+            TestRunner.RunTestScript("Test-NewAndSetResourceGroupDeploymentStackDenySettings");
         }
 
         [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestSetResourceGroupDeploymentStackDenySettings()
+        public void TestSetResourceGroupDeploymentStackUnmanageActions()
         {
-            TestRunner.RunTestScript("Test-SetResourceGroupDeploymentStackDenySettings");
+            TestRunner.RunTestScript("Test-SetResourceGroupDeploymentStackUnmanageActions");
         }
 
         [Fact()]
@@ -124,9 +117,9 @@ namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
 
         [Fact()]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestNewSubscriptionDeploymentStackDenySettings()
+        public void TestNewAndSetSubscriptionDeploymentStackDenySettings()
         {
-            TestRunner.RunTestScript("Test-NewSubscriptionDeploymentStackDenySettings");
+            TestRunner.RunTestScript("Test-NewAndSetSubscriptionDeploymentStackDenySettings");
         }
 
         [Fact()]
@@ -141,13 +134,6 @@ namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
         public void TestSetSubscriptionDeploymentStackUnmanageActions()
         {
             TestRunner.RunTestScript("Test-SetSubscriptionDeploymentStackUnmanageActions");
-        }
-
-        [Fact()]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestSetSubscriptionDeploymentStackDenySettings()
-        {
-            TestRunner.RunTestScript("Test-SetSubscriptionDeploymentStackDenySettings");
         }
 
         [Fact()]

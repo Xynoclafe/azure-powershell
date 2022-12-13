@@ -1,8 +1,12 @@
 ﻿{
-  "rgname": {
-    "value": "rgstacks1341"
-  },
-  "tsname": {
-    "value": "12345StacksSpecTest"
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "rgname": {
+      "value": "rgstacks1341"
+    },
+    "tsname": {
+      "value": "12345StacksSpecTest"
+    }
   }
 }
