@@ -145,10 +145,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             "the denySettings. Up to 200 actions are permitted.")]
         public string[] DenySettingsExcludedActions { get; set; }
 
-        [Parameter(Mandatory = false, HelpMessage = "List of role-based management operations that are excluded from " +
-            "the denySettings. Up to 200 actions are permitted.")]
-        public string[] DenySettingsExcludedDataActions { get; set; }
-
         [Parameter(Mandatory = false, HelpMessage = "Apply to child scopes.")]
         public SwitchParameter DenySettingsApplyToChildScopes { get; set; }
 
