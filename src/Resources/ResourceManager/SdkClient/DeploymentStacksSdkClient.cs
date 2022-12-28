@@ -475,15 +475,16 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             string location,
             string templateUri,
             string templateSpec,
+            Hashtable templateObject,
             string parameterUri,
-            Hashtable parameters,
+            Hashtable parameterObject,
             string description,
             string resourcesCleanupAction,
             string resourceGroupsCleanupAction,
             string managementGroupsCleanupAction,
             string deploymentScope,
             string denySettingsMode,
-            string[] denySettingsExcludedPrincipales,
+            string[] denySettingsExcludedPrincipals,
             string[] denySettingsExcludedActions,
             bool denySettingsApplyToChildScopes
         )
@@ -498,7 +499,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             var denySettings = new DenySettings
             {
                 Mode = denySettingsMode,
-                ExcludedPrincipals = denySettingsExcludedPrincipales,
+                ExcludedPrincipals = denySettingsExcludedPrincipals,
                 ExcludedActions = denySettingsExcludedActions,
                 ApplyToChildScopes = denySettingsApplyToChildScopes
             };
@@ -535,9 +536,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                 deploymentStackModel.ParametersLink = parametersLink;
             }
 
-            else if (parameters != null)
+            else if (parameterObject != null)
             {
-                Dictionary<string, object> parametersDictionary = parameters?.ToDictionary(false);
+                Dictionary<string, object> parametersDictionary = parameterObject?.ToDictionary(false);
                 string parametersContent = parametersDictionary != null
                     ? PSJsonSerializer.Serialize(parametersDictionary)
                     : null;

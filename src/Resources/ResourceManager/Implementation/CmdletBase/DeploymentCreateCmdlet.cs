@@ -133,7 +133,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.Cmdlet
 
         public override object GetDynamicParameters()
         {
-            if (!string.IsNullOrEmpty(QueryString))
+                if (!string.IsNullOrEmpty(QueryString))
             {
                 if(QueryString.Substring(0,1) == "?")
                     protectedTemplateUri = TemplateUri + QueryString;

@@ -19,9 +19,7 @@ using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Utilities;
 using Microsoft.Azure.Management.ResourceManager;
 using Microsoft.Azure.Management.ResourceManager.Models;
 using Microsoft.WindowsAzure.Commands.Utilities.Common;
-
 using Newtonsoft.Json.Linq;
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -55,6 +53,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         protected const string TemplateSpecResourceIdParameterObjectParameterSetName = "ByTemplateSpecResourceIdAndParamsObject";
 
         protected RuntimeDefinedParameterDictionary dynamicParameters;
+
+        // TODO: What is the use of these private properties?
 
         private Hashtable templateObject;
 

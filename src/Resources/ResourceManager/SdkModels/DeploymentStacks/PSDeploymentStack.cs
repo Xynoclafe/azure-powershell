@@ -61,6 +61,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
 
         public string deploymentId { get; set; }
 
+        public string operationResultId { get; set; }
+
         public ErrorResponse error { get; set; }
 
         // Deprecated.
@@ -92,6 +94,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
             this.failedResources = deploymentStack.FailedResources;
             this.deploymentId = deploymentStack.DeploymentId;
             this.duration = deploymentStack.Duration;
+            //this.operationResultId = deploymentStack.operationResultId;
             this.error = deploymentStack.Error;
             this.parametersLink = deploymentStack.ParametersLink;
             this.Tags = deploymentStack.Tags;

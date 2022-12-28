@@ -624,8 +624,8 @@ function Test-NewSubscriptionDeploymentStack
 
 		# Test - Failure - template file not found
 		$missingFile = "missingFile142.json"
-		$exceptionMessage = "The provided file $missingFile doesn't exist"
-		Assert-Throws { New-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile $missingFile  -Location $location -Force } $exceptionMessage
+		$exceptionMessage = "$missingFile' because it does not exist"
+		Assert-ThrowsContains { New-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile $missingFile  -Location $location -Force } $exceptionMessage
 
 		# --- ParameterFileTemplateFileParameterSetName ---
 
@@ -635,8 +635,8 @@ function Test-NewSubscriptionDeploymentStack
 
 		# Test - Failure - template parameter file not found
 		$missingFile = "missingFile145.json"
-		$exceptionMessage = "The provided file $missingFile doesn't exist"
-		Assert-Throws { New-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -TemplateParameterFile $missingFile -Location $location -Force } $exceptionMessage
+		$exceptionMessage = "$missingFile' because it does not exist"
+		Assert-ThrowsContains { New-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -TemplateParameterFile $missingFile -Location $location -Force } $exceptionMessage
 
 		# --- ParameterObjectTemplateFileParameterSetName ---
 
