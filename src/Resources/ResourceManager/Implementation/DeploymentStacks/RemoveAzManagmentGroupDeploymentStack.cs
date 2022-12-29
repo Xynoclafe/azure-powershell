@@ -22,16 +22,16 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Text;
 
     [Cmdlet("Remove", Common.AzureRMConstants.AzureRMPrefix + "ManagementGroupDeploymentStack",
-        SupportsShouldProcess = true, DefaultParameterSetName = RemoveByResourceNameParameterSetName), OutputType(typeof(bool))]
+        SupportsShouldProcess = true, DefaultParameterSetName = RemoveByNameParameterSetName), OutputType(typeof(bool))]
     public class RemoveAzManagementGroupDeploymentStack : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
 
         internal const string RemoveByResourceIdParameterSetName = "RemoveByResourceId";
-        internal const string RemoveByResourceNameParameterSetName = "RemoveByResourceName";
+        internal const string RemoveByNameParameterSetName = "RemoveByName";
 
         [Alias("StackName")]
-        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByResourceNameParameterSetName,
+        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByNameParameterSetName,
             HelpMessage = "The name of the DeploymentStack to delete")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }

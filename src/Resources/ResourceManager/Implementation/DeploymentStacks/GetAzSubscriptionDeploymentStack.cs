@@ -27,12 +27,12 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     {
         #region Cmdlet Parameters and Parameter Set Definitions
 
-        internal const string GetByStackNameParameterSetname = "GetIndividualDeploymentStack";
-        internal const string GetByResourceIdParameterSetName = "GetDeploymentStackByResourceId";
+        internal const string GetByNameParameterSetname = "GetByName";
+        internal const string GetByResourceIdParameterSetName = "GetByResourceId";
         internal const string ListParameterSetname = "ListDeploymentStacks";
 
         [Alias("StackName")]
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByStackNameParameterSetname,
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = GetByNameParameterSetname,
             HelpMessage = "The name of the DeploymentStack to get")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
@@ -54,7 +54,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 this.GetResourcesClient();
                 switch (ParameterSetName)
                 {
-                    case GetByStackNameParameterSetname:
+                    case GetByNameParameterSetname:
                         WriteObject(DeploymentStacksSdkClient.GetSubscriptionDeploymentStack(Name), true);
                         break;
                     case GetByResourceIdParameterSetName:
