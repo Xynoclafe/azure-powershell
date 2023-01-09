@@ -1,1 +1,15 @@
-﻿
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "westus"
+    },
+    "nestedSubId": {
+      "value": "92722693-40f1-44fe-8c39-9cf6b6353750"
+    },
+    "subModuleName": {
+      "value": "pstestMGsubmodule"
+    }
+  }
+}

@@ -1049,18 +1049,19 @@ function Test-GetManagementGroupDeploymentStack
 	$rname = Get-ResourceName
 	$subId = (Get-AzContext).Subscription.SubscriptionId
 	$mgId = "AzBlueprintAssignTest"
+	$location = "West US 2"
 
 	try
 	{
 		# Prepare 
-		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgid -TemplateFile StacksMGTemplate.json -TemplateParameterFile StacksMGTemplateParams.json -DeploymentScopeId $subId -Force
+		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgid -TemplateFile StacksMGTemplate.json -TemplateParameterFile StacksMGTemplateParams.json -DeploymentScopeId $subId -Location $location -Force
 		$resourceId = "/providers/Microsoft.Management/managementGroups/$mgId/providers/Microsoft.Resources/deploymentStacks/$rname"
 
-		# Test - GetByNameAndResourceGroup - Success 
+		# Test - GetByManagementGroupNameAndId - Success 
 		$getByNameAndManagementGroup = Get-AzManagementGroupDeploymentStack -ManagementGroupId $mgId -StackName $rname 
 		Assert-NotNull $getByNameAndManagementGroup
 
-		# Test - GetByNameAndManagementGroup - Failure - RG NotFound
+		# Test - GetByManagementGroupIdAndName - Failure - RG NotFound
 		$badManagementGroupId = "badmg1928273615"
 		$exceptionMessage = "does not have authorization to perform action 'Microsoft.Resources/deploymentStacks/read' over scope '/providers/Microsoft.Management/managementGroups/$badManagementGroupId"
 		Assert-ThrowsContains { Get-AzManagementGroupDeploymentStack -ManagementGroupId $badManagementGroupId -StackName $rname } $exceptionMessage 
@@ -1090,6 +1091,7 @@ function Test-GetManagementGroupDeploymentStack
 		Remove-AzManagementGroupDeploymentStack -ManagementGroupId $mgId -Name $rname -DeleteAll -Force
     }
 }
+
 
 <#
 .SYNOPSIS
