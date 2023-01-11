@@ -25,7 +25,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     public class NewAzSubscriptionDeploymentStack : DeploymentStacksCreateCmdletBase
     {
 
-        #region Cmdlet Parameters and Parameter Set Definitions
+        #region Cmdlet Parameters
 
         [Alias("StackName")]
         [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true,

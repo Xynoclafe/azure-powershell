@@ -227,25 +227,25 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
                 Action createOrUpdateAction = () =>
                     {
-                    var deploymentStack = DeploymentStacksSdkClient.ResourceGroupCreateOrUpdateDeploymentStack(
-                        Name,
-                        ResourceGroupName,
-                        TemplateUri,
-                        TemplateSpecId,
-                        TemplateParameterUri,
-                        parameters,
-                        Description,
-                        resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
-                        resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach",
-                        managementGroupsCleanupAction: "detach",
-                        DenySettingsMode.ToString(),
-                        DenySettingsExcludedPrincipals,
-                        DenySettingsExcludedActions,
-                        DenySettingsApplyToChildScopes.IsPresent
-                    );
+                        var deploymentStack = DeploymentStacksSdkClient.ResourceGroupCreateOrUpdateDeploymentStack(
+                            Name,
+                            ResourceGroupName,
+                            TemplateUri,
+                            TemplateSpecId,
+                            TemplateParameterUri,
+                            parameters,
+                            Description,
+                            resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
+                            resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach",
+                            managementGroupsCleanupAction: "detach",
+                            DenySettingsMode.ToString(),
+                            DenySettingsExcludedPrincipals,
+                            DenySettingsExcludedActions,
+                            DenySettingsApplyToChildScopes.IsPresent
+                        );
 
-                    WriteObject(deploymentStack);
-                };
+                        WriteObject(deploymentStack);
+                    };
 
                 if (!Force.IsPresent && DeploymentStacksSdkClient.GetResourceGroupDeploymentStack(
                         ResourceGroupName,
