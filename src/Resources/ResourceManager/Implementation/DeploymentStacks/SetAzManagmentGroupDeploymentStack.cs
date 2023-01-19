@@ -145,11 +145,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         public PSDenySettingsMode DenySettingsMode { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = "List of AAD principal IDs excluded from the lock. Up to 5 principals are permitted.")]
-        public string[] DenySettingsExcludedPrincipals { get; set; }
+        public string[] DenySettingsExcludedPrincipal { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = "List of role-based management operations that are excluded from " +
             "the denySettings. Up to 200 actions are permitted.")]
-        public string[] DenySettingsExcludedActions { get; set; }
+        public string[] DenySettingsExcludedAction { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = "Apply to child scopes.")]
         public SwitchParameter DenySettingsApplyToChildScopes { get; set; }
@@ -252,8 +252,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                             managementGroupsCleanupAction: "detach",
                             deploymentScope,
                             DenySettingsMode.ToString(),
-                            DenySettingsExcludedPrincipals,
-                            DenySettingsExcludedActions,
+                            DenySettingsExcludedPrincipal,
+                            DenySettingsExcludedAction,
                             DenySettingsApplyToChildScopes.IsPresent
                         );
 

@@ -16,8 +16,8 @@ Creates a new Subscription scoped Deployment Stack.
 ```
 New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateFile <String> [-Description <String>]
  -Location <String> [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups]
- [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipals <String[]>]
- [-DenySettingsExcludedActions <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
+ [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
  [-Force] [-AsJob] [-Pre] [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -25,8 +25,8 @@ New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateFile <String> [-Desc
 ```
 New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateFile <String> -TemplateParameterFile <String>
  [-Description <String>] -Location <String> [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups]
- [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipals <String[]>]
- [-DenySettingsExcludedActions <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
+ [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
  [-Force] [-AsJob] [-Pre] [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -34,8 +34,8 @@ New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateFile <String> -Templ
 ```
 New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateFile <String> -TemplateParameterUri <String>
  [-Description <String>] -Location <String> [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups]
- [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipals <String[]>]
- [-DenySettingsExcludedActions <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
+ [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
  [-Force] [-AsJob] [-Pre] [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -43,8 +43,8 @@ New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateFile <String> -Templ
 ```
 New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateFile <String> -TemplateParameterObject <Hashtable>
  [-Description <String>] -Location <String> [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups]
- [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipals <String[]>]
- [-DenySettingsExcludedActions <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
+ [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
  [-Force] [-AsJob] [-Pre] [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -52,8 +52,8 @@ New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateFile <String> -Templ
 ```
 New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateUri <String> -TemplateParameterFile <String>
  [-Description <String>] -Location <String> [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups]
- [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipals <String[]>]
- [-DenySettingsExcludedActions <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
+ [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
  [-Force] [-AsJob] [-Pre] [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -61,8 +61,8 @@ New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateUri <String> -Templa
 ```
 New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateUri <String> -TemplateParameterUri <String>
  [-Description <String>] -Location <String> [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups]
- [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipals <String[]>]
- [-DenySettingsExcludedActions <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
+ [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
  [-Force] [-AsJob] [-Pre] [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -70,8 +70,8 @@ New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateUri <String> -Templa
 ```
 New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateUri <String> -TemplateParameterObject <Hashtable>
  [-Description <String>] -Location <String> [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups]
- [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipals <String[]>]
- [-DenySettingsExcludedActions <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
+ [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
  [-Force] [-AsJob] [-Pre] [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -79,8 +79,8 @@ New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateUri <String> -Templa
 ```
 New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateUri <String> [-Description <String>]
  -Location <String> [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups]
- [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipals <String[]>]
- [-DenySettingsExcludedActions <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
+ [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
  [-Force] [-AsJob] [-Pre] [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -88,8 +88,8 @@ New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateUri <String> [-Descr
 ```
 New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateSpecId <String> -TemplateParameterFile <String>
  [-Description <String>] -Location <String> [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups]
- [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipals <String[]>]
- [-DenySettingsExcludedActions <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
+ [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
  [-Force] [-AsJob] [-Pre] [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -97,8 +97,8 @@ New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateSpecId <String> -Tem
 ```
 New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateSpecId <String> -TemplateParameterUri <String>
  [-Description <String>] -Location <String> [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups]
- [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipals <String[]>]
- [-DenySettingsExcludedActions <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
+ [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
  [-Force] [-AsJob] [-Pre] [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -107,7 +107,7 @@ New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateSpecId <String> -Tem
 New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateSpecId <String>
  -TemplateParameterObject <Hashtable> [-Description <String>] -Location <String> [-DeleteAll]
  [-DeleteResources] [-DeleteResourceGroups] [-DenySettingsMode <PSDenySettingsMode>]
- [-DenySettingsExcludedPrincipals <String[]>] [-DenySettingsExcludedActions <String[]>]
+ [-DenySettingsExcludedPrincipal <String[]>] [-DenySettingsExcludedAction <String[]>]
  [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>] [-Force] [-AsJob] [-Pre]
  [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
@@ -116,8 +116,8 @@ New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateSpecId <String>
 ```
 New-AzSubscriptionDeploymentStack [-Name] <String> -TemplateSpecId <String> [-Description <String>]
  -Location <String> [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups]
- [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipals <String[]>]
- [-DenySettingsExcludedActions <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
+ [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-ResourceGroupName <String>]
  [-Force] [-AsJob] [-Pre] [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -225,9 +225,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -DenySettingsExcludedActions
-List of role-based management operations that are excluded from the denySettings.
-Up to 200 actions are permitted.
+### -DenySettingsExcludedAction
+List of role-based management operations that are excluded from the denySettings. Up to 200 actions are permitted.
 
 ```yaml
 Type: System.String[]
@@ -241,9 +240,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -DenySettingsExcludedPrincipals
-List of AAD principal IDs excluded from the lock.
-Up to 5 principals are permitted.
+### -DenySettingsExcludedPrincipal
+List of AAD principal IDs excluded from the lock. Up to 5 principals are permitted.
 
 ```yaml
 Type: System.String[]
