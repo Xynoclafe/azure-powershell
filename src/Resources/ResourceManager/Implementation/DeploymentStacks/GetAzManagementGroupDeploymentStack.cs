@@ -17,9 +17,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
     using System;
-    using System.Collections.Generic;
     using System.Management.Automation;
-    using System.Text;
 
     [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "ManagementGroupDeploymentStack",
         DefaultParameterSetName = ListByManagementGroupIdParameterSetName), OutputType(typeof(PSDeploymentStack))]

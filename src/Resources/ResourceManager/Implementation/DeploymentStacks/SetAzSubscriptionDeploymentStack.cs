@@ -16,10 +16,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 {
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
     using Microsoft.Azure.Management.ResourceManager.Models;
-    using Microsoft.WindowsAzure.Commands.Utilities.Common;
     using System;
-    using System.Collections;
-    using System.IO;
     using System.Management.Automation;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.CmdletBase;
 
@@ -27,7 +24,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         SupportsShouldProcess = true, DefaultParameterSetName = ParameterlessTemplateFileParameterSetName), OutputType(typeof(PSDeploymentStack))]
     public class SetAzSubscriptionDeploymentStack : DeploymentStacksCreateCmdletBase
     {
-        #region Cmdlet Parameters and Parameter Set Definitions
+        #region Cmdlet Parameters
 
         [Alias("StackName")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true,

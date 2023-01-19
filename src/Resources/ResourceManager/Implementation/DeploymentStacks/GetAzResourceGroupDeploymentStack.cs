@@ -18,9 +18,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
     using Microsoft.Azure.Commands.ResourceManager.Common.ArgumentCompleters;
     using System;
-    using System.Collections.Generic;
     using System.Management.Automation;
-    using System.Text;
 
     [Cmdlet("Get", Common.AzureRMConstants.AzureRMPrefix + "ResourceGroupDeploymentStack",
         DefaultParameterSetName = ListByResourceGroupNameParameterSetName), OutputType(typeof(PSDeploymentStack))]
