@@ -126,14 +126,14 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         public SwitchParameter DeleteAll { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack Resources after updating stack.")]
-        public SwitchParameter DeleteResources { get; set; }
+        public SwitchParameter DeleteResource { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = "Signal to delete unmanaged stack ResourceGroups after updating stack.")]
-        public SwitchParameter DeleteResourceGroups { get; set; }
+        public SwitchParameter DeleteResourceGroup { get; set; }
 
         // Not Yet Supported.
         /*[Parameter(Mandatory = false, HelpMessage = "Singal to delete unmanaged stack management groups after updating stack.")]
-        public SwitchParameter DeleteManagementGroups { get; set; }*/
+        public SwitchParameter DeleteManagementGroup { get; set; }*/
 
         [Parameter(Mandatory = false, HelpMessage = "Mode for DenySettings. Possible values include: 'denyDelete', 'denyWriteAndDelete', and 'none'.")]
         public PSDenySettingsMode DenySettingsMode { get; set; }
@@ -146,7 +146,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         public string[] DenySettingsExcludedAction { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = "Apply to child scopes.")]
-        public SwitchParameter DenySettingsApplyToChildScopes { get; set; }
+        public SwitchParameter DenySettingsApplyToChildScope { get; set; }
 
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true,
             HelpMessage = "The subscription id at which the deployment should be created.")]
@@ -228,8 +228,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         break;
                 }
 
-                var shouldDeleteResources = (DeleteAll.ToBool() || DeleteResources.ToBool()) ? true : false;
-                var shouldDeleteResourceGroups = (DeleteAll.ToBool() || DeleteResourceGroups.ToBool()) ? true : false;
+                var shouldDeleteResources = (DeleteAll.ToBool() || DeleteResource.ToBool()) ? true : false;
+                var shouldDeleteResourceGroups = (DeleteAll.ToBool() || DeleteResourceGroup.ToBool()) ? true : false;
 
 
                 // construct deploymentScope if ResourceGroup was provided
@@ -253,7 +253,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                         DenySettingsMode.ToString(),
                         DenySettingsExcludedPrincipal,
                         DenySettingsExcludedAction,
-                        DenySettingsApplyToChildScopes.IsPresent
+                        DenySettingsApplyToChildScope.IsPresent
                     );
 
                     WriteObject(deploymentStack);

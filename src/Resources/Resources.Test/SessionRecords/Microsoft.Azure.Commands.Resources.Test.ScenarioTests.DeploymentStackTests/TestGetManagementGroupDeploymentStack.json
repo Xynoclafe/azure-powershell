@@ -1,0 +1,78 @@
+{
+  "Entries": [
+    {
+      "RequestUri": "/providers/Microsoft.Management/managementGroups/AzBlueprintAssignTest/providers/Microsoft.Resources/deploymentStacks/ps61?unmanageAction.Resources=delete&unmanageAction.ResourceGroups=delete&api-version=2022-08-01-preview",
+      "EncodedRequestUri": "L3Byb3ZpZGVycy9NaWNyb3NvZnQuTWFuYWdlbWVudC9tYW5hZ2VtZW50R3JvdXBzL0F6Qmx1ZXByaW50QXNzaWduVGVzdC9wcm92aWRlcnMvTWljcm9zb2Z0LlJlc291cmNlcy9kZXBsb3ltZW50U3RhY2tzL3BzNjE/dW5tYW5hZ2VBY3Rpb24uUmVzb3VyY2VzPWRlbGV0ZSZ1bm1hbmFnZUFjdGlvbi5SZXNvdXJjZUdyb3Vwcz1kZWxldGUmYXBpLXZlcnNpb249MjAyMi0wOC0wMS1wcmV2aWV3",
+      "RequestMethod": "DELETE",
+      "RequestHeaders": {
+        "x-ms-client-request-id": [
+          "8fd6ca11-040c-44a9-93f0-49b6115b137d"
+        ],
+        "Accept-Language": [
+          "en-US"
+        ],
+        "User-Agent": [
+          "FxVersion/4.700.22.55902",
+          "OSName/Windows",
+          "OSVersion/Microsoft.Windows.10.0.22621",
+          "Microsoft.Azure.Management.ResourceManager.DeploymentStacksClient/3.17.4.0"
+        ]
+      },
+      "RequestBody": "",
+      "ResponseHeaders": {
+        "Cache-Control": [
+          "no-cache"
+        ],
+        "Pragma": [
+          "no-cache"
+        ],
+        "x-ms-failure-cause": [
+          "gateway"
+        ],
+        "x-ms-ratelimit-remaining-tenant-deletes": [
+          "14999"
+        ],
+        "x-ms-request-id": [
+          "951eca5c-c8a2-4ef1-b627-9fae4ce82426"
+        ],
+        "x-ms-correlation-request-id": [
+          "951eca5c-c8a2-4ef1-b627-9fae4ce82426"
+        ],
+        "x-ms-routing-request-id": [
+          "WESTUS:20230106T000245Z:951eca5c-c8a2-4ef1-b627-9fae4ce82426"
+        ],
+        "Strict-Transport-Security": [
+          "max-age=31536000; includeSubDomains"
+        ],
+        "X-Content-Type-Options": [
+          "nosniff"
+        ],
+        "Date": [
+          "Fri, 06 Jan 2023 00:02:44 GMT"
+        ],
+        "Content-Type": [
+          "application/json; charset=utf-8"
+        ],
+        "Expires": [
+          "-1"
+        ],
+        "Content-Length": [
+          "405"
+        ],
+        "Retry-After": [
+          "0"
+        ]
+      },
+      "ResponseBody": "{\r\n  \"error\": {\r\n    \"code\": \"InvalidResourceType\",\r\n    \"message\": \"The resource type 'managementGroups' could not be found in the namespace 'Microsoft.Management' for api version '2022-08-01-preview'. The supported api-versions are '2021-04-01,2020-10-01,2020-05-01,2020-02-01,2019-11-01,2018-03-01-preview,2018-01-01-preview,2017-11-01-preview,2017-08-31-preview,2017-06-30-preview,2017-05-31-preview,2018-03-01-beta'.\"\r\n  }\r\n}",
+      "StatusCode": 404
+    }
+  ],
+  "Names": {
+    "Test-GetManagementGroupDeploymentStack": [
+      "ps61"
+    ]
+  },
+  "Variables": {
+    "SubscriptionId": "4ce8c9fe-cadc-47d6-9c76-335812fd59df"
+  }
+}

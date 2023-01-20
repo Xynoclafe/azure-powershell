@@ -1,14 +1,14 @@
 ---
 external help file: Microsoft.Azure.PowerShell.Cmdlets.ResourceManager.dll-Help.xml
 Module Name: Az.Resources
-online version: https://docs.microsoft.com/powershell/module/az.resources/update-azrolemanagementpolicy
+online version:
 schema: 2.0.0
 ---
 
 # Set-AzManagementGroupDeploymentStack
 
 ## SYNOPSIS
-Sets a new Management Group scoped Deployment Stack.
+{{ Fill in the Synopsis }}
 
 ## SYNTAX
 
@@ -16,19 +16,19 @@ Sets a new Management Group scoped Deployment Stack.
 ```
 Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
  -DeploymentSubscriptionId <String> -Location <String> -TemplateFile <String> [-Description <String>]
- [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups] [-DenySettingsMode <PSDenySettingsMode>]
+ [-DeleteAll] [-DeleteResource] [-DeleteResourceGroup] [-DenySettingsMode <PSDenySettingsMode>]
  [-DenySettingsExcludedPrincipal <String[]>] [-DenySettingsExcludedAction <String[]>]
- [-DenySettingsApplyToChildScopes] [-Force] [-AsJob] [-Pre] [-DefaultProfile <IAzureContextContainer>]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-DenySettingsApplyToChildScope] [-Force] [-AsJob] [-Pre] [-DefaultProfile <IAzureContextContainer>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ### ByTemplateFileWithParameterFile
 ```
 Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
  -DeploymentSubscriptionId <String> -Location <String> -TemplateFile <String> -TemplateParameterFile <String>
- [-Description <String>] [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups]
+ [-Description <String>] [-DeleteAll] [-DeleteResource] [-DeleteResourceGroup]
  [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
- [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-Force] [-AsJob] [-Pre]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScope] [-Force] [-AsJob] [-Pre]
  [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -36,9 +36,9 @@ Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
 ```
 Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
  -DeploymentSubscriptionId <String> -Location <String> -TemplateFile <String> -TemplateParameterUri <String>
- [-Description <String>] [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups]
+ [-Description <String>] [-DeleteAll] [-DeleteResource] [-DeleteResourceGroup]
  [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
- [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-Force] [-AsJob] [-Pre]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScope] [-Force] [-AsJob] [-Pre]
  [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -46,9 +46,9 @@ Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
 ```
 Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
  -DeploymentSubscriptionId <String> -Location <String> -TemplateFile <String>
- -TemplateParameterObject <Hashtable> [-Description <String>] [-DeleteAll] [-DeleteResources]
- [-DeleteResourceGroups] [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
- [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-Force] [-AsJob] [-Pre]
+ -TemplateParameterObject <Hashtable> [-Description <String>] [-DeleteAll] [-DeleteResource]
+ [-DeleteResourceGroup] [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScope] [-Force] [-AsJob] [-Pre]
  [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -56,9 +56,9 @@ Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
 ```
 Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
  -DeploymentSubscriptionId <String> -Location <String> -TemplateUri <String> -TemplateParameterFile <String>
- [-Description <String>] [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups]
+ [-Description <String>] [-DeleteAll] [-DeleteResource] [-DeleteResourceGroup]
  [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
- [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-Force] [-AsJob] [-Pre]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScope] [-Force] [-AsJob] [-Pre]
  [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -66,9 +66,9 @@ Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
 ```
 Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
  -DeploymentSubscriptionId <String> -Location <String> -TemplateUri <String> -TemplateParameterUri <String>
- [-Description <String>] [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups]
+ [-Description <String>] [-DeleteAll] [-DeleteResource] [-DeleteResourceGroup]
  [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
- [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-Force] [-AsJob] [-Pre]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScope] [-Force] [-AsJob] [-Pre]
  [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -76,9 +76,9 @@ Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
 ```
 Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
  -DeploymentSubscriptionId <String> -Location <String> -TemplateUri <String>
- -TemplateParameterObject <Hashtable> [-Description <String>] [-DeleteAll] [-DeleteResources]
- [-DeleteResourceGroups] [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
- [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-Force] [-AsJob] [-Pre]
+ -TemplateParameterObject <Hashtable> [-Description <String>] [-DeleteAll] [-DeleteResource]
+ [-DeleteResourceGroup] [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScope] [-Force] [-AsJob] [-Pre]
  [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -86,19 +86,19 @@ Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
 ```
 Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
  -DeploymentSubscriptionId <String> -Location <String> -TemplateUri <String> [-Description <String>]
- [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups] [-DenySettingsMode <PSDenySettingsMode>]
+ [-DeleteAll] [-DeleteResource] [-DeleteResourceGroup] [-DenySettingsMode <PSDenySettingsMode>]
  [-DenySettingsExcludedPrincipal <String[]>] [-DenySettingsExcludedAction <String[]>]
- [-DenySettingsApplyToChildScopes] [-Force] [-AsJob] [-Pre] [-DefaultProfile <IAzureContextContainer>]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-DenySettingsApplyToChildScope] [-Force] [-AsJob] [-Pre] [-DefaultProfile <IAzureContextContainer>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ### ByTemplateSpecWithParameterFile
 ```
 Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
  -DeploymentSubscriptionId <String> -Location <String> -TemplateSpecId <String> -TemplateParameterFile <String>
- [-Description <String>] [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups]
+ [-Description <String>] [-DeleteAll] [-DeleteResource] [-DeleteResourceGroup]
  [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
- [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-Force] [-AsJob] [-Pre]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScope] [-Force] [-AsJob] [-Pre]
  [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -106,9 +106,9 @@ Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
 ```
 Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
  -DeploymentSubscriptionId <String> -Location <String> -TemplateSpecId <String> -TemplateParameterUri <String>
- [-Description <String>] [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups]
+ [-Description <String>] [-DeleteAll] [-DeleteResource] [-DeleteResourceGroup]
  [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
- [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-Force] [-AsJob] [-Pre]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScope] [-Force] [-AsJob] [-Pre]
  [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -116,9 +116,9 @@ Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
 ```
 Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
  -DeploymentSubscriptionId <String> -Location <String> -TemplateSpecId <String>
- -TemplateParameterObject <Hashtable> [-Description <String>] [-DeleteAll] [-DeleteResources]
- [-DeleteResourceGroups] [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
- [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScopes] [-Force] [-AsJob] [-Pre]
+ -TemplateParameterObject <Hashtable> [-Description <String>] [-DeleteAll] [-DeleteResource]
+ [-DeleteResourceGroup] [-DenySettingsMode <PSDenySettingsMode>] [-DenySettingsExcludedPrincipal <String[]>]
+ [-DenySettingsExcludedAction <String[]>] [-DenySettingsApplyToChildScope] [-Force] [-AsJob] [-Pre]
  [-DefaultProfile <IAzureContextContainer>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -126,10 +126,10 @@ Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
 ```
 Set-AzManagementGroupDeploymentStack -Name <String> -ManagementGroupId <String>
  -DeploymentSubscriptionId <String> -Location <String> -TemplateSpecId <String> [-Description <String>]
- [-DeleteAll] [-DeleteResources] [-DeleteResourceGroups] [-DenySettingsMode <PSDenySettingsMode>]
+ [-DeleteAll] [-DeleteResource] [-DeleteResourceGroup] [-DenySettingsMode <PSDenySettingsMode>]
  [-DenySettingsExcludedPrincipal <String[]>] [-DenySettingsExcludedAction <String[]>]
- [-DenySettingsApplyToChildScopes] [-Force] [-AsJob] [-Pre] [-DefaultProfile <IAzureContextContainer>]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-DenySettingsApplyToChildScope] [-Force] [-AsJob] [-Pre] [-DefaultProfile <IAzureContextContainer>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -150,7 +150,7 @@ PS C:\> {{ Add example code here }}
 Run cmdlet in the background.
 
 ```yaml
-Type: System.Management.Automation.SwitchParameter
+Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
 
@@ -165,7 +165,7 @@ Accept wildcard characters: False
 The credentials, account, tenant, and subscription used for communication with Azure.
 
 ```yaml
-Type: Microsoft.Azure.Commands.Common.Authentication.Abstractions.Core.IAzureContextContainer
+Type: IAzureContextContainer
 Parameter Sets: (All)
 Aliases: AzContext, AzureRmContext, AzureCredential
 
@@ -180,7 +180,7 @@ Accept wildcard characters: False
 Signal to delete both unmanaged Resources and ResourceGroups after deleting stack.
 
 ```yaml
-Type: System.Management.Automation.SwitchParameter
+Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
 
@@ -191,26 +191,11 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -DeleteResourceGroups
-Signal to delete unmanaged stack ResourceGroups after deleting stack.
-
-```yaml
-Type: System.Management.Automation.SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -DeleteResources
+### -DeleteResource
 Signal to delete unmanaged stack Resources after deleting stack.
 
 ```yaml
-Type: System.Management.Automation.SwitchParameter
+Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
 
@@ -221,11 +206,26 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -DenySettingsApplyToChildScopes
+### -DeleteResourceGroup
+Signal to delete unmanaged stack ResourceGroups after deleting stack.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -DenySettingsApplyToChildScope
 Apply to child scopes.
 
 ```yaml
-Type: System.Management.Automation.SwitchParameter
+Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
 
@@ -237,10 +237,11 @@ Accept wildcard characters: False
 ```
 
 ### -DenySettingsExcludedAction
-List of role-based management operations that are excluded from the denySettings. Up to 200 actions are permitted.
+List of role-based management operations that are excluded from the denySettings.
+Up to 200 actions are permitted.
 
 ```yaml
-Type: System.String[]
+Type: String[]
 Parameter Sets: (All)
 Aliases:
 
@@ -252,10 +253,11 @@ Accept wildcard characters: False
 ```
 
 ### -DenySettingsExcludedPrincipal
-List of AAD principal IDs excluded from the lock. Up to 5 principals are permitted.
+List of AAD principal IDs excluded from the lock.
+Up to 5 principals are permitted.
 
 ```yaml
-Type: System.String[]
+Type: String[]
 Parameter Sets: (All)
 Aliases:
 
@@ -271,7 +273,7 @@ Mode for DenySettings.
 Possible values include: 'denyDelete', 'denyWriteAndDelete', and 'none'.
 
 ```yaml
-Type: Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels.PSDenySettingsMode
+Type: PSDenySettingsMode
 Parameter Sets: (All)
 Aliases:
 Accepted values: None, DenyDelete, DenyWriteAndDelete
@@ -287,7 +289,7 @@ Accept wildcard characters: False
 The subscription Id at which the deployment should be created.
 
 ```yaml
-Type: System.String
+Type: String
 Parameter Sets: (All)
 Aliases:
 
@@ -302,7 +304,7 @@ Accept wildcard characters: False
 Description for the stack.
 
 ```yaml
-Type: System.String
+Type: String
 Parameter Sets: (All)
 Aliases:
 
@@ -317,7 +319,7 @@ Accept wildcard characters: False
 Do not ask for confirmation when overwriting an existing stack.
 
 ```yaml
-Type: System.Management.Automation.SwitchParameter
+Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
 
@@ -332,7 +334,7 @@ Accept wildcard characters: False
 Location of the stack.
 
 ```yaml
-Type: System.String
+Type: String
 Parameter Sets: (All)
 Aliases:
 
@@ -347,7 +349,7 @@ Accept wildcard characters: False
 The id of the management group that the deploymentStack will be deployed into.
 
 ```yaml
-Type: System.String
+Type: String
 Parameter Sets: (All)
 Aliases:
 
@@ -362,7 +364,7 @@ Accept wildcard characters: False
 The name of the deploymentStack to create.
 
 ```yaml
-Type: System.String
+Type: String
 Parameter Sets: (All)
 Aliases: StackName
 
@@ -377,7 +379,7 @@ Accept wildcard characters: False
 When set, indicates that the cmdlet should use pre-release API versions when automatically determining which version to use.
 
 ```yaml
-Type: System.Management.Automation.SwitchParameter
+Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
 
@@ -392,7 +394,7 @@ Accept wildcard characters: False
 TemplateFile to be used to create the stack.
 
 ```yaml
-Type: System.String
+Type: String
 Parameter Sets: ByTemplateFileWithNoParameters, ByTemplateFileWithParameterFile, ByTemplateFileWithParameterUri, ByTemplateFileWithParameterObject
 Aliases:
 
@@ -407,7 +409,7 @@ Accept wildcard characters: False
 Parameter file to use for the template.
 
 ```yaml
-Type: System.String
+Type: String
 Parameter Sets: ByTemplateFileWithParameterFile, ByTemplateUriWithParameterFile, ByTemplateSpecWithParameterFile
 Aliases:
 
@@ -422,7 +424,7 @@ Accept wildcard characters: False
 A hash table which represents the parameters.
 
 ```yaml
-Type: System.Collections.Hashtable
+Type: Hashtable
 Parameter Sets: ByTemplateFileWithParameterObject, ByTemplateUriWithParameterObject, ByTemplateSpecWithParameterObject
 Aliases:
 
@@ -437,7 +439,7 @@ Accept wildcard characters: False
 Location of the Parameter file to use for the template.
 
 ```yaml
-Type: System.String
+Type: String
 Parameter Sets: ByTemplateFileWithParameterUri, ByTemplateUriWithParameterUri, ByTemplateSpecWithParameterUri
 Aliases:
 
@@ -452,7 +454,7 @@ Accept wildcard characters: False
 ResourceId of the TemplateSpec to be used to create the stack.
 
 ```yaml
-Type: System.String
+Type: String
 Parameter Sets: ByTemplateSpecWithParameterFile, ByTemplateSpecWithParameterUri, ByTemplateSpecWithParameterObject, ByTemplateSpecWithNoParameters
 Aliases:
 
@@ -467,7 +469,7 @@ Accept wildcard characters: False
 Location of the Template to be used to create the stack.
 
 ```yaml
-Type: System.String
+Type: String
 Parameter Sets: ByTemplateUriWithParameterFile, ByTemplateUriWithParameterUri, ByTemplateUriWithParameterObject, ByTemplateUriWithNoParameters
 Aliases:
 
@@ -482,7 +484,7 @@ Accept wildcard characters: False
 Prompts you for confirmation before running the cmdlet.
 
 ```yaml
-Type: System.Management.Automation.SwitchParameter
+Type: SwitchParameter
 Parameter Sets: (All)
 Aliases: cf
 
@@ -498,7 +500,7 @@ Shows what would happen if the cmdlet runs.
 The cmdlet is not run.
 
 ```yaml
-Type: System.Management.Automation.SwitchParameter
+Type: SwitchParameter
 Parameter Sets: (All)
 Aliases: wi
 
