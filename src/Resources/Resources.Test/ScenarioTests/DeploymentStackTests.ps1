@@ -88,9 +88,10 @@ function Test-NewResourceGroupDeploymentStack
 		
 		# --- ParameterlessTemplateFileParameterSetName ---
 
-		# Test - Success
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile blankTemplate.json -Force
+		# Test - Success (with tags)
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -Description "A Stack" -ResourceGroup $rgname -TemplateFile blankTemplate.json -Tag @{"key1" = "value1"; "key2" = "value2"} -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+		Assert-AreEqual 2 $deployment.Tags.Count
 
 		# Test - Failure - template file not found
 		$missingFile = "missingFile142.json"
@@ -618,9 +619,10 @@ function Test-NewSubscriptionDeploymentStack
 		
 		# --- ParameterlessTemplateFileParameterSetName ---
 
-		# Test - Success
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile blankTemplate.json -Location $location -Force
+		# Test - Success (with tags)
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile blankTemplate.json -Location $location -Tag @{"key1" = "value1"; "key2" = "value2"} -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+		Assert-AreEqual 2 $deployment.Tags.Count
 
 		# Test - Failure - template file not found
 		$missingFile = "missingFile142.json"
@@ -1108,9 +1110,10 @@ function Test-NewManagementGroupDeploymentStack
 		
 		# --- ParameterlessTemplateFileParameterSetName ---
 
-		# Test - Success
-		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -Description "A Stack" -ManagementGroupId $mgId -TemplateFile blankTemplate.json -DeploymentScopeId $subId -Force
+		# Test - Success (with tags)
+		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -Description "A Stack" -ManagementGroupId $mgId -TemplateFile blankTemplate.json -DeploymentScopeId $subId -Tag @{"key1" = "value1"; "key2" = "value2"} -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
+		Assert-AreEqual 2 $deployment.Tags.Count
 
 		# Test - Failure - template file not found
 		$missingFile = "missingFile142.json"

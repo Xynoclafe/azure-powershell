@@ -121,7 +121,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         [Parameter(Mandatory = false,
             HelpMessage = "The ResourceGroup at which the deployment will be created. If none is specified, it will default to the " +
             "subscription level scope of the deployment stack.")]
-        public string ResourceGroupName { get; set; }
+        public string DeploymentResourceGroupName { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = "Signal to delete both unmanaged Resources and ResourceGroups after deleting stack.")]
         public SwitchParameter DeleteAll { get; set; }
@@ -148,6 +148,10 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
         [Parameter(Mandatory = false, HelpMessage = "Apply to child scopes.")]
         public SwitchParameter DenySettingsApplyToChildScopes { get; set; }
+
+        [Parameter(Mandatory = false, HelpMessage = "The tags to put on the deployment.")]
+        [ValidateNotNullOrEmpty]
+        public Hashtable Tag { get; set; }
 
         [Parameter(Mandatory = false, HelpMessage = "Do not ask for confirmation when overwriting an existing stack.")]
         public SwitchParameter Force { get; set; }
@@ -228,8 +232,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 var shouldDeleteResourceGroups = (DeleteAll.ToBool() || DeleteResourceGroups.ToBool()) ? true : false;
 
                 // construct deploymentScope if ResourceGroup was provided
-                var deploymentScope = ResourceGroupName != null ? "/subscriptions/" + DeploymentStacksSdkClient.DeploymentStacksClient.SubscriptionId
-                        + "/resourceGroups/" + ResourceGroupName : null;
+                var deploymentScope = DeploymentResourceGroupName != null ? "/subscriptions/" + DeploymentStacksSdkClient.DeploymentStacksClient.SubscriptionId
+                        + "/resourceGroups/" + DeploymentResourceGroupName : null;
 
                 Action createOrUpdateAction = () =>
                 {
@@ -248,7 +252,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                             DenySettingsMode.ToString(),
                             DenySettingsExcludedPrincipals,
                             DenySettingsExcludedActions,
-                            DenySettingsApplyToChildScopes.IsPresent
+                            DenySettingsApplyToChildScopes.IsPresent,
+                            Tag
                         );
 
                     WriteObject(deploymentStack);

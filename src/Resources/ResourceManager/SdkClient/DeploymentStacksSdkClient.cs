@@ -364,7 +364,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             string denySettingsMode,
             string[] denySettingsExcludedPrincipales,
             string[] denySettingsExcludedActions,
-            bool denySettingsApplyToChildScopes
+            bool denySettingsApplyToChildScopes,
+            Hashtable tags
             )
         {
             var actionOnUnmanage = new DeploymentStackPropertiesSharedActionOnUnmanage
@@ -386,7 +387,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             {
                 Description = description,
                 ActionOnUnmanage = actionOnUnmanage,
-                DenySettings = denySettings
+                DenySettings = denySettings,
+                Tags = TagsHelper.ConvertToTagsDictionary(tags)
             };
 
             DeploymentStacksTemplateLink templateLink = new DeploymentStacksTemplateLink();
@@ -485,7 +487,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             string denySettingsMode,
             string[] denySettingsExcludedPrincipales,
             string[] denySettingsExcludedActions,
-            bool denySettingsApplyToChildScopes
+            bool denySettingsApplyToChildScopes,
+            Hashtable tags
         )
         {
             var actionOnUnmanage = new DeploymentStackPropertiesSharedActionOnUnmanage
@@ -509,7 +512,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                 Location = location,
                 ActionOnUnmanage = actionOnUnmanage,
                 DeploymentScope = deploymentScope,
-                DenySettings = denySettings
+                DenySettings = denySettings,
+                Tags = TagsHelper.ConvertToTagsDictionary(tags)
             };
 
             DeploymentStacksTemplateLink templateLink = new DeploymentStacksTemplateLink();
@@ -594,7 +598,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             string denySettingsMode,
             string[] denySettingsExcludedPrincipales,
             string[] denySettingsExcludedActions,
-            bool denySettingsApplyToChildScopes
+            bool denySettingsApplyToChildScopes,
+            Hashtable tags
         )
         {
             var actionOnUnmanage = new DeploymentStackPropertiesSharedActionOnUnmanage
@@ -617,7 +622,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                 Location = location,
                 ActionOnUnmanage = actionOnUnmanage,
                 DeploymentScope = deploymentScope,
-                DenySettings = denySettings
+                DenySettings = denySettings,
+                Tags = TagsHelper.ConvertToTagsDictionary(tags)
             };
 
             DeploymentStacksTemplateLink templateLink = new DeploymentStacksTemplateLink();

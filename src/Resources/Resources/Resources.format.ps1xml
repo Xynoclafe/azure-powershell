@@ -521,6 +521,13 @@
                 </ItemSelectionCondition>
                 <ScriptBlock>$s = ""; foreach($v in $_.Parameters.Keys) { $n = ""; if ($s -ne "") { $n = "`n"; } $s = $s + $n + "{" + "Name: " + $v + ", Type: " + $_.Parameters[$v].Type + ", " + "Value: " + $_.Parameters[$v].Value + "}"} $s;</ScriptBlock>
               </ListItem>
+              <ListItem>
+                <Label>Tags</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.Tags -ne $null -And $_.Tags.Keys.Count -ne 0</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$s = ""; foreach($v in $_.Tags.Keys) { $n = ""; if ($s -ne "") { $n = "`n"; } $s = $s + $n + "{" + "Key: " + $v + ", Value: " + $_.Tags[$v] + "}"} $s;</ScriptBlock>
+              </ListItem>
 						  <ListItem>
 							  <Label>ResourcesCleanupAction</Label>
                 <PropertyName>resourcesCleanupAction</PropertyName>
