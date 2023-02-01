@@ -510,23 +510,9 @@
 							  <Label>Name</Label>
 							  <PropertyName>name</PropertyName>
 						  </ListItem>
-						  <ListItem>
-							  <Label>ProvisioningState</Label>
-							  <PropertyName>provisioningState</PropertyName>
-						  </ListItem>
               <ListItem>
-                <Label>Parameters</Label>
-                <ItemSelectionCondition>
-                  <ScriptBlock>$_.Parameters -ne $null -And $_.Parameters.Keys.Count -ne 0</ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>$s = ""; foreach($v in $_.Parameters.Keys) { $n = ""; if ($s -ne "") { $n = "`n"; } $s = $s + $n + "{" + "Name: " + $v + ", Type: " + $_.Parameters[$v].Type + ", " + "Value: " + $_.Parameters[$v].Value + "}"} $s;</ScriptBlock>
-              </ListItem>
-              <ListItem>
-                <Label>Tags</Label>
-                <ItemSelectionCondition>
-                  <ScriptBlock>$_.Tags -ne $null -And $_.Tags.Keys.Count -ne 0</ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>$_.Tags</ScriptBlock>
+                <Label>ProvisioningState</Label>
+                <PropertyName>provisioningState</PropertyName>
               </ListItem>
 						  <ListItem>
 							  <Label>ResourcesCleanupAction</Label>
@@ -579,13 +565,6 @@
 							  <ScriptBlock>$_.snapshotId</ScriptBlock>
 						  </ListItem>
               <ListItem>
-                <Label>Outputs</Label>
-                <ItemSelectionCondition>
-                  <ScriptBlock>$_.Outputs -ne $null -And $_.Outputs.Keys.Count -ne 0</ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>$s = ""; foreach($v in $_.Outputs.Keys) { $n = ""; if ($s -ne "") { $n = "`n"; } $s = $s + $n + "{" + "Name: " + $v + ", Type: " + $_.Outputs[$v].Type + ", " + "Value: " + $_.Outputs[$v].Value + "}"} $s;</ScriptBlock>
-              </ListItem>
-              <ListItem>
                 <Label>Resources</Label>
                 <ItemSelectionCondition>
                   <ScriptBlock>$_.resources -ne $null</ScriptBlock>
@@ -618,7 +597,28 @@
                 <ItemSelectionCondition>
                   <ScriptBlock>$_.error -ne $null</ScriptBlock>
                 </ItemSelectionCondition>
-                <ScriptBlock>$e=$_.error; while($e.Details -ne $null){$e = $e.Details[0]}$e.Code + " - " +$e.Message</ScriptBlock>
+                <ScriptBlock>$_.GetFormattedErrorString()</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>Tags</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.Tags -ne $null -And $_.Tags.Keys.Count -ne 0</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$_.GetFormattedTagTable()</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>Parameters</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.Parameters -ne $null -And $_.Parameters.Keys.Count -ne 0</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$_.GetFormattedParameterTable()</ScriptBlock>
+              </ListItem>
+              <ListItem>
+                <Label>Outputs</Label>
+                <ItemSelectionCondition>
+                  <ScriptBlock>$_.Outputs -ne $null -And $_.Outputs.Keys.Count -ne 0</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>$_.GetFormattedOutputTable()</ScriptBlock>
               </ListItem>
 					  </ListItems>
 				  </ListEntry>
