@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkExtensions;
+﻿using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Extensions;
+using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkExtensions;
 using Microsoft.Azure.Management.Internal.Network.Version2017_10_01;
 using Microsoft.Azure.Management.ResourceManager.Models;
 using Microsoft.Rest;
@@ -11,6 +12,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
+using ProjectResources = Microsoft.Azure.Commands.ResourceManager.Cmdlets.Properties.Resources;
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
 {
@@ -104,6 +107,52 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
             // this.snapshotId = deploymentStack.SnapshotId
             // this.locks = deploymentStack.Locks
 
+        }
+
+        public string GetFormattedParameterTable() 
+        {
+            return ResourcesExtensions.ConstructDeploymentVariableTable(this.parameters);
+        }
+
+        public string GetFormattedOutputTable()
+        {
+            return ResourcesExtensions.ConstructDeploymentVariableTable(this.outputs);
+        }
+
+        public string GetFormattedTagTable()
+        {
+            return ResourcesExtensions.ConstructTagsTableFromIDictionary(this.Tags);
+        }
+
+        private const char Whitespace = ' ';
+
+        public string GetFormattedErrorString()
+        {
+            return this.error == null
+                ? string.Empty
+                : GetFormattedErrorString(this.error).TrimEnd('\r', '\n');
+        }
+
+        private static string GetFormattedErrorString(ErrorResponse error, int level = 0)
+        {
+            if (error.Details == null)
+            {
+                return string.Format(ProjectResources.DeploymentOperationErrorMessageNoDetails, error.Message, error.Code);
+            }
+
+            string errorDetail = null;
+
+            foreach (ErrorResponse detail in error.Details)
+            {
+                errorDetail += GetIndentation(level) + GetFormattedErrorString(detail, level + 1) + System.Environment.NewLine;
+            }
+
+            return string.Format(ProjectResources.DeploymentOperationErrorMessage, error.Message, error.Code, errorDetail);
+        }
+
+        private static string GetIndentation(int l)
+        {
+            return new StringBuilder().Append(Whitespace, l * 2).Append(" - ").ToString();
         }
 
         internal static PSDeploymentStack FromAzureSDKDeploymentStack(DeploymentStack stack)

@@ -452,7 +452,7 @@ function Test-RemoveResourceGroupDeploymentStack
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		$deployment = Remove-AzResourceGroupDeploymentStack -Id $resourceId -Force
-		Assert-AreEqual "true" $deployment
+		Assert-Null $deployment
 
 		# Test - Failure - Bad ID form 
 		$badId = "a/bad/id"
@@ -471,25 +471,25 @@ function Test-RemoveResourceGroupDeploymentStack
 		$exceptionMessage = "DeploymentStack '$badStackName' in ResourceGroup '$rgname' not found."
 		Assert-Throws { Remove-AzResourceGroupDeploymentStack -ResourceGroupName $rgname -StackName $badStackName -Force } $exceptionMessage
 
-		# Test - Success - DeleteResources
+		# Test - Success with PassThru - DeleteResources
 		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		$deployment = Remove-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -DeleteResources -Force
+		$deployment = Remove-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -DeleteResources -PassThru -Force
 		Assert-AreEqual "true" $deployment
 
-		# Test - Success - DeleteResources and DeleteResourceGroups
+		# Test - Success with PassThru - DeleteResources and DeleteResourceGroups
 		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		$deployment = Remove-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -DeleteResources -DeleteResourceGroups -Force
+		$deployment = Remove-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -DeleteResources -DeleteResourceGroups -PassThru -Force
 		Assert-AreEqual "true" $deployment
 
-		# Test - Success - DeleteAll
+		# Test - Success with PassThru - DeleteAll
 		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		$deployment = Remove-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -DeleteAll -Force
+		$deployment = Remove-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -DeleteAll -PassThru -Force
 		Assert-AreEqual "true" $deployment
 	}
 
@@ -922,7 +922,7 @@ function Test-NewAndSetSubscriptionDeploymentStackWithBicep
      {
          # Cleanup
          Clean-ResourceGroup $rgname
-		 Remove-AzSubscriptionDeploymentStack -Name $rname -DeleteAll -Force
+		 Remove-AzSubscriptionDeploymentStack -Name $stackname -DeleteAll -Force
      }
  }
 
@@ -946,7 +946,7 @@ function Test-RemoveSubscriptionDeploymentStack
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		$deployment = Remove-AzSubscriptionDeploymentStack -Id $resourceId -Force
-		Assert-AreEqual "true" $deployment
+		Assert-Null $deployment
 
 		# Test - Failure - Bad ID form 
 		$badId = "a/bad/id"
@@ -961,25 +961,25 @@ function Test-RemoveSubscriptionDeploymentStack
 		# $exceptionMessage = "DeploymentStack '$badStackName' not found in the curent subscription scope."
 		# Assert-Throws { Remove-AzSubscriptionDeploymentStack -StackName $badStackName -Force } $exceptionMessage
 
-		# Test - Success - DeleteResources
+		# Test - Success with PassThru - DeleteResources
 		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		$deployment = Remove-AzSubscriptionDeploymentStack -Name $rname -DeleteResources -Force
+		$deployment = Remove-AzSubscriptionDeploymentStack -Name $rname -DeleteResources -PassThru -Force
 		Assert-AreEqual "true" $deployment
 
-		# Test - Success - DeleteResources and DeleteResourceGroups
+		# Test - Success with PassThru - DeleteResources and DeleteResourceGroups
 		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		$deployment = Remove-AzSubscriptionDeploymentStack -Name $rname -DeleteResources -DeleteResourceGroups -Force
+		$deployment = Remove-AzSubscriptionDeploymentStack -Name $rname -DeleteResources -DeleteResourceGroups -PassThru -Force
 		Assert-AreEqual "true" $deployment
 
-		# Test - Success - DeleteAll
+		# Test - Success with PassThru - DeleteAll
 		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		$deployment = Remove-AzSubscriptionDeploymentStack -Name $rname -DeleteAll -Force
+		$deployment = Remove-AzSubscriptionDeploymentStack -Name $rname -DeleteAll -PassThru -Force
 		Assert-AreEqual "true" $deployment
 	}
 	finally
@@ -1451,7 +1451,7 @@ function Test-RemoveManagementGroupDeploymentStack
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		$deployment = Remove-AzManagementGroupDeploymentStack -Id $resourceId -Force
-		Assert-AreEqual "true" $deployment
+		Assert-Null $deployment
 
 		# Test - Failure - Bad ID form 
 		$badId = "a/bad/id"
@@ -1470,25 +1470,25 @@ function Test-RemoveManagementGroupDeploymentStack
 		$exceptionMessage = "DeploymentStack '$badStackName' in ResourceGroup '$mgId' not found."
 		Assert-Throws { Remove-AzManagementGroupDeploymentStack -ManagementGroupId $mgId -StackName $badStackName -Force } $exceptionMessage
 
-		# Test - Success - DeleteResources
+		# Test - Success with PassThru - DeleteResources
 		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -TemplateFile StacksMGTemplate.json -TemplateParameterFile StacksMGTemplateParams.json -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		$deployment = Remove-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -DeleteResources -Force
+		$deployment = Remove-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -DeleteResources -PassThru -Force
 		Assert-AreEqual "true" $deployment
 
-		# Test - Success - DeleteResources and DeleteResourceGroups
+		# Test - Success with PassThru - DeleteResources and DeleteResourceGroups
 		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -TemplateFile StacksMGTemplateWithNestedRG.json -TemplateParameterFile StacksMGTemplateWithNestedRGParams.json -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		$deployment = Remove-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -DeleteResources -DeleteResourceGroups -Force
+		$deployment = Remove-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -DeleteResources -DeleteResourceGroups -PassThru -Force
 		Assert-AreEqual "true" $deployment
 
-		# Test - Success - DeleteAll
+		# Test - Success with PassThru - DeleteAll
 		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -TemplateFile StacksMGTemplateWithNestedRG.json -TemplateParameterFile StacksMGTemplateWithNestedRGParams.json -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		$deployment = Remove-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -DeleteAll -Force
+		$deployment = Remove-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgId -DeleteAll -PassThru -Force
 		Assert-AreEqual "true" $deployment
 	}
 

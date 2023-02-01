@@ -264,16 +264,16 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 {
 
                     string confirmationMessage = $"The DeploymentStack '{Name}' you're trying to create already exists in the current subscription. " +
-                        $"Do you want to overwrite it with the following actions?" +
-                        (!shouldDeleteResources || !shouldDeleteResourceGroups ? "\nDetaching: " : "") +
-                        (!shouldDeleteResources ? "resources" : "") +
-                        (!shouldDeleteResources && !shouldDeleteResourceGroups ? ", " : "") +
-                        (!shouldDeleteResourceGroups ? "resourceGroups" : "") +
+                        $"Do you want to overwrite it?\n" +
+                        $"The following actions will be applied to any resources the are no longer managed by the deployment stack after the template is applied:" +
                         (shouldDeleteResources || shouldDeleteResourceGroups ? "\nDeleting: " : "") +
                         (shouldDeleteResources ? "resources" : "") +
                         (shouldDeleteResources && shouldDeleteResourceGroups ? ", " : "") +
-                        (shouldDeleteResourceGroups ? "resourceGroups" : "");
-
+                        (shouldDeleteResourceGroups ? "resourceGroups" : "") +
+                        (!shouldDeleteResources || !shouldDeleteResourceGroups ? "\nDetaching: " : "") +
+                        (!shouldDeleteResources ? "resources" : "") +
+                        (!shouldDeleteResources && !shouldDeleteResourceGroups ? ", " : "") +
+                        (!shouldDeleteResourceGroups ? "resourceGroups" : "");
                     ConfirmAction(
                         Force.IsPresent,
                         confirmationMessage,

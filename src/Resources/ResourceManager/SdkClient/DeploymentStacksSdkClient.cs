@@ -460,14 +460,16 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 
         internal void DeleteSubscriptionDeploymentStack(string name, string resourcesCleanupAction, string resourceGroupsCleanupAction)
         {
-            var deleteResponse = DeploymentStacksClient.DeploymentStacks.DeleteAtSubscription(name, resourcesCleanupAction, resourceGroupsCleanupAction);
+            var deleteResponse = DeploymentStacksClient.DeploymentStacks.DeleteAtSubscriptionWithHttpMessagesAsync(name, resourcesCleanupAction, resourceGroupsCleanupAction)
+                .GetAwaiter()
+                .GetResult();
 
-/*            if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
                 throw new PSArgumentException(
                         $"DeploymentStack '{name}' not found in the curent subscription scope."
                     );
-            }*/
+            }
 
             return;
         }

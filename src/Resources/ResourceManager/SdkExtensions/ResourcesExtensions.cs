@@ -176,6 +176,40 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkExtensions
             return resourcesTable.ToString();
         }
 
+        public static string ConstructTagsTableFromIDictionary(IDictionary<string, string> tags)
+        {
+            // TODO: Can I change existing code?
+         
+            if (tags == null || tags.Count == 0)
+            {
+                return null;
+            }
+
+            StringBuilder resourcesTable = new StringBuilder();
+
+            int maxNameLength = Math.Max("Name".Length, tags.Max(tag => tag.Key.Length));
+            int maxValueLength = Math.Max("Value".Length, tags.Max(tag => tag.Value.Length));
+
+            string rowFormat = "{0, -" + maxNameLength + "}  {1, -" + maxValueLength + "}\r\n";
+            resourcesTable.AppendLine();
+            resourcesTable.AppendFormat(rowFormat, "Name", "Value");
+            resourcesTable.AppendFormat(rowFormat,
+                GeneralUtilities.GenerateSeparator(maxNameLength, "="),
+                GeneralUtilities.GenerateSeparator(maxValueLength, "="));
+
+            foreach (var tag in tags)
+            {
+                if (tag.Key.StartsWith(TagsClient.ExecludedTagPrefix))
+                {
+                    continue;
+                }
+
+                resourcesTable.AppendFormat(rowFormat, tag.Key, tag.Value);
+            }
+
+            return resourcesTable.ToString();
+        }
+
         private static string ConstructTemplateLinkView(TemplateLink templateLink)
         {
             if (templateLink == null)

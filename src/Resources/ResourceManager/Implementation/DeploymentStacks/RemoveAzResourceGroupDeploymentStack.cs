@@ -62,6 +62,9 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         /*[Parameter(Mandatory = false, HelpMessage = "Singal to delete unmanaged stack management groups after updating stack.")]
         public SwitchParameter DeleteManagementGroups { get; set; }*/
 
+        [Parameter(Mandatory = false, HelpMessage = "If set, a boolean will be returned with value dependent on cmdlet success.")]
+        public SwitchParameter PassThru { get; set; }
+
         [Parameter(Mandatory = false, HelpMessage = "Do not ask for confirmation.")]
         public SwitchParameter Force { get; set; }
 
@@ -110,17 +113,23 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                             resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
                             resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach"
                         );
-                        WriteObject(true);
+                        if (PassThru.IsPresent)
+                        {
+                            WriteObject(true);
+                        }
                     }   
                 );
             }
             catch (Exception ex)
             {
                 if (ex is DeploymentStacksErrorException dex)
+                {
                     throw new PSArgumentException(dex.Message + " : " + dex.Body.Error.Code + " : " + dex.Body.Error.Message);
+                }
                 else
-                    WriteObject(false);
+                {
                     WriteExceptionError(ex);
+                }
             }
         }
 
