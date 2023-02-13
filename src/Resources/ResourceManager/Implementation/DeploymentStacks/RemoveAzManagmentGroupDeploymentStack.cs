@@ -22,16 +22,16 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
     using System.Text;
 
     [Cmdlet("Remove", Common.AzureRMConstants.AzureRMPrefix + "ManagementGroupDeploymentStack",
-        SupportsShouldProcess = true, DefaultParameterSetName = RemoveByNameParameterSetName), OutputType(typeof(bool))]
+        SupportsShouldProcess = true, DefaultParameterSetName = RemoveByNameAndManagementGroupIdParameterSetName), OutputType(typeof(bool))]
     public class RemoveAzManagementGroupDeploymentStack : DeploymentStacksCmdletBase
     {
         #region Cmdlet Parameters and Parameter Set Definitions
 
         internal const string RemoveByResourceIdParameterSetName = "RemoveByResourceId";
-        internal const string RemoveByNameParameterSetName = "RemoveByName";
+        internal const string RemoveByNameAndManagementGroupIdParameterSetName = "RemoveByNameAndManagementGroupId";
 
         [Alias("StackName")]
-        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByNameParameterSetName,
+        [Parameter(Position = 1, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByNameAndManagementGroupIdParameterSetName,
             HelpMessage = "The name of the DeploymentStack to delete")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
@@ -42,7 +42,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         [ValidateNotNullOrEmpty]
         public string ResourceId { get; set; }
 
-        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, 
+        [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true, ParameterSetName = RemoveByNameAndManagementGroupIdParameterSetName, 
             HelpMessage = "The id of the ManagementGroup where the DeploymentStack is being deleted")]
         [ValidateNotNullOrEmpty]
         public string ManagementGroupId { get; set; }
