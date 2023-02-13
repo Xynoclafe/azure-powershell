@@ -182,7 +182,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                             return null;
                         else
                             throw new PSArgumentException(
-                            $"DeploymentStack '{deploymentStackName}' not found in Management Group '{managementGroupId}'."
+                            $"DeploymentStack '{deploymentStackName}' in Management Group '{managementGroupId}' not found."
                         );
                     }
                     else
@@ -307,7 +307,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
                             return null;
                         else
                             throw new PSArgumentException(
-                            $"DeploymentStack '{deploymentStackName}' not found in management group '{managementGroupId}'."
+                            $"DeploymentStack '{deploymentStackName}' in Management Group '{managementGroupId}' not found."
                         );
                     }
                     else
@@ -577,7 +577,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             if (deleteResponse.Response.StatusCode == System.Net.HttpStatusCode.NoContent)
             {
                 throw new PSArgumentException(
-                        $"DeploymentStack '{name}' not found in management group '{managementGroupId}'."
+                        $"DeploymentStack '{name}' not found in Management Group '{managementGroupId}'."
                     );
             }
 

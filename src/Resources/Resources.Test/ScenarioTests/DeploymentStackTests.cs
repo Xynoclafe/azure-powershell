@@ -163,5 +163,75 @@ namespace Microsoft.Azure.Commands.Resources.Test.ScenarioTests
         {
             TestRunner.RunTestScript("Test-RemoveSubscriptionDeploymentStack");
         }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestGetManagementGroupDeploymentStack()
+        {
+            TestRunner.RunTestScript("Test-GetManagementGroupDeploymentStack");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestNewManagementGroupDeploymentStack()
+        {
+            TestRunner.RunTestScript("Test-NewManagementGroupDeploymentStack");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestNewManagementGroupDeploymentStackUnmanageActions()
+        {
+            TestRunner.RunTestScript("Test-NewManagementGroupDeploymentStackUnmanageActions");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestSetManagementGroupDeploymentStack()
+        {
+            TestRunner.RunTestScript("Test-SetManagementGroupDeploymentStack");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestNewAndSetManagementGroupDeploymentStackDenySettings()
+        {
+            TestRunner.RunTestScript("Test-NewAndSetManagementGroupDeploymentStackDenySettings");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestSetManagementGroupDeploymentStackUnmanageActions()
+        {
+            TestRunner.RunTestScript("Test-SetManagementGroupDeploymentStackUnmanageActions");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestNewAndSetAndExportManagementGroupDeploymentStackWithTemplateSpec()
+        {
+            TestRunner.RunTestScript("Test-NewAndSetAndExportManagementGroupDeploymentStackWithTemplateSpec");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestNewAndSetManagementGroupDeploymentStackWithBicep()
+        {
+            TestRunner.RunTestScript("Test-NewAndSetManagementGroupDeploymentStackWithBicep");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestExportManagementGroupDeploymentStackTemplate()
+        {
+            TestRunner.RunTestScript("Test-ExportManagementGroupDeploymentStackTemplate");
+        }
+
+        [Fact()]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestRemoveManagementGroupDeploymentStack()
+        {
+            TestRunner.RunTestScript("Test-RemoveManagementGroupDeploymentStack");
+        }
     }
 }
