@@ -20,9 +20,9 @@ using System.Linq;
 using Microsoft.Rest.Azure;
 using System.Threading.Tasks;
 using ProjectResources = Microsoft.Azure.Commands.ResourceManager.Cmdlets.Properties.Resources;
-using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels.DeploymentStacks;
 using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels.Deployments;
 using System.Net;
+using System.Threading;
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
 {
@@ -795,8 +795,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             }
         }
 
-        //verboseLoggingStuff - subject to change
-
         private DeploymentStack PollDeployments(DeploymentStack stack)
         {
             string deploymentId = stack.DeploymentId;
@@ -805,16 +803,20 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             parameters.ResourceGroupName = ResourceIdUtility.GetResourceGroupName(deploymentId);
             parameters.ManagementGroupId = ResourceIdUtility.GetManagementGroupId(deploymentId);
             if (parameters.ResourceGroupName != null)
-            {
                 parameters.ScopeType = DeploymentScopeType.ResourceGroup;
-                ResourceManagerSdkClient.ProvisionDeploymentStatus(parameters, new Deployment()); //Only called for RG at this time to avoid replication issues
-            }
             else if (parameters.ManagementGroupId != null)
                 parameters.ScopeType = DeploymentScopeType.ManagementGroup;
             else
                 parameters.ScopeType = DeploymentScopeType.Subscription;
-            //Enable when deploymentOperations can be fetched for all scopes and not just RG
-            //resourceManagerSdkClient.ProvisionDeploymentStatus(parameters, new Deployment());
+            WriteVerbose("Starting DeploymentOperations polling");
+            try
+            {
+                ResourceManagerSdkClient.ProvisionDeploymentStatus(parameters, new Deployment());
+            }
+            catch(Exception)
+            {
+                WriteVerbose("DeploymentOperations polling failed");
+            }
             return stack;
         }
 
