@@ -53,7 +53,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
         /// <summary>
         /// Gets or sets the resource manager sdk client
         /// </summary>
-        public ResourceManagerSdkClient ResourceManagerSdkClient
+        private ResourceManagerSdkClient ResourceManagerSdkClient
         {
             get
             {
