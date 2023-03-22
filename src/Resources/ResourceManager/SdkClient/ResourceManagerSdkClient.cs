@@ -1470,6 +1470,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             this.BeginDeployment(parameters, deployment);
 
             WriteVerbose(string.Format(ProjectResources.CreatedDeployment, parameters.DeploymentName));
+            
             return ProvisionDeploymentStatus(parameters, deployment);
         }
 
