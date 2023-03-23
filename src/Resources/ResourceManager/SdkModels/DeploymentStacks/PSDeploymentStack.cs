@@ -1,17 +1,9 @@
-﻿using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Extensions;
-using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkExtensions;
-using Microsoft.Azure.Management.Internal.Network.Version2017_10_01;
+﻿using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkExtensions;
 using Microsoft.Azure.Management.ResourceManager.Models;
-using Microsoft.Rest;
-using Microsoft.Rest.Serialization;
 using Microsoft.WindowsAzure.Commands.Utilities.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Text;
 using ProjectResources = Microsoft.Azure.Commands.ResourceManager.Cmdlets.Properties.Resources;
 
@@ -66,12 +58,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
 
         public ErrorResponse error { get; set; }
 
-        // Deprecated.
-        // public LockSettings locks { get; set; }
-        // public string snapshotId { get; set; }
-        // public object template { get; set; }
-        // public DeploymentStacksTemplateLink templateLink { get; set; }
-
         public PSDeploymentStack() { }
 
         internal PSDeploymentStack(DeploymentStack deploymentStack)
@@ -102,11 +88,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels
             // Convert the raw outputs and parameters objects to dictionaries.
             this.parameters = deploymentStack.Parameters != null ? FormatMappedObject(deploymentStack.Parameters) : null;
             this.outputs = deploymentStack.Outputs != null ? FormatMappedObject(deploymentStack.Outputs) : null;
-
-            // Deprecated.
-            // this.snapshotId = deploymentStack.SnapshotId
-            // this.locks = deploymentStack.Locks
-
         }
 
         public string GetFormattedParameterTable() 
