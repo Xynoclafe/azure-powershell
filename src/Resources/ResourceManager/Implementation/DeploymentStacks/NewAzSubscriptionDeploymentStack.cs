@@ -14,97 +14,31 @@
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 {
+    using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components;
+    using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.CmdletBase;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
+    using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Utilities;
+    using Microsoft.Azure.Management.ResourceManager;
     using Microsoft.Azure.Management.ResourceManager.Models;
     using Microsoft.WindowsAzure.Commands.Utilities.Common;
+    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections;
     using System.IO;
+    using System.Linq;
     using System.Management.Automation;
+    using System.Net;
     using ProjectResources = Microsoft.Azure.Commands.ResourceManager.Cmdlets.Properties.Resources;
 
     [Cmdlet("New", Common.AzureRMConstants.AzureRMPrefix + "SubscriptionDeploymentStack",
         SupportsShouldProcess = true, DefaultParameterSetName = ParameterlessTemplateFileParameterSetName), OutputType(typeof(PSDeploymentStack))]
-    public class NewAzSubscriptionDeploymentStack : DeploymentStacksCmdletBase
+    public class NewAzSubscriptionDeploymentStack : DeploymentStacksTemplateDeploymentCmdletBase, IDynamicParameters
     {
-
-        #region Cmdlet Parameters and Parameter Set Definitions
-
-        internal const string ParameterlessTemplateFileParameterSetName = "ByTemplateFileWithNoParameters";
-        internal const string ParameterlessTemplateUriParameterSetName = "ByTemplateUriWithNoParameters";
-        internal const string ParameterlessTemplateSpecParameterSetName = "ByTemplateSpecWithNoParameters";
-
-        internal const string ParameterFileTemplateFileParameterSetName = "ByTemplateFileWithParameterFile";
-        internal const string ParameterFileTemplateUriParameterSetName = "ByTemplateUriWithParameterFile";
-        internal const string ParameterFileTemplateSpecParameterSetName = "ByTemplateSpecWithParameterFile";
-
-        internal const string ParameterUriTemplateFileParameterSetName = "ByTemplateFileWithParameterUri";
-        internal const string ParameterUriTemplateUriParameterSetName = "ByTemplateUriWithParameterUri";
-        internal const string ParameterUriTemplateSpecParameterSetName = "ByTemplateSpecWithParameterUri";
-
-        internal const string ParameterObjectTemplateFileParameterSetName = "ByTemplateFileWithParameterObject";
-        internal const string ParameterObjectTemplateUriParameterSetName = "ByTemplateUriWithParameterObject";
-        internal const string ParameterObjectTemplateSpecParameterSetName = "ByTemplateSpecWithParameterObject";
-
         [Alias("StackName")]
         [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true,
             HelpMessage = "The name of the deploymentStack to create")]
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
-
-        [Parameter(ParameterSetName = ParameterFileTemplateFileParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "TemplateFile to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterUriTemplateFileParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "TemplateFile to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterObjectTemplateFileParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "TemplateFile to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterlessTemplateFileParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "TemplateFile to be used to create the stack.")]
-        public string TemplateFile { get; set; }
-
-        [Parameter(ParameterSetName = ParameterFileTemplateUriParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Template to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterUriTemplateUriParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Template to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterObjectTemplateUriParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Template to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterlessTemplateUriParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Template to be used to create the stack.")]
-        public string TemplateUri { get; set; }
-
-        [Parameter(ParameterSetName = ParameterFileTemplateSpecParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "ResourceId of the TemplateSpec to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterUriTemplateSpecParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "ResourceId of the TemplateSpec to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterObjectTemplateSpecParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "ResourceId of the TemplateSpec to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterlessTemplateSpecParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "ResourceId of the TemplateSpec to be used to create the stack.")]
-        public string TemplateSpecId { get; set; }
-
-        [Parameter(ParameterSetName = ParameterFileTemplateFileParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Parameter file to use for the template.")]
-        [Parameter(ParameterSetName = ParameterFileTemplateUriParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Parameter file to use for the template.")]
-        [Parameter(ParameterSetName = ParameterFileTemplateSpecParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Parameter file to use for the template.")]
-        public string TemplateParameterFile { get; set; }
-
-        [Parameter(ParameterSetName = ParameterUriTemplateFileParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Parameter file to use for the template.")]
-        [Parameter(ParameterSetName = ParameterUriTemplateUriParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Parameter file to use for the template.")]
-        [Parameter(ParameterSetName = ParameterUriTemplateSpecParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Parameter file to use for the template.")]
-        public string TemplateParameterUri { get; set; }
-
-        [Parameter(ParameterSetName = ParameterObjectTemplateFileParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "A hash table which represents the parameters.")]
-        [Parameter(ParameterSetName = ParameterObjectTemplateUriParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "A hash table which represents the parameters.")]
-        [Parameter(ParameterSetName = ParameterObjectTemplateSpecParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "A hash table which represents the parameters.")]
-        public Hashtable TemplateParameterObject { get; set; }
 
         [Parameter(Mandatory = false, ValueFromPipelineByPropertyName = true,
             HelpMessage = "Description for the stack.")]
@@ -151,8 +85,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
         [Parameter(Mandatory = false, HelpMessage = "Run cmdlet in the background.")]
         public SwitchParameter AsJob { get; set; }
-
-        #endregion
 
         #region Cmdlet Overrides
 
