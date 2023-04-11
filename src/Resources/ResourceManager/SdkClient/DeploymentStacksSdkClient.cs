@@ -394,7 +394,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             Hashtable tags
             )
         {
-            var actionOnUnmanage = new DeploymentStackPropertiesSharedActionOnUnmanage
+            var actionOnUnmanage = new DeploymentStackPropertiesActionOnUnmanage
             {
                 Resources = resourcesCleanupAction,
                 ResourceGroups = resourceGroupsCleanupAction,
@@ -519,7 +519,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             Hashtable tags
         )
         {
-            var actionOnUnmanage = new DeploymentStackPropertiesSharedActionOnUnmanage
+            var actionOnUnmanage = new DeploymentStackPropertiesActionOnUnmanage
             {
                 Resources = resourcesCleanupAction,
                 ResourceGroups = resourceGroupsCleanupAction,
@@ -630,7 +630,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
             Hashtable tags
         )
         {
-            var actionOnUnmanage = new DeploymentStackPropertiesSharedActionOnUnmanage
+            var actionOnUnmanage = new DeploymentStackPropertiesActionOnUnmanage
             {
                 Resources = resourcesCleanupAction,
                 ResourceGroups = resourceGroupsCleanupAction,
