@@ -11,6 +11,9 @@ using System.Management.Automation;
 using System.Net;
 using Microsoft.Azure.Commands.Common.Authentication;
 using Microsoft.Azure.Commands.Common.Authentication.Abstractions;
+using System.IO;
+using ProjectResources = Microsoft.Azure.Commands.ResourceManager.Cmdlets.Properties.Resources;
+using System.Collections.Generic;
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.CmdletBase
 {
@@ -18,13 +21,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.Cmdlet
     {
         #region Cmdlet Parameters and Parameter Set Definitions
 
-        protected RuntimeDefinedParameterDictionary dynamicParameters;
+        // protected RuntimeDefinedParameterDictionary dynamicParameters;
 
-        private string templateFile;
+        // private string templateFile;
 
-        private string templateUri;
+        // private string templateUri;
 
-        private string templateSpecId;
+        // private string templateSpecId;
 
         protected string protectedTemplateUri;
 
@@ -32,7 +35,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.Cmdlet
 
         protected DeploymentStacksTemplateDeploymentCmdletBase()
         {
-            dynamicParameters = new RuntimeDefinedParameterDictionary();
+            // dynamicParameters = new RuntimeDefinedParameterDictionary();
         }
 
         internal const string ParameterlessTemplateFileParameterSetName = "ByTemplateFileWithNoParameters";
@@ -111,10 +114,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.Cmdlet
                                             "to provide a better error message in the case where not all required parameters are satisfied.")]
         public SwitchParameter SkipTemplateParameterPrompt { get; set; }
 
+        [Parameter(Mandatory = false, HelpMessage = "The query string (for example, a SAS token) to be used with the TemplateUri parameter. Would be used in case of linked templates")]
+        public string QueryString { get; set; }
+
         #endregion
 
         /// <summary>
-        /// Gets or sets the Template Specs Azure SDK client
+        /// Gets or sets the Template Specs Azure SDK client.
         /// </summary>
         public ITemplateSpecsClient TemplateSpecsClient
         {
@@ -137,12 +143,34 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.Cmdlet
 
         protected override void OnBeginProcessing()
         {
+            if (BicepUtility.IsBicepFile(TemplateUri))
+            {
+                throw new NotSupportedException($"'-TemplateUri {TemplateUri}' is not supported. Please download the bicep file and pass it using -TemplateFile.");
+            }
+
+            if (BicepUtility.IsBicepFile(TemplateFile))
+            {
+                BuildAndUseBicepTemplate();
+            }
+
             TemplateFile = this.TryResolvePath(TemplateFile);
+            if (TemplateFile != null && !File.Exists(TemplateFile))
+            {
+                throw new PSInvalidOperationException(
+                    string.Format(ProjectResources.InvalidFilePath, TemplateFile));
+            }
+
             TemplateParameterFile = this.TryResolvePath(TemplateParameterFile);
+            if (TemplateParameterFile != null && !File.Exists(TemplateParameterFile))
+            {
+                throw new PSInvalidOperationException(
+                    string.Format(ProjectResources.InvalidFilePath, TemplateParameterFile));
+            }
+
             base.OnBeginProcessing();
         }
 
-        public new virtual object GetDynamicParameters()
+        /*public new virtual object GetDynamicParameters()
         {
             if (BicepUtility.IsBicepFile(TemplateUri))
             {
@@ -150,7 +178,17 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.Cmdlet
             }
 
             if (BicepUtility.IsBicepFile(TemplateFile))
+            {
                 BuildAndUseBicepTemplate();
+            }
+
+            if (!string.IsNullOrEmpty(QueryString))
+            {
+                if (QueryString.Substring(0, 1) == "?")
+                    protectedTemplateUri = TemplateUri + QueryString;
+                else
+                    protectedTemplateUri = TemplateUri + "?" + QueryString;
+            }
 
             if (!this.IsParameterBound(c => c.SkipTemplateParameterPrompt))
             {
@@ -271,7 +309,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.Cmdlet
             RegisterDynamicParameters(dynamicParameters);
 
             return dynamicParameters;
-        }
+        }*/
 
         /// <summary>
         /// Gets the names of the static parameters defined for this cmdlet.
@@ -307,12 +345,62 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.Cmdlet
             return cmdletInfo.Parameters.Keys.ToArray();
         }
 
+        protected Hashtable GenerateParameterObject()
+        {
+            // NOTE(jogao): create a new Hashtable so that user can re-use the templateParameterObject.
+            var parameterObject = new Hashtable();
+            
+            // Load parameters from parameter oject.
+            if (TemplateParameterObject != null)
+            {
+                foreach (var parameterKey in TemplateParameterObject.Keys)
+                {
+                    // Let default behavior of a value parameter if not a KeyVault reference Hashtable
+                    var hashtableParameter = TemplateParameterObject[parameterKey] as Hashtable;
+                    if (hashtableParameter != null && hashtableParameter.ContainsKey("reference"))
+                    {
+                        parameterObject[parameterKey] = TemplateParameterObject[parameterKey];
+                    }
+                    else
+                    {
+                        parameterObject[parameterKey] = new Hashtable { { "value", TemplateParameterObject[parameterKey] } };
+                    }
+                }
+            }
+
+            // Load parameters from the file.
+            if (TemplateParameterFile != null)
+            {
+                var parametersFromFile = TemplateUtility.ParseTemplateParameterFileContents(TemplateParameterFile);
+                parametersFromFile.ForEach(dp =>
+                {
+                    var parameter = new Hashtable();
+                    if (dp.Value.Value != null)
+                    {
+                        parameter.Add("value", dp.Value.Value);
+                    }
+                    if (dp.Value.Reference != null)
+                    {
+                        parameter.Add("reference", dp.Value.Reference);
+                    }
+
+                    parameterObject[dp.Key] = parameter;
+                });
+            }
+
+            // Load dynamic parameters.
+            IEnumerable<RuntimeDefinedParameter> parameters = PowerShellUtilities.GetUsedDynamicParameters(this.AsJobDynamicParameters, MyInvocation);
+            if (parameters.Any())
+            {
+                parameters.ForEach(dp => parameterObject[((ParameterAttribute)dp.Attributes[0]).HelpMessage] = new Hashtable { { "value", dp.Value } });
+            }
+
+            return parameterObject;
+        }
+
         protected void BuildAndUseBicepTemplate()
         {
             TemplateFile = BicepUtility.BuildFile(this.ResolvePath(TemplateFile), this.WriteVerbose, this.WriteWarning);
         }
-
     }
-
-
 }

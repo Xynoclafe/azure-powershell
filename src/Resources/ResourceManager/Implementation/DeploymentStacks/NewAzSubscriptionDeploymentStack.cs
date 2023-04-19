@@ -14,21 +14,12 @@
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 {
-    using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Components;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.CmdletBase;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
-    using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Utilities;
-    using Microsoft.Azure.Management.ResourceManager;
     using Microsoft.Azure.Management.ResourceManager.Models;
-    using Microsoft.WindowsAzure.Commands.Utilities.Common;
-    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections;
-    using System.IO;
-    using System.Linq;
     using System.Management.Automation;
-    using System.Net;
-    using ProjectResources = Microsoft.Azure.Commands.ResourceManager.Cmdlets.Properties.Resources;
 
     [Cmdlet("New", Common.AzureRMConstants.AzureRMPrefix + "SubscriptionDeploymentStack",
         SupportsShouldProcess = true, DefaultParameterSetName = ParameterlessTemplateFileParameterSetName), OutputType(typeof(PSDeploymentStack))]
@@ -92,67 +83,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         {
             try
             {
-                Hashtable parameters = new Hashtable();
-                string filePath = "";
-                string parameterFilePath = "";
-                switch (ParameterSetName)
-                {
-                    case ParameterlessTemplateFileParameterSetName:
-                    case ParameterUriTemplateFileParameterSetName:
-                        filePath = this.TryResolvePath(TemplateFile);
-                        if (!File.Exists(filePath))
-                        {
-                            throw new PSInvalidOperationException(
-                                string.Format(ProjectResources.InvalidFilePath, TemplateFile));
-                        }
-                        filePath = ResolveBicepFile(filePath);
-                        TemplateUri = filePath;
-                        break;
-                    case ParameterFileTemplateSpecParameterSetName:
-                    case ParameterFileTemplateUriParameterSetName:
-                        parameterFilePath = this.TryResolvePath(TemplateParameterFile);
-                        if (!File.Exists(parameterFilePath))
-                        {
-                            throw new PSInvalidOperationException(
-                                string.Format(ProjectResources.InvalidFilePath, TemplateParameterFile));
-                        }
-                        parameters = this.GetParameterObject(parameterFilePath);
-                        break;
-                    case ParameterFileTemplateFileParameterSetName:
-                        filePath = this.TryResolvePath(TemplateFile);
-                        if (!File.Exists(filePath))
-                        {
-                            throw new PSInvalidOperationException(
-                                string.Format(ProjectResources.InvalidFilePath, TemplateFile));
-                        }
-                        filePath = ResolveBicepFile(filePath);
-                        
-                        parameterFilePath = this.TryResolvePath(TemplateParameterFile);
-                        if (!File.Exists(parameterFilePath))
-                        {
-                            throw new PSInvalidOperationException(
-                                string.Format(ProjectResources.InvalidFilePath, TemplateParameterFile));
-                        }
-                        parameters = this.GetParameterObject(parameterFilePath);
-                        TemplateUri = filePath;
-                        break;
-                    case ParameterObjectTemplateFileParameterSetName:                       
-                        filePath = this.TryResolvePath(TemplateFile);
-                        if (!File.Exists(filePath))
-                        {
-                            throw new PSInvalidOperationException(
-                                string.Format(ProjectResources.InvalidFilePath, TemplateFile));
-                        }
-                        filePath = ResolveBicepFile(filePath);
-                        TemplateUri = filePath;
-                        parameters = GetTemplateParameterObject(TemplateParameterObject);
-                        break;
-                    case ParameterObjectTemplateSpecParameterSetName:
-                    case ParameterObjectTemplateUriParameterSetName:                     
-                        parameters = GetTemplateParameterObject(TemplateParameterObject);
-                        break;
-                }
-
                 var shouldDeleteResources = (DeleteAll.ToBool() || DeleteResources.ToBool()) ? true : false;
                 var shouldDeleteResourceGroups = (DeleteAll.ToBool() || DeleteResourceGroups.ToBool()) ? true : false;
 
@@ -163,23 +93,23 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 Action createOrUpdateAction = () =>
                 {
                     var deploymentStack = DeploymentStacksSdkClient.SubscriptionCreateOrUpdateDeploymentStack(
-                        Name,
-                        Location,
-                        TemplateUri,
-                        TemplateSpecId,
-                        TemplateParameterUri,
-                        parameters,
-                        Description,
+                        deploymentStackName: Name,
+                        location: Location,
+                        tags: Tag,
+                        templateUri: TemplateUri ?? TemplateFile,
+                        templateSpec: TemplateSpecId,
+                        parameterUri: TemplateParameterUri,
+                        parameters: this.GenerateParameterObject(),
+                        description: Description,
                         resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
                         resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach",
                         managementGroupsCleanupAction: "detach",
-                        deploymentScope,
-                        DenySettingsMode.ToString(),
-                        DenySettingsExcludedPrincipals,
-                        DenySettingsExcludedActions,
-                        DenySettingsApplyToChildScopes.IsPresent,
-                        Tag
-                    );
+                        deploymentScope: deploymentScope,
+                        denySettingsMode: DenySettingsMode.ToString(),
+                        denySettingsExcludedPrincipales: DenySettingsExcludedPrincipals,
+                        denySettingsExcludedActions: DenySettingsExcludedActions,
+                        denySettingsApplyToChildScopes: DenySettingsApplyToChildScopes.IsPresent
+                    ); ;
 
                     WriteObject(deploymentStack);
                 };

@@ -503,6 +503,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkClient
         public PSDeploymentStack SubscriptionCreateOrUpdateDeploymentStack(
             string deploymentStackName,
             string location,
+            // TODO: Change to template address
             string templateUri,
             string templateSpec,
             string parameterUri,
