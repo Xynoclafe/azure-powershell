@@ -1214,7 +1214,7 @@ function Test-NewAndSetManagementGroupDeploymentStackDenySettings
 	try 
 	{
 		# Test - NEW - DenySettingsMode and ApplyToChildScopes
-		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgid -DeploymentSubscriptionId $subId -TemplateFile StacksMGTemplate.json -TemplateParameterFile StacksMGTemplateParams.json -DenySettingsMode DenyDelete -DenySettingsApplyToChildScopes -Location $location -DenySettingsMode None -Force
+		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgid -DeploymentSubscriptionId $subId -TemplateFile StacksMGTemplate.json -TemplateParameterFile StacksMGTemplateParams.json -DenySettingsMode DenyDelete -DenySettingsApplyToChildScopes -Location $location -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 		Assert-AreEqual "DenyDelete" $deployment.DenySettings.Mode
 
@@ -1435,16 +1435,16 @@ function Test-RemoveManagementGroupDeploymentStack
 
 		# Test - Success
 		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgid -DeploymentSubscriptionId $subId -TemplateFile StacksMGTemplate.json -TemplateParameterFile StacksMGTemplateParams.json -Location $location -DenySettingsMode None -Force
-		$resourceId = "/subscriptions/$subId/ManagementGroups/$mgid/providers/Microsoft.Resources/deploymentStacks/$rname"
+		$resourceId = "/providers/Microsoft.Management/managementGroups/$mgid/providers/Microsoft.Resources/deploymentStacks/$rname"
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
-		$deployment = Remove-AzManagementGroupDeploymentStack -ManagementGroupId $mgid -Id $resourceId -Force
+		$deployment = Remove-AzManagementGroupDeploymentStack -Id $resourceId -Force
 		Assert-Null $deployment
 
 		# Test - Failure - Bad ID form 
 		$badId = "a/bad/id"
 		$exceptionMessage = "Provided Id '$badId' is not in correct form. Should be in form /providers/Microsoft.Management/managementGroups/<managementgroupid>/providers/Microsoft.Resources/deploymentStacks/<stackname>"
-		Assert-Throws { Remove-AzManagementGroupDeploymentStack -ManagementGroupId $mgid -Id $badId -Force } $exceptionMessage
+		Assert-Throws { Remove-AzManagementGroupDeploymentStack -Id $badId -Force } $exceptionMessage
 
 		# --- RemoveByNameAndManagementGroupId --- 
 
