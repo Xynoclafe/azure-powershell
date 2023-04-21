@@ -1,7 +1,6 @@
-﻿param templateSpecName string = 'MyTemplateSpec${uniqueString(resourceGroup().id)}'
-param specVersionName string = 'MySpecVersion${uniqueString(resourceGroup().id)}'
+param templateSpecName string
+param specVersionName string
 param location string = resourceGroup().location
-
 
 resource ts 'Microsoft.Resources/templateSpecs@2022-02-01' = {
   name: templateSpecName
@@ -11,7 +10,6 @@ resource ts 'Microsoft.Resources/templateSpecs@2022-02-01' = {
     description: 'Template Spec for testing RG stacks.'
   }
 }
-
 
 resource version 'Microsoft.Resources/templateSpecs/versions@2022-02-01' = {
   parent: ts

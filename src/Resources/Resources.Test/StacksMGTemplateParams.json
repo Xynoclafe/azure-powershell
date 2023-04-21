@@ -5,23 +5,11 @@
     "subId": {
       "value": "4ce8c9fe-cadc-47d6-9c76-335812fd59df"
     },
-    "modName": {
+    "moduleName": {
       "value": "stacksMGtestmod"
     },
-    "location": {
-      "value": "westus"
-    },
-    "rgName": {
-      "value": "StacksTestMG765"
-    },
-    "specVersionName": {
-      "value": "StacksSpecVersionMG765"
-    },
-    "specModName": {
-      "value": "stacksSpecMGtestmod"
-    },
-    "specName": {
-      "value": "StacksSpecNameMG765"
+    "policyDefinitionName": {
+      "value": "PSCmdletTestPolicy476223"
     }
   }
 }

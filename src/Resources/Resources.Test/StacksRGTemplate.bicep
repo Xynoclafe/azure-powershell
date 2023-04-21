@@ -1,6 +1,5 @@
-﻿param templateSpecName string = 'MyTemplateSpec${uniqueString(resourceGroup().id)}'
+param templateSpecName string 
 param location string = resourceGroup().location
-
 
 resource ts 'Microsoft.Resources/templateSpecs@2022-02-01' = {
   name: templateSpecName

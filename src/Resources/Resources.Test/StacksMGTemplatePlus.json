@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.16.2.56959",
-      "templateHash": "13529450622016881009"
+      "templateHash": "14209418576505764717"
     }
   },
   "parameters": {
@@ -15,7 +15,10 @@
     "moduleName": {
       "type": "string"
     },
-    "policyDefinitionName": {
+    "policyDefinitionName1": {
+      "type": "string"
+    },
+    "policyDefinitionName2": {
       "type": "string"
     }
   },
@@ -32,8 +35,11 @@
         },
         "mode": "Incremental",
         "parameters": {
-          "policyDefinitionName": {
-            "value": "[parameters('policyDefinitionName')]"
+          "policyDefinitionName1": {
+            "value": "[parameters('policyDefinitionName1')]"
+          },
+          "policyDefinitionName2": {
+            "value": "[parameters('policyDefinitionName2')]"
           }
         },
         "template": {
@@ -43,11 +49,11 @@
             "_generator": {
               "name": "bicep",
               "version": "0.16.2.56959",
-              "templateHash": "17912971569522144482"
+              "templateHash": "10146281962728406218"
             }
           },
           "parameters": {
-            "allowedLocations": {
+            "allowedLocations1": {
               "type": "array",
               "defaultValue": [
                 "westus"
@@ -56,7 +62,19 @@
                 "description": "An array of the allowed locations, all other locations will be denied by the created policy."
               }
             },
-            "policyDefinitionName": {
+            "allowedLocations2": {
+              "type": "array",
+              "defaultValue": [
+                "eastus"
+              ],
+              "metadata": {
+                "description": "An array of the allowed locations, all other locations will be denied by the created policy."
+              }
+            },
+            "policyDefinitionName1": {
+              "type": "string"
+            },
+            "policyDefinitionName2": {
               "type": "string"
             }
           },
@@ -64,7 +82,7 @@
             {
               "type": "Microsoft.Authorization/policyDefinitions",
               "apiVersion": "2020-03-01",
-              "name": "[parameters('policyDefinitionName')]",
+              "name": "[parameters('policyDefinitionName1')]",
               "properties": {
                 "policyType": "Custom",
                 "mode": "All",
@@ -73,7 +91,28 @@
                   "if": {
                     "not": {
                       "field": "location",
-                      "in": "[parameters('allowedLocations')]"
+                      "in": "[parameters('allowedLocations1')]"
+                    }
+                  },
+                  "then": {
+                    "effect": "audit"
+                  }
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/policyDefinitions",
+              "apiVersion": "2020-03-01",
+              "name": "[parameters('policyDefinitionName2')]",
+              "properties": {
+                "policyType": "Custom",
+                "mode": "All",
+                "parameters": {},
+                "policyRule": {
+                  "if": {
+                    "not": {
+                      "field": "location",
+                      "in": "[parameters('allowedLocations2')]"
                     }
                   },
                   "then": {

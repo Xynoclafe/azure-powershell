@@ -1,10 +1,16 @@
-﻿{
+{
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.16.2.56959",
+      "templateHash": "1655483545797491034"
+    }
+  },
   "parameters": {
     "templateSpecName": {
-      "type": "string",
-      "defaultValue": "[format('MyTemplateSpec{0}', uniqueString(resourceGroup().id))]"
+      "type": "string"
     },
     "location": {
       "type": "string",

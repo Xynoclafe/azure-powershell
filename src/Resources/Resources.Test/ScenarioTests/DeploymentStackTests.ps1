@@ -163,7 +163,7 @@ function Test-NewResourceGroupDeploymentStackUnmanageActions
 		Assert-AreEqual "detach" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteResources and ResourceGroups set 
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -DenySettingsMode None -Force
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -DenySettingsMode None -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DenySettingsMode None -DeleteResources -DeleteResourceGroups -Force
@@ -172,7 +172,7 @@ function Test-NewResourceGroupDeploymentStackUnmanageActions
 		Assert-AreEqual "delete" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteAll set 
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -DenySettingsMode None -Force
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -DenySettingsMode None -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DenySettingsMode None -DeleteAll -Force
@@ -322,7 +322,7 @@ function Test-SetResourceGroupDeploymentStackUnmanageActions
 		Assert-AreEqual "detach" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteResources and ResourceGroups set 
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -DenySettingsMode None -Force
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -DenySettingsMode None -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DenySettingsMode None -DeleteResources -DeleteResourceGroups -Force
 
@@ -331,7 +331,7 @@ function Test-SetResourceGroupDeploymentStackUnmanageActions
 		Assert-AreEqual "delete" $deployment.ResourceGroupsCleanupAction
 
 		# Test - Setting a blank stack with DeleteAll set 
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -DenySettingsMode None -Force
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -DenySettingsMode None -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile blankTemplate.json -DenySettingsMode None -DeleteAll -Force
 
@@ -368,11 +368,11 @@ function Test-NewAndSetResourceGroupDeploymentStackWithBicep
 		New-AzResourceGroup -Name $rgname -Location $rglocation
 
 		# Test - NewByNameAndResourceGroupAndBicepTemplateFile
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGBicepTest1.bicep -TemplateParameterFile StacksRGTemplateParams.json -DenySettingsMode None -Force
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.bicep -TemplateParameterFile StacksRGTemplateParams.json -DenySettingsMode None -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		# Test - Set-AzResourceGroupDeploymentStacks
-		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGBicepTest2.bicep -TemplateParameterFile StacksRGTemplateParams.json -DenySettingsMode None -Force
+		$deployment = Set-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplatePlus.bicep -TemplateParameterFile StacksRGTemplatePlusParams.json -DenySettingsMode None -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 	}
 
@@ -479,14 +479,14 @@ function Test-RemoveResourceGroupDeploymentStack
 		Assert-AreEqual "true" $deployment
 
 		# Test - Success with PassThru - DeleteResources and DeleteResourceGroups
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -DenySettingsMode None -Force
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -DenySettingsMode None -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		$deployment = Remove-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -DeleteResources -DeleteResourceGroups -PassThru -Force
 		Assert-AreEqual "true" $deployment
 
 		# Test - Success with PassThru - DeleteAll
-		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplateWithNestedRG.json -TemplateParameterFile StacksRGTemplateWithNestedRGParams.json -DenySettingsMode None -Force
+		$deployment = New-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -TemplateFile StacksRGTemplate.json -TemplateParameterFile StacksRGTemplateParams.json -DenySettingsMode None -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		$deployment = Remove-AzResourceGroupDeploymentStack -Name $rname -ResourceGroupName $rgname -DeleteAll -PassThru -Force
@@ -635,6 +635,7 @@ function Test-NewSubscriptionDeploymentStack
 		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -TemplateParameterFile StacksSubTemplateParams.json -Location $location -DenySettingsMode None -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
+
 		# Test - Failure - template parameter file not found
 		$missingFile = "missingFile145.json"
 		$exceptionMessage = "The provided file $missingFile doesn't exist"
@@ -643,7 +644,7 @@ function Test-NewSubscriptionDeploymentStack
 		# --- ParameterObjectTemplateFileParameterSetName ---
 
 		# Test - Success
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -TemplateParameterObject @{location = "westus"} -Location $location -DenySettingsMode None -Force
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -TemplateParameterObject @{policyDefinitionName = "PSCmdletTestPolicy4762"} -Location $location -DenySettingsMode None -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 	}
 
@@ -781,7 +782,7 @@ function Test-SetSubscriptionDeploymentStack
 		# --- ParameterObjectTemplateFileParameterSetName ---
 
 		# Test - Success
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -Location $location -TemplateParameterObject @{location = "westus"} -DenySettingsMode None -Force
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -Description "A Stack" -TemplateFile StacksSubTemplate.json -Location $location -TemplateParameterObject @{policyDefinitionName = "PSCmdletTestPolicy4762"} -DenySettingsMode None -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 	}
 
@@ -865,11 +866,11 @@ function Test-NewAndSetSubscriptionDeploymentStackWithBicep
 	try 
 	{
 		# Test - NewByNameAndResourceGroupAndBicepTemplateFile
-		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubBicepTest1.bicep -TemplateParameterFile StacksSubTemplateParams.json -Location $location -DenySettingsMode None -Force
+		$deployment = New-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplate.bicep -TemplateParameterFile StacksSubTemplateParams.json -Location $location -DenySettingsMode None -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		# Test - Set-AzSubscriptionDeploymentStacks
-		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubBicepTest2.bicep -TemplateParameterFile StacksSubTemplateParams.json -Location $location -DenySettingsMode None -Force
+		$deployment = Set-AzSubscriptionDeploymentStack -Name $rname -TemplateFile StacksSubTemplatePlus.bicep -TemplateParameterFile StacksSubTemplatePlusParams.json -Location $location -DenySettingsMode None -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 	}
 
@@ -1356,11 +1357,11 @@ function Test-NewAndSetManagementGroupDeploymentStackWithBicep
 	try 
 	{
 		# Test - NewByNameAndManagementGroupAndBicepTemplateFile
-		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgid -DeploymentSubscriptionId $subId -TemplateFile StacksMGBicepTest1.bicep -Location $location -DenySettingsMode None -Force
+		$deployment = New-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgid -DeploymentSubscriptionId $subId -TemplateFile StacksMGTemplate.bicep -TemplateParameterFile StacksMGTemplateParams.json -Location $location -DenySettingsMode None -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 
 		# Test - Set-AzManagementGroupDeploymentStacks
-		$deployment = Set-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgid -DeploymentSubscriptionId $subId -TemplateFile StacksMGBicepTest2.bicep -TemplateParameterFile StacksMGBicepTest2Params.json -Location $location -DenySettingsMode None -Force
+		$deployment = Set-AzManagementGroupDeploymentStack -Name $rname -ManagementGroupId $mgid -DeploymentSubscriptionId $subId -TemplateFile StacksMGTemplatePlus.bicep -TemplateParameterFile StacksMGTemplatePlusParams.json -Location $location -DenySettingsMode None -Force
 		Assert-AreEqual "succeeded" $deployment.ProvisioningState
 	}
 
