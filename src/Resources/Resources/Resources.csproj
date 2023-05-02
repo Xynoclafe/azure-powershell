@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ResourceManager\ResourceManager.csproj" />
+	<ProjectReference Include="..\Resources.Sdk\Resources.Sdk.csproj" />
   </ItemGroup>
 
   <ItemGroup>

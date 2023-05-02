@@ -24,6 +24,7 @@
     <ProjectReference Include="..\ResourceManager\ResourceManager.csproj" />
     <ProjectReference Include="..\Resources\Resources.csproj" />
     <ProjectReference Include="..\..\ManagedServiceIdentity\Az.ManagedServiceIdentity.csproj" />
+	<ProjectReference Include="..\Resources.Sdk\Resources.Sdk.csproj" />
   </ItemGroup>
 
   <ItemGroup>
