@@ -78,7 +78,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             Location = this.Location,
             DeploymentName = this.Name,
             DeploymentMode = DeploymentMode.Incremental,
-            TemplateFile = this.TemplateUri ?? this.TryResolvePath(this.TemplateFile),
+            TemplateFile = this.TemplateUri ?? this.TemplateFile,
             TemplateObject = this.TemplateObject,
             TemplateSpecId = TemplateSpecId,
             QueryString = QueryString,

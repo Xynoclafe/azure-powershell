@@ -357,34 +357,23 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             }
 
             // Load parameters from the file
-            string templateParameterFilePath = this.ResolvePath(TemplateParameterFile);
-            if (templateParameterFilePath != null)
+            if (TemplateParameterFile != null)
             {
-                // Check whether templateParameterFilePath exists
-                if (FileUtilities.DataStore.FileExists(templateParameterFilePath))
+                var parametersFromFile = TemplateUtility.ParseTemplateParameterFileContents(TemplateParameterFile);
+                parametersFromFile.ForEach(dp =>
                 {
-                    var parametersFromFile = TemplateUtility.ParseTemplateParameterFileContents(templateParameterFilePath);
-                    parametersFromFile.ForEach(dp =>
+                    var parameter = new Hashtable();
+                    if (dp.Value.Value != null)
                     {
-                        var parameter = new Hashtable();
-                        if (dp.Value.Value != null)
-                        {
-                            parameter.Add("value", dp.Value.Value);
-                        }
-                        if (dp.Value.Reference != null)
-                        {
-                            parameter.Add("reference", dp.Value.Reference);
-                        }
+                        parameter.Add("value", dp.Value.Value);
+                    }
+                    if (dp.Value.Reference != null)
+                    {
+                        parameter.Add("reference", dp.Value.Reference);
+                    }
 
-                        parameterObject[dp.Key] = parameter;
-                    });
-
-                }
-                else
-                {
-                    // To not break previous behavior, just output a warning.
-                    WriteWarning("${templateParameterFilePath} does not exist");
-                }
+                    parameterObject[dp.Key] = parameter;
+                });
             }
             
             // Load dynamic parameters

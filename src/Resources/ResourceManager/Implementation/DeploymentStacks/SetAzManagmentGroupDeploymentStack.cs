@@ -14,37 +14,18 @@
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 {
+    using Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.CmdletBase;
     using Microsoft.Azure.Commands.ResourceManager.Cmdlets.SdkModels;
     using Microsoft.Azure.Management.ResourceManager.Models;
-    using Microsoft.WindowsAzure.Commands.Utilities.Common;
     using System;
     using System.Collections;
-    using System.IO;
     using System.Management.Automation;
-    using ProjectResources = Microsoft.Azure.Commands.ResourceManager.Cmdlets.Properties.Resources;
 
     [Cmdlet("Set", Common.AzureRMConstants.AzureRMPrefix + "ManagementGroupDeploymentStack",
         SupportsShouldProcess = true, DefaultParameterSetName = ParameterlessTemplateFileParameterSetName), OutputType(typeof(PSDeploymentStack))]
-    public class SetAzManagementGroupDeploymentStack : DeploymentStacksCmdletBase
+    public class SetAzManagementGroupDeploymentStack : DeploymentStacksTemplateDeploymentCmdletBase, IDynamicParameters
     {
-
-        #region Cmdlet Parameters and Parameter Set Definitions
-
-        internal const string ParameterlessTemplateFileParameterSetName = "ByTemplateFileWithNoParameters";
-        internal const string ParameterlessTemplateUriParameterSetName = "ByTemplateUriWithNoParameters";
-        internal const string ParameterlessTemplateSpecParameterSetName = "ByTemplateSpecWithNoParameters";
-
-        internal const string ParameterFileTemplateFileParameterSetName = "ByTemplateFileWithParameterFile";
-        internal const string ParameterFileTemplateUriParameterSetName = "ByTemplateUriWithParameterFile";
-        internal const string ParameterFileTemplateSpecParameterSetName = "ByTemplateSpecWithParameterFile";
-
-        internal const string ParameterUriTemplateFileParameterSetName = "ByTemplateFileWithParameterUri";
-        internal const string ParameterUriTemplateUriParameterSetName = "ByTemplateUriWithParameterUri";
-        internal const string ParameterUriTemplateSpecParameterSetName = "ByTemplateSpecWithParameterUri";
-
-        internal const string ParameterObjectTemplateFileParameterSetName = "ByTemplateFileWithParameterObject";
-        internal const string ParameterObjectTemplateUriParameterSetName = "ByTemplateUriWithParameterObject";
-        internal const string ParameterObjectTemplateSpecParameterSetName = "ByTemplateSpecWithParameterObject";
+        #region Cmdlet Parameters
 
         [Alias("StackName")]
         [Parameter(Mandatory = true, ValueFromPipelineByPropertyName = true,
@@ -66,60 +47,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
             HelpMessage = "Location of the stack.")]
         [ValidateNotNullOrEmpty]
         public string Location { get; set; }
-
-        [Parameter(ParameterSetName = ParameterFileTemplateFileParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "TemplateFile to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterUriTemplateFileParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "TemplateFile to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterObjectTemplateFileParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "TemplateFile to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterlessTemplateFileParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "TemplateFile to be used to create the stack.")]
-        public string TemplateFile { get; set; }
-
-        [Parameter(ParameterSetName = ParameterFileTemplateUriParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Template to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterUriTemplateUriParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Template to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterObjectTemplateUriParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Template to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterlessTemplateUriParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Template to be used to create the stack.")]
-        public string TemplateUri { get; set; }
-
-        [Parameter(ParameterSetName = ParameterFileTemplateSpecParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "ResourceId of the TemplateSpec to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterUriTemplateSpecParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "ResourceId of the TemplateSpec to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterObjectTemplateSpecParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "ResourceId of the TemplateSpec to be used to create the stack.")]
-        [Parameter(ParameterSetName = ParameterlessTemplateSpecParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "ResourceId of the TemplateSpec to be used to create the stack.")]
-        public string TemplateSpecId { get; set; }
-
-        [Parameter(ParameterSetName = ParameterFileTemplateFileParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Parameter file to use for the template.")]
-        [Parameter(ParameterSetName = ParameterFileTemplateUriParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Parameter file to use for the template.")]
-        [Parameter(ParameterSetName = ParameterFileTemplateSpecParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Parameter file to use for the template.")]
-        public string TemplateParameterFile { get; set; }
-
-        [Parameter(ParameterSetName = ParameterUriTemplateFileParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Parameter file to use for the template.")]
-        [Parameter(ParameterSetName = ParameterUriTemplateUriParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Parameter file to use for the template.")]
-        [Parameter(ParameterSetName = ParameterUriTemplateSpecParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "Location of the Parameter file to use for the template.")]
-        public string TemplateParameterUri { get; set; }
-
-        [Parameter(ParameterSetName = ParameterObjectTemplateFileParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "A hash table which represents the parameters.")]
-        [Parameter(ParameterSetName = ParameterObjectTemplateUriParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "A hash table which represents the parameters.")]
-        [Parameter(ParameterSetName = ParameterObjectTemplateSpecParameterSetName,
-            Mandatory = true, ValueFromPipelineByPropertyName = true, HelpMessage = "A hash table which represents the parameters.")]
-        public Hashtable TemplateParameterObject { get; set; }
 
         [Parameter(Mandatory = false, ValueFromPipelineByPropertyName = true,
             HelpMessage = "Description for the stack.")]
@@ -166,67 +93,6 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         {
             try
             {
-                Hashtable parameters = new Hashtable();
-                string filePath = "";
-                string parameterFilePath = "";
-                switch (ParameterSetName)
-                {
-                    case ParameterlessTemplateFileParameterSetName:
-                    case ParameterUriTemplateFileParameterSetName:
-                        filePath = this.TryResolvePath(TemplateFile);
-                        if (!File.Exists(filePath))
-                        {
-                            throw new PSInvalidOperationException(
-                                string.Format(ProjectResources.InvalidFilePath, TemplateFile));
-                        }
-                        filePath = ResolveBicepFile(filePath);
-                        TemplateUri = filePath;
-                        break;
-                    case ParameterFileTemplateSpecParameterSetName:
-                    case ParameterFileTemplateUriParameterSetName:
-                        parameterFilePath = this.TryResolvePath(TemplateParameterFile);
-                        if (!File.Exists(parameterFilePath))
-                        {
-                            throw new PSInvalidOperationException(
-                                string.Format(ProjectResources.InvalidFilePath, TemplateParameterFile));
-                        }
-                        parameters = this.GetParameterObject(parameterFilePath);
-                        break;
-                    case ParameterFileTemplateFileParameterSetName:
-                        filePath = this.TryResolvePath(TemplateFile);
-                        if (!File.Exists(filePath))
-                        {
-                            throw new PSInvalidOperationException(
-                                string.Format(ProjectResources.InvalidFilePath, TemplateFile));
-                        }
-                        filePath = ResolveBicepFile(filePath);
-
-                        parameterFilePath = this.TryResolvePath(TemplateParameterFile);
-                        if (!File.Exists(parameterFilePath))
-                        {
-                            throw new PSInvalidOperationException(
-                                string.Format(ProjectResources.InvalidFilePath, TemplateParameterFile));
-                        }
-                        parameters = this.GetParameterObject(parameterFilePath);
-                        TemplateUri = filePath;
-                        break;
-                    case ParameterObjectTemplateFileParameterSetName:
-                        filePath = this.TryResolvePath(TemplateFile);
-                        if (!File.Exists(filePath))
-                        {
-                            throw new PSInvalidOperationException(
-                                string.Format(ProjectResources.InvalidFilePath, TemplateFile));
-                        }
-                        filePath = ResolveBicepFile(filePath);
-                        TemplateUri = filePath;
-                        parameters = GetTemplateParameterObject(TemplateParameterObject);
-                        break;
-                    case ParameterObjectTemplateSpecParameterSetName:
-                    case ParameterObjectTemplateUriParameterSetName:
-                        parameters = GetTemplateParameterObject(TemplateParameterObject);
-                        break;
-                }
-
                 var shouldDeleteResources = (DeleteAll.ToBool() || DeleteResources.ToBool()) ? true : false;
                 var shouldDeleteResourceGroups = (DeleteAll.ToBool() || DeleteResourceGroups.ToBool()) ? true : false;
 
@@ -236,24 +102,24 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
                 Action createOrUpdateAction = () =>
                 {
                     var deploymentStack = DeploymentStacksSdkClient.ManagementGroupCreateOrUpdateDeploymentStack(
-                            Name,
-                            ManagementGroupId,
-                            Location,
-                            TemplateUri,
-                            TemplateSpecId,
-                            TemplateParameterUri,
-                            parameters,
-                            Description,
-                            resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
-                            resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach",
-                            managementGroupsCleanupAction: "detach",
-                            deploymentScope,
-                            DenySettingsMode.ToString(),
-                            DenySettingsExcludedPrincipals,
-                            DenySettingsExcludedActions,
-                            DenySettingsApplyToChildScopes.IsPresent,
-                            Tag
-                        );
+                        deploymentStackName: Name,
+                        managementGroupId: ManagementGroupId,
+                        tags: Tag,
+                        deploymentScope: deploymentScope,
+                        location: Location,
+                        templateUri: TemplateUri ?? TemplateFile,
+                        templateSpec: TemplateSpecId,
+                        parameterUri: TemplateParameterUri,
+                        parameters: this.GenerateParameterObject(),
+                        description: Description,
+                        resourcesCleanupAction: shouldDeleteResources ? "delete" : "detach",
+                        resourceGroupsCleanupAction: shouldDeleteResourceGroups ? "delete" : "detach",
+                        managementGroupsCleanupAction: "detach",
+                        denySettingsMode: DenySettingsMode.ToString(),
+                        denySettingsExcludedPrincipales: DenySettingsExcludedPrincipals,
+                        denySettingsExcludedActions: DenySettingsExcludedActions,
+                        denySettingsApplyToChildScopes: DenySettingsApplyToChildScopes.IsPresent
+                    );
 
                     WriteObject(deploymentStack);
                 };

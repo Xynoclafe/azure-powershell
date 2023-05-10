@@ -25,6 +25,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
         SupportsShouldProcess = true, DefaultParameterSetName = ParameterlessTemplateFileParameterSetName), OutputType(typeof(PSDeploymentStack))]
     public class NewAzSubscriptionDeploymentStack : DeploymentStacksTemplateDeploymentCmdletBase, IDynamicParameters
     {
+        #region Cmdlet Parameters
+
         [Alias("StackName")]
         [Parameter(Position = 0, Mandatory = true, ValueFromPipelineByPropertyName = true,
             HelpMessage = "The name of the deploymentStack to create")]
@@ -76,6 +78,8 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation
 
         [Parameter(Mandatory = false, HelpMessage = "Run cmdlet in the background.")]
         public SwitchParameter AsJob { get; set; }
+
+        #endregion
 
         #region Cmdlet Overrides
 

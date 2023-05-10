@@ -11,8 +11,6 @@ using System.Management.Automation;
 using System.Net;
 using Microsoft.Azure.Commands.Common.Authentication;
 using Microsoft.Azure.Commands.Common.Authentication.Abstractions;
-using System.IO;
-using ProjectResources = Microsoft.Azure.Commands.ResourceManager.Cmdlets.Properties.Resources;
 using System.Collections.Generic;
 
 namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.CmdletBase
@@ -21,13 +19,13 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.Cmdlet
     {
         #region Cmdlet Parameters and Parameter Set Definitions
 
-        // protected RuntimeDefinedParameterDictionary dynamicParameters;
+        protected RuntimeDefinedParameterDictionary dynamicParameters;
 
-        // private string templateFile;
+        private string templateFile;
 
-        // private string templateUri;
+        private string templateUri;
 
-        // private string templateSpecId;
+        private string templateSpecId;
 
         protected string protectedTemplateUri;
 
@@ -35,7 +33,7 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.Cmdlet
 
         protected DeploymentStacksTemplateDeploymentCmdletBase()
         {
-            // dynamicParameters = new RuntimeDefinedParameterDictionary();
+            dynamicParameters = new RuntimeDefinedParameterDictionary();
         }
 
         internal const string ParameterlessTemplateFileParameterSetName = "ByTemplateFileWithNoParameters";
@@ -143,61 +141,28 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.Cmdlet
 
         protected override void OnBeginProcessing()
         {
-            if (BicepUtility.IsBicepFile(TemplateUri))
-            {
-                throw new NotSupportedException($"'-TemplateUri {TemplateUri}' is not supported. Please download the bicep file and pass it using -TemplateFile.");
-            }
-
-            if (BicepUtility.IsBicepFile(TemplateFile))
-            {
-                BuildAndUseBicepTemplate();
-            }
-
-            TemplateFile = this.TryResolvePath(TemplateFile);
-            if (TemplateFile != null && !File.Exists(TemplateFile))
-            {
-                throw new PSInvalidOperationException(
-                    string.Format(ProjectResources.InvalidFilePath, TemplateFile));
-            }
-
-            TemplateParameterFile = this.TryResolvePath(TemplateParameterFile);
-            if (TemplateParameterFile != null && !File.Exists(TemplateParameterFile))
-            {
-                throw new PSInvalidOperationException(
-                    string.Format(ProjectResources.InvalidFilePath, TemplateParameterFile));
-            }
-
+            TemplateFile = this.ResolvePath(TemplateFile);
+            TemplateParameterFile = this.ResolvePath(TemplateParameterFile);
             base.OnBeginProcessing();
         }
 
-        /*public new virtual object GetDynamicParameters()
+        public new virtual object GetDynamicParameters()
         {
-            if (BicepUtility.IsBicepFile(TemplateUri))
-            {
-                throw new NotSupportedException($"'-TemplateUri {TemplateUri}' is not supported. Please download the bicep file and pass it using -TemplateFile.");
-            }
-
-            if (BicepUtility.IsBicepFile(TemplateFile))
-            {
-                BuildAndUseBicepTemplate();
-            }
-
-            if (!string.IsNullOrEmpty(QueryString))
-            {
-                if (QueryString.Substring(0, 1) == "?")
-                    protectedTemplateUri = TemplateUri + QueryString;
-                else
-                    protectedTemplateUri = TemplateUri + "?" + QueryString;
-            }
-
             if (!this.IsParameterBound(c => c.SkipTemplateParameterPrompt))
             {
                 // Resolve the static parameter names for this cmdlet:
                 string[] staticParameterNames = this.GetStaticParameterNames();
 
+                // TODO: If bicep file checksum is the same, should not reload parameters.
                 if (!string.IsNullOrEmpty(TemplateFile) &&
                     !TemplateFile.Equals(templateFile, StringComparison.OrdinalIgnoreCase))
                 {
+                    // Build if template file is a bicep file.
+                    if (BicepUtility.IsBicepFile(TemplateFile))
+                    {
+                        BuildAndUseBicepTemplate();
+                    }
+
                     templateFile = TemplateFile;
                     if (string.IsNullOrEmpty(TemplateParameterUri))
                     {
@@ -219,6 +184,20 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.Cmdlet
                 else if (!string.IsNullOrEmpty(TemplateUri) &&
                     !TemplateUri.Equals(templateUri, StringComparison.OrdinalIgnoreCase))
                 {
+                    // Check for invalid bicep Template URI. 
+                    if (BicepUtility.IsBicepFile(TemplateUri))
+                    {
+                        throw new NotSupportedException($"'-TemplateUri {TemplateUri}' is not supported. Please download the bicep file and pass it using -TemplateFile.");
+                    }
+
+                    if (!string.IsNullOrEmpty(QueryString))
+                    {
+                        if (QueryString.Substring(0, 1) == "?")
+                            protectedTemplateUri = TemplateUri + QueryString;
+                        else
+                            protectedTemplateUri = TemplateUri + "?" + QueryString;
+                    }
+
                     if (string.IsNullOrEmpty(protectedTemplateUri))
                     {
                         templateUri = TemplateUri;
@@ -305,11 +284,11 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.Cmdlet
                     }
                 }
             }
-
+            
             RegisterDynamicParameters(dynamicParameters);
 
             return dynamicParameters;
-        }*/
+        }
 
         /// <summary>
         /// Gets the names of the static parameters defined for this cmdlet.
@@ -369,23 +348,28 @@ namespace Microsoft.Azure.Commands.ResourceManager.Cmdlets.Implementation.Cmdlet
             }
 
             // Load parameters from the file.
-            if (TemplateParameterFile != null)
+            string parameterFilePath = this.ResolvePath(TemplateParameterFile);
+            if (parameterFilePath != null)
             {
-                var parametersFromFile = TemplateUtility.ParseTemplateParameterFileContents(TemplateParameterFile);
-                parametersFromFile.ForEach(dp =>
+                // Check whether templateParameterFilePath exists
+                if (FileUtilities.DataStore.FileExists(parameterFilePath))
                 {
-                    var parameter = new Hashtable();
-                    if (dp.Value.Value != null)
+                    var parametersFromFile = TemplateUtility.ParseTemplateParameterFileContents(TemplateParameterFile);
+                    parametersFromFile.ForEach(dp =>
                     {
-                        parameter.Add("value", dp.Value.Value);
-                    }
-                    if (dp.Value.Reference != null)
-                    {
-                        parameter.Add("reference", dp.Value.Reference);
-                    }
+                        var parameter = new Hashtable();
+                        if (dp.Value.Value != null)
+                        {
+                            parameter.Add("value", dp.Value.Value);
+                        }
+                        if (dp.Value.Reference != null)
+                        {
+                            parameter.Add("reference", dp.Value.Reference);
+                        }
 
-                    parameterObject[dp.Key] = parameter;
-                });
+                        parameterObject[dp.Key] = parameter;
+                    });
+                }
             }
 
             // Load dynamic parameters.
