@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <PsModuleName>Resources</PsModuleName>
+    <Configurations>Debug;Release;Powershell</Configurations>
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)..\..\Az.Test.props" />
@@ -34,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Update="Microsoft.Azure.Management.ResourceManager" Version="3.17.3-preview" />
+    <PackageReference Update="Microsoft.Azure.Management.ResourceManager" Version="3.17.4-preview" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.9.0" />
